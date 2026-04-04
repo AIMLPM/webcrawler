@@ -24,6 +24,8 @@ A lot of crawlers are either too heavyweight for small ingestion jobs or too foc
 - Safe filenames with URL hashing
 - JSONL index for ingestion workflows
 - Basic content cleanup for nav / footer / utility elements
+- Built-in text chunking for embeddings
+- Supabase / pgvector upload with OpenAI embeddings
 
 ## Project structure
 
@@ -39,7 +41,10 @@ A lot of crawlers are either too heavyweight for small ingestion jobs or too foc
 └── webcrawler/
     ├── __init__.py
     ├── cli.py
-    └── core.py
+    ├── core.py
+    ├── chunker.py
+    ├── upload.py
+    └── upload_cli.py
 ```
 
 ## Installation
@@ -57,6 +62,14 @@ pip install -r requirements.txt
 ```bash
 pip install -e .
 ```
+
+### Option 3: Install with Supabase upload support
+
+```bash
+pip install -e ".[upload]"
+```
+
+This adds the `openai` and `supabase` packages needed for the upload command.
 
 ## Usage
 
@@ -141,6 +154,140 @@ output/
 └── pages.jsonl
 ```
 
+## Uploading to Supabase for RAG
+
+After crawling, you can chunk the output, generate embeddings, and upload directly to a Supabase table with pgvector for vector search.
+
+### 1. Set up Supabase
+
+In your Supabase project, go to the **SQL Editor** and run:
+
+```sql
+-- Enable the pgvector extension (one time per project)
+create extension if not exists vector;
+
+-- Create the documents table
+create table documents (
+  id bigserial primary key,
+  url text not null,
+  title text,
+  chunk_text text not null,
+  chunk_index integer not null,
+  chunk_total integer not null,
+  embedding vector(1536) not null,
+  metadata jsonb default '{}'::jsonb,
+  created_at timestamptz default now()
+);
+
+-- Create an index for fast similarity search
+create index on documents using hnsw (embedding vector_cosine_ops);
+```
+
+> **Note on dimensions:** The default embedding model (`text-embedding-3-small`) produces 1536-dimensional vectors. If you use a different model, update `vector(1536)` to match.
+
+### 2. Set environment variables
+
+```bash
+export SUPABASE_URL="https://your-project-id.supabase.co"
+export SUPABASE_KEY="your-service-role-key"
+export OPENAI_API_KEY="your-openai-api-key"
+```
+
+Use your **service-role key** (not the anon key) since it bypasses Row Level Security for inserts.
+
+### 3. Run the upload
+
+```bash
+python -m webcrawler.upload_cli \
+  --jsonl ./output/pages.jsonl \
+  --show-progress
+```
+
+### Upload CLI arguments
+
+| Argument | Description |
+|---|---|
+| `--jsonl` | Path to `pages.jsonl` from the crawler |
+| `--supabase-url` | Supabase project URL (or `SUPABASE_URL` env var) |
+| `--supabase-key` | Supabase service-role key (or `SUPABASE_KEY` env var) |
+| `--table` | Target table name (default: `documents`) |
+| `--max-words` | Max words per chunk (default: `400`) |
+| `--overlap-words` | Overlap words between chunks (default: `50`) |
+| `--embedding-model` | OpenAI embedding model (default: `text-embedding-3-small`) |
+| `--show-progress` | Print progress during upload |
+
+### 4. Query with vector search
+
+Once uploaded, you can find relevant chunks using cosine similarity:
+
+```sql
+-- Replace the array with your query's embedding vector
+select
+  url,
+  title,
+  chunk_text,
+  1 - (embedding <=> '[0.012, -0.003, ...]') as similarity
+from documents
+order by embedding <=> '[0.012, -0.003, ...]'
+limit 5;
+```
+
+In practice, you would generate the query embedding in your application code:
+
+```python
+import openai
+from supabase import create_client
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+client = openai.OpenAI()
+
+# Embed the user's question
+query = "How do I set up authentication?"
+response = client.embeddings.create(input=[query], model="text-embedding-3-small")
+query_embedding = response.data[0].embedding
+
+# Search for the most relevant chunks
+result = supabase.rpc(
+    "match_documents",
+    {"query_embedding": query_embedding, "match_count": 5},
+).execute()
+```
+
+To use the `match_documents` RPC, create this function in Supabase:
+
+```sql
+create or replace function match_documents(
+  query_embedding vector(1536),
+  match_count int default 5
+)
+returns table (
+  id bigint,
+  url text,
+  title text,
+  chunk_text text,
+  similarity float
+)
+language sql stable
+as $$
+  select
+    id,
+    url,
+    title,
+    chunk_text,
+    1 - (embedding <=> query_embedding) as similarity
+  from documents
+  order by embedding <=> query_embedding
+  limit match_count;
+$$;
+```
+
+### Supabase recommendations
+
+- **HNSW index**: The `create index ... using hnsw` statement above creates an approximate nearest-neighbor index. This is much faster than exact search for tables with more than a few thousand rows.
+- **Service-role key**: Use the service-role key for bulk inserts. For user-facing queries, use the anon key with Row Level Security enabled.
+- **Embedding model**: `text-embedding-3-small` is a good balance of cost and quality. For higher accuracy, use `text-embedding-3-large` (3072 dimensions — update the `vector()` size accordingly).
+- **Chunk size**: The default 400 words with 50-word overlap works well for most documentation. Decrease for short-form content, increase for long technical documents.
+
 ## Good fit for
 
 - RAG ingestion
@@ -164,7 +311,8 @@ output/
 - [ ] GitHub Actions CI
 - [ ] Canonical URL support
 - [ ] Duplicate-content detection
-- [ ] Optional chunking for embeddings
+- [x] Optional chunking for embeddings
+- [x] Supabase / pgvector upload
 - [ ] PDF support
 - [ ] Browser-rendered page mode
 

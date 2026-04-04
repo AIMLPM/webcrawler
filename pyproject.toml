@@ -19,8 +19,15 @@ dependencies = [
   "certifi>=2024.2.2"
 ]
 
+[project.optional-dependencies]
+upload = [
+  "openai>=1.0.0",
+  "supabase>=2.0.0",
+]
+
 [project.scripts]
 website-crawler = "webcrawler.cli:main"
+website-crawler-upload = "webcrawler.upload_cli:main"
 
 [tool.setuptools.packages.find]
 include = ["webcrawler*"]
