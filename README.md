@@ -1,4 +1,5 @@
-# Website Crawler for AI / RAG Ingestion
+# MarkCrawl by iD8 🕷️📝
+### Fast Python Web Crawler for AI & RAG Ingestion
 
 A lightweight Python website crawler that extracts clean Markdown or plain text from websites for AI ingestion, RAG pipelines, search indexing, and documentation archiving.
 
