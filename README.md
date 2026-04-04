@@ -724,20 +724,30 @@ For full extensibility docs (custom storage adapters, swap output formats, modul
 
 ## Roadmap
 
-- [x] Package publishing (`pip install markcrawl`)
-- [x] Automated tests (44 tests)
-- [x] GitHub Actions CI (Python 3.10-3.13)
-- [x] Optional chunking for embeddings
-- [x] Supabase / pgvector upload
-- [x] Browser-rendered page mode (Playwright)
-- [x] Concurrent fetching
-- [x] Proxy support
-- [x] Resume interrupted crawls
-- [x] LLM-powered structured extraction (OpenAI, Claude, Gemini)
-- [x] MCP server for AI agents
-- [ ] Canonical URL support
-- [ ] Duplicate-content detection
-- [ ] PDF support
+What's next for MarkCrawl:
+
+- [ ] Canonical URL support — deduplicate pages with different URLs pointing to the same content
+- [ ] Duplicate-content detection — fuzzy matching beyond exact hash deduplication
+- [ ] PDF support — extract text from PDF files linked on crawled sites
+- [ ] Authenticated crawling — cookie/session support for login-protected sites
+- [ ] Multi-provider embeddings — use Anthropic, Gemini, or Grok for embeddings (not just OpenAI)
+
+<details>
+<summary>Shipped features</summary>
+
+- Package publishing (`pip install markcrawl`)
+- 44 automated tests + GitHub Actions CI (Python 3.10-3.13)
+- Markdown and plain text output with auto-citation
+- Sitemap-first crawling with robots.txt compliance
+- Text chunking with configurable overlap
+- Supabase / pgvector upload for RAG
+- JavaScript rendering via Playwright
+- Concurrent fetching and proxy support
+- Resume interrupted crawls
+- LLM-powered structured extraction (OpenAI, Claude, Gemini, Grok)
+- Auto-field discovery across multiple sites
+- MCP server, LangChain tools, OpenClaw skill
+</details>
 
 ## Contributing
 
