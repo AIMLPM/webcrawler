@@ -3,6 +3,7 @@
 
 [![CI](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml)
 ![PyPI Version](https://img.shields.io/pypi/v/markcrawl)
+![License](https://img.shields.io/github/license/AIMLPM/markcrawl)
 
 ```bash
 pip install markcrawl
