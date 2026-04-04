@@ -69,7 +69,23 @@ pip install -e .
 pip install -e ".[upload]"
 ```
 
-This adds the `openai` and `supabase` packages needed for the upload command.
+This adds the `openai` and `supabase` packages needed for the upload command. After installing this way, you can also run `website-crawler-upload` directly instead of `python -m webcrawler.upload_cli`.
+
+## Quick start — full pipeline
+
+```bash
+# 1. Crawl a site
+python -m webcrawler.cli \
+  --base https://docs.example.com/ \
+  --out ./output \
+  --format markdown \
+  --show-progress
+
+# 2. Upload to Supabase (requires SUPABASE_URL, SUPABASE_KEY, OPENAI_API_KEY env vars)
+python -m webcrawler.upload_cli \
+  --jsonl ./output/pages.jsonl \
+  --show-progress
+```
 
 ## Usage
 
@@ -235,11 +251,12 @@ limit 5;
 In practice, you would generate the query embedding in your application code:
 
 ```python
+import os
 import openai
 from supabase import create_client
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-client = openai.OpenAI()
+supabase = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
+client = openai.OpenAI()  # uses OPENAI_API_KEY env var
 
 # Embed the user's question
 query = "How do I set up authentication?"
@@ -251,6 +268,10 @@ result = supabase.rpc(
     "match_documents",
     {"query_embedding": query_embedding, "match_count": 5},
 ).execute()
+
+for row in result.data:
+    print(f"{row['similarity']:.3f}  {row['url']}")
+    print(f"  {row['chunk_text'][:120]}...\n")
 ```
 
 To use the `match_documents` RPC, create this function in Supabase:
