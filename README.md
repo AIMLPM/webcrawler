@@ -43,6 +43,9 @@ A lot of crawlers are either too heavyweight for small ingestion jobs or too foc
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── SECURITY.md
+├── tests/
+│   ├── test_core.py
+│   └── test_chunker.py
 └── webcrawler/
     ├── __init__.py
     ├── cli.py
@@ -79,7 +82,15 @@ playwright install chromium
 
 This adds Playwright for rendering JavaScript-heavy sites with `--render-js`.
 
-### Option 4: Install with Supabase upload support
+### Option 4: Install with structured extraction support
+
+```bash
+pip install -e ".[extract]"
+```
+
+This adds the `openai` package needed for LLM-powered field extraction via `python -m webcrawler.extract_cli`.
+
+### Option 5: Install with Supabase upload support
 
 ```bash
 pip install -e ".[upload]"
@@ -87,7 +98,7 @@ pip install -e ".[upload]"
 
 This adds the `openai` and `supabase` packages needed for the upload command. After installing this way, you can also run `website-crawler-upload` directly instead of `python -m webcrawler.upload_cli`.
 
-### Option 5: Install everything
+### Option 6: Install everything
 
 ```bash
 pip install -e ".[all]"
@@ -421,10 +432,13 @@ $$;
 
 ### Supabase recommendations
 
-- **HNSW index**: The `create index ... using hnsw` statement above creates an approximate nearest-neighbor index. This is much faster than exact search for tables with more than a few thousand rows.
+- **HNSW index**: The `create index ... using hnsw` statement above creates an approximate nearest-neighbor index. This is much faster than exact search for tables with more than a few thousand rows. ([Supabase HNSW docs](https://supabase.com/docs/guides/ai/vector-indexes/hnsw-indexes))
 - **Service-role key**: Use the service-role key for bulk inserts. For user-facing queries, use the anon key with Row Level Security enabled.
-- **Embedding model**: `text-embedding-3-small` is a good balance of cost and quality. For higher accuracy, use `text-embedding-3-large` (3072 dimensions — update the `vector()` size accordingly).
+- **Embedding model**: `text-embedding-3-small` is a good balance of cost and quality. For higher accuracy, use `text-embedding-3-large` (3072 dimensions — update the `vector()` size accordingly). ([OpenAI embeddings guide](https://platform.openai.com/docs/guides/embeddings))
 - **Chunk size**: The default 400 words with 50-word overlap works well for most documentation. Decrease for short-form content, increase for long technical documents.
+- **pgvector reference**: The `<=>` operator is cosine distance (lower = more similar). See the [pgvector documentation](https://github.com/pgvector/pgvector) for all available distance operators.
+
+> These recommendations were verified against official documentation as of April 2026.
 
 ## Structured extraction with LLM
 
