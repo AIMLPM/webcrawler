@@ -90,6 +90,36 @@ pip install -e ".[extract]"
 
 This adds the `openai` package needed for LLM-powered field extraction via `python -m webcrawler.extract_cli`.
 
+**What does extraction add?** The base crawler gives you the full text content of every page. The extraction step uses an LLM to pull out specific structured fields you define. Here's the difference:
+
+**Without LLM extraction** — you get raw page content:
+
+```json
+{
+  "url": "https://competitor.com/pricing",
+  "title": "Pricing - Competitor",
+  "text": "Pricing Plans\n\nStarter\n$29/month\nUp to 1,000 API calls...\n\nPro\n$99/month\nUp to 50,000 API calls...\n\nEnterprise\nContact us\nUnlimited API calls, SLA, dedicated support...\n\nAll plans include SSL, 99.9% uptime, and REST API access.\n\nQuestions? Contact sales@competitor.com"
+}
+```
+
+This is useful for search and RAG, but you'd need to manually read through hundreds of pages to compare competitors or find specific details.
+
+**With LLM extraction** (`--fields pricing_tiers lowest_price enterprise_available api_included contact_email`):
+
+```json
+{
+  "url": "https://competitor.com/pricing",
+  "title": "Pricing - Competitor",
+  "pricing_tiers": "Starter ($29/mo), Pro ($99/mo), Enterprise (contact sales)",
+  "lowest_price": "$29/month",
+  "enterprise_available": "Yes, contact sales for pricing",
+  "api_included": "Yes, REST API on all plans",
+  "contact_email": "sales@competitor.com"
+}
+```
+
+Now you can load this into a spreadsheet or database and instantly compare across 10 competitors — no manual reading required. You define the fields, the LLM finds the answers.
+
 ### Option 5: Install with Supabase upload support
 
 ```bash
