@@ -94,6 +94,19 @@ pip install -e ".[all]"
 playwright install chromium
 ```
 
+## Cost
+
+The crawler itself is **completely free** — crawling, text extraction, chunking, resume, JS rendering, and proxy support use no paid APIs.
+
+Only two optional features require an OpenAI API key (and therefore have token costs):
+
+| Feature | When it costs money | Typical cost |
+|---|---|---|
+| `extract_cli` (structured extraction) | When you use `--fields` to extract structured data via LLM | ~$0.01-0.03 per page with `gpt-4o-mini` |
+| `upload_cli` (Supabase upload) | When generating embeddings for vector search | ~$0.0001 per page with `text-embedding-3-small` |
+
+You can use the full crawl pipeline (crawl → chunk → save files) without any API keys or costs.
+
 ## Quick start — full pipeline
 
 ```bash
@@ -488,7 +501,7 @@ This produces an `extracted.jsonl` file with structured data:
 
 - [ ] Package publishing
 - [x] Automated tests
-- [ ] GitHub Actions CI
+- [x] GitHub Actions CI
 - [ ] Canonical URL support
 - [ ] Duplicate-content detection
 - [x] Optional chunking for embeddings
