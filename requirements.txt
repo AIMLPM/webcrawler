@@ -3,6 +3,9 @@ markdownify>=0.12.0
 requests>=2.31.0
 certifi>=2024.2.2
 
+# Optional: required for --render-js (JS rendering)
+# playwright>=1.40.0
+
 # Optional: required for Supabase upload with embeddings
 # openai>=1.0.0
 # supabase>=2.0.0

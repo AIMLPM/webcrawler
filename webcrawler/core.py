@@ -9,8 +9,9 @@ import time
 import urllib.parse as up
 import xml.etree.ElementTree as ET
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Callable, Deque, Iterable, List, Optional, Set, Tuple
+from typing import Callable, Deque, Dict, Iterable, List, Optional, Set, Tuple
 from urllib import robotparser
 
 import requests
@@ -47,7 +48,14 @@ class CrawlResult:
     index_file: str
 
 
-def build_session(user_agent: str = DEFAULT_UA) -> requests.Session:
+# ---------------------------------------------------------------------------
+# Session / fetch helpers
+# ---------------------------------------------------------------------------
+
+def build_session(
+    user_agent: str = DEFAULT_UA,
+    proxy: Optional[str] = None,
+) -> requests.Session:
     session = requests.Session()
     session.verify = CERT_PATH
     session.headers.update(
@@ -56,6 +64,8 @@ def build_session(user_agent: str = DEFAULT_UA) -> requests.Session:
             "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
         }
     )
+    if proxy:
+        session.proxies = {"http": proxy, "https": proxy}
 
     retry = Retry(
         total=3,
@@ -70,6 +80,72 @@ def build_session(user_agent: str = DEFAULT_UA) -> requests.Session:
     session.mount("https://", adapter)
     return session
 
+
+def fetch(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
+    try:
+        return session.get(url, timeout=timeout, allow_redirects=True)
+    except requests.RequestException as exc:
+        logger.warning("Fetch error for %s: %s", url, exc)
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Playwright (optional) — JS rendering
+# ---------------------------------------------------------------------------
+
+def _get_playwright_browser(proxy: Optional[str] = None):
+    """Launch a Playwright Chromium browser (reuse across calls via caller)."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        raise SystemExit(
+            "Playwright is required for --render-js.\n"
+            "Install it with:  pip install playwright && playwright install chromium"
+        )
+    pw = sync_playwright().start()
+    launch_args: Dict = {}
+    if proxy:
+        launch_args["proxy"] = {"server": proxy}
+    browser = pw.chromium.launch(headless=True, **launch_args)
+    return pw, browser
+
+
+@dataclass
+class PlaywrightResponse:
+    """Minimal response object matching what the crawl loop needs."""
+    ok: bool
+    status_code: int
+    text: str
+    headers: Dict[str, str]
+
+
+def fetch_with_playwright(browser, url: str, timeout: int, user_agent: str) -> Optional[PlaywrightResponse]:
+    """Fetch a URL using Playwright, returning rendered HTML."""
+    try:
+        context = browser.new_context(user_agent=user_agent)
+        page = context.new_page()
+        response = page.goto(url, timeout=timeout * 1000, wait_until="networkidle")
+        if response is None:
+            context.close()
+            return None
+        html = page.content()
+        headers = {k.lower(): v for k, v in response.headers.items()}
+        result = PlaywrightResponse(
+            ok=response.ok,
+            status_code=response.status,
+            text=html,
+            headers=headers,
+        )
+        context.close()
+        return result
+    except Exception as exc:
+        logger.warning("Playwright fetch error for %s: %s", url, exc)
+        return None
+
+
+# ---------------------------------------------------------------------------
+# URL helpers
+# ---------------------------------------------------------------------------
 
 def norm_url(url: str) -> str:
     p = up.urlsplit(url)
@@ -101,13 +177,9 @@ def safe_filename(url: str, ext: str) -> str:
     return f"{stub}__{h}.{ext}"
 
 
-def fetch(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
-    try:
-        return session.get(url, timeout=timeout, allow_redirects=True)
-    except requests.RequestException as exc:
-        logger.warning("Fetch error for %s: %s", url, exc)
-        return None
-
+# ---------------------------------------------------------------------------
+# Robots / sitemap
+# ---------------------------------------------------------------------------
 
 def parse_robots_txt(session: requests.Session, robots_url: str) -> robotparser.RobotFileParser:
     rp = robotparser.RobotFileParser()
@@ -170,6 +242,10 @@ def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List
 
     return list(dict.fromkeys(urls))
 
+
+# ---------------------------------------------------------------------------
+# Content extraction
+# ---------------------------------------------------------------------------
 
 def extract_links(html: str, base_url: str) -> Set[str]:
     soup = BeautifulSoup(html, "html.parser")
@@ -258,6 +334,10 @@ def default_progress(enabled: bool) -> Callable[[str], None]:
     return emit
 
 
+# ---------------------------------------------------------------------------
+# Main crawl
+# ---------------------------------------------------------------------------
+
 def crawl(
     base_url: str,
     out_dir: str,
@@ -270,13 +350,23 @@ def crawl(
     show_progress: bool = False,
     min_words: int = 20,
     user_agent: Optional[str] = DEFAULT_UA,
+    render_js: bool = False,
+    concurrency: int = 1,
+    proxy: Optional[str] = None,
 ) -> CrawlResult:
     os.makedirs(out_dir, exist_ok=True)
     jsonl_path = os.path.join(out_dir, "pages.jsonl")
 
     effective_user_agent = user_agent or DEFAULT_UA
-    session = build_session(user_agent=effective_user_agent)
+    session = build_session(user_agent=effective_user_agent, proxy=proxy)
     progress = default_progress(show_progress)
+
+    # Playwright browser (only when JS rendering is requested)
+    pw_instance = None
+    pw_browser = None
+    if render_js:
+        pw_instance, pw_browser = _get_playwright_browser(proxy=proxy)
+        progress("[info] Playwright browser launched for JS rendering")
 
     base_url = norm_url(base_url)
     base_netloc = up.urlsplit(base_url).netloc
@@ -288,6 +378,12 @@ def crawl(
             return rp.can_fetch(effective_user_agent, url)
         except Exception:
             return True
+
+    def fetch_page(url: str):
+        """Fetch a single page using either requests or Playwright."""
+        if render_js:
+            return fetch_with_playwright(pw_browser, url, timeout, effective_user_agent)
+        return fetch(session, url, timeout)
 
     to_visit: Deque[str] = deque()
     seen_urls: Set[str] = set()
@@ -315,76 +411,177 @@ def crawl(
     saved_count = 0
     ext = "md" if fmt == "markdown" else "txt"
 
-    with open(jsonl_path, "w", encoding="utf-8") as jsonl_file:
-        while to_visit and (max_pages <= 0 or saved_count < max_pages):
-            url = to_visit.popleft()
-            if url in seen_urls:
-                continue
-            if not same_scope(url, base_netloc, include_subdomains):
-                continue
-            if not allowed(url):
-                progress(f"[skip] robots.txt disallowed: {url}")
-                continue
+    def process_page(url: str, html: str) -> Optional[Dict]:
+        """Extract content from HTML and return a dict to write, or None to skip."""
+        if fmt == "markdown":
+            title, content = html_to_markdown(html)
+        else:
+            title, content = html_to_text(html)
 
-            seen_urls.add(url)
-            progress(f"[get ] {url}")
-            response = fetch(session, url, timeout)
-            time.sleep(delay)
+        if not content:
+            return None
+        if len(content.split()) < min_words:
+            progress(f"[skip] too little content: {url}")
+            return None
 
-            if not (response and response.ok):
-                continue
-            content_type = response.headers.get("Content-Type", "").lower()
-            if "text/html" not in content_type:
-                progress(f"[skip] non-HTML content: {url}")
-                continue
+        content_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
+        if content_hash in seen_content:
+            progress(f"[skip] duplicate content: {url}")
+            return None
+        seen_content.add(content_hash)
 
+        return {"url": url, "title": title, "content": content, "html": html}
+
+    def write_page(page_data: Dict) -> str:
+        """Write a page to disk and return the filename."""
+        url = page_data["url"]
+        title = page_data["title"]
+        content = page_data["content"]
+
+        filename = safe_filename(url, ext)
+        output_path = os.path.join(out_dir, filename)
+        with open(output_path, "w", encoding="utf-8") as output_file:
             if fmt == "markdown":
-                title, content = html_to_markdown(response.text)
+                header = f"# {title}\n\n" if title else ""
+                meta = f"> URL: {url}\n\n"
             else:
-                title, content = html_to_text(response.text)
+                header = f"Title: {title}\n\n" if title else ""
+                meta = f"URL: {url}\n\n"
+            output_file.write(header + meta + content + "\n")
+        return filename
 
-            if not content:
-                continue
-            if len(content.split()) < min_words:
-                progress(f"[skip] too little content: {url}")
-                continue
+    try:
+        with open(jsonl_path, "w", encoding="utf-8") as jsonl_file:
 
-            content_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
-            if content_hash in seen_content:
-                progress(f"[skip] duplicate content: {url}")
-                continue
-            seen_content.add(content_hash)
+            if concurrency <= 1:
+                # --- Sequential mode (original behavior) ---
+                while to_visit and (max_pages <= 0 or saved_count < max_pages):
+                    url = to_visit.popleft()
+                    if url in seen_urls:
+                        continue
+                    if not same_scope(url, base_netloc, include_subdomains):
+                        continue
+                    if not allowed(url):
+                        progress(f"[skip] robots.txt disallowed: {url}")
+                        continue
 
-            filename = safe_filename(url, ext)
-            output_path = os.path.join(out_dir, filename)
-            with open(output_path, "w", encoding="utf-8") as output_file:
-                if fmt == "markdown":
-                    header = f"# {title}\n\n" if title else ""
-                    meta = f"> URL: {url}\n\n"
-                else:
-                    header = f"Title: {title}\n\n" if title else ""
-                    meta = f"URL: {url}\n\n"
-                output_file.write(header + meta + content + "\n")
+                    seen_urls.add(url)
+                    progress(f"[get ] {url}")
+                    response = fetch_page(url)
+                    time.sleep(delay)
 
-            jsonl_file.write(
-                json.dumps(
-                    {"url": url, "title": title, "path": filename, "text": content},
-                    ensure_ascii=False,
-                )
-                + "\n"
-            )
-            saved_count += 1
+                    if not (response and response.ok):
+                        continue
+                    content_type = response.headers.get("content-type", response.headers.get("Content-Type", "")).lower()
+                    if "text/html" not in content_type:
+                        progress(f"[skip] non-HTML content: {url}")
+                        continue
 
-            if total_planned:
-                progress(f"[prog] saved {saved_count}/{total_planned} | queued={len(to_visit)}")
+                    page_data = process_page(url, response.text)
+                    if page_data is None:
+                        continue
+
+                    filename = write_page(page_data)
+                    jsonl_file.write(
+                        json.dumps(
+                            {"url": url, "title": page_data["title"], "path": filename, "text": page_data["content"]},
+                            ensure_ascii=False,
+                        )
+                        + "\n"
+                    )
+                    saved_count += 1
+
+                    if total_planned:
+                        progress(f"[prog] saved {saved_count}/{total_planned} | queued={len(to_visit)}")
+                    else:
+                        progress(f"[prog] saved {saved_count} | queued={len(to_visit)}")
+
+                    if not seeds and url not in visited_for_links:
+                        visited_for_links.add(url)
+                        for link in extract_links(response.text, url):
+                            if link not in seen_urls and same_scope(link, base_netloc, include_subdomains) and allowed(link):
+                                to_visit.append(link)
+
             else:
-                progress(f"[prog] saved {saved_count} | queued={len(to_visit)}")
+                # --- Concurrent mode ---
+                progress(f"[info] concurrent mode: {concurrency} workers")
 
-            if not seeds and url not in visited_for_links:
-                visited_for_links.add(url)
-                for link in extract_links(response.text, url):
-                    if link not in seen_urls and same_scope(link, base_netloc, include_subdomains) and allowed(link):
-                        to_visit.append(link)
+                while to_visit and (max_pages <= 0 or saved_count < max_pages):
+                    # Collect a batch of URLs to fetch in parallel
+                    batch: List[str] = []
+                    while to_visit and len(batch) < concurrency and (max_pages <= 0 or saved_count + len(batch) < max_pages):
+                        url = to_visit.popleft()
+                        if url in seen_urls:
+                            continue
+                        if not same_scope(url, base_netloc, include_subdomains):
+                            continue
+                        if not allowed(url):
+                            progress(f"[skip] robots.txt disallowed: {url}")
+                            continue
+                        seen_urls.add(url)
+                        batch.append(url)
+
+                    if not batch:
+                        break
+
+                    for url in batch:
+                        progress(f"[get ] {url}")
+
+                    # Fetch all URLs in the batch concurrently
+                    results: Dict[str, Optional] = {}
+                    with ThreadPoolExecutor(max_workers=concurrency) as pool:
+                        futures = {pool.submit(fetch_page, url): url for url in batch}
+                        for future in as_completed(futures):
+                            url = futures[future]
+                            try:
+                                results[url] = future.result()
+                            except Exception as exc:
+                                logger.warning("Fetch error for %s: %s", url, exc)
+                                results[url] = None
+
+                    # Process results in original batch order
+                    for url in batch:
+                        response = results.get(url)
+                        if not (response and response.ok):
+                            continue
+                        content_type = response.headers.get("content-type", response.headers.get("Content-Type", "")).lower()
+                        if "text/html" not in content_type:
+                            progress(f"[skip] non-HTML content: {url}")
+                            continue
+
+                        page_data = process_page(url, response.text)
+                        if page_data is None:
+                            continue
+
+                        filename = write_page(page_data)
+                        jsonl_file.write(
+                            json.dumps(
+                                {"url": url, "title": page_data["title"], "path": filename, "text": page_data["content"]},
+                                ensure_ascii=False,
+                            )
+                            + "\n"
+                        )
+                        saved_count += 1
+
+                        if total_planned:
+                            progress(f"[prog] saved {saved_count}/{total_planned} | queued={len(to_visit)}")
+                        else:
+                            progress(f"[prog] saved {saved_count} | queued={len(to_visit)}")
+
+                        if not seeds and url not in visited_for_links:
+                            visited_for_links.add(url)
+                            for link in extract_links(response.text, url):
+                                if link not in seen_urls and same_scope(link, base_netloc, include_subdomains) and allowed(link):
+                                    to_visit.append(link)
+
+                    # Respect delay between batches
+                    time.sleep(delay)
+
+    finally:
+        if pw_browser:
+            pw_browser.close()
+        if pw_instance:
+            pw_instance.stop()
 
     logger.info("Saved %s HTML page(s) to %s", saved_count, out_dir)
     return CrawlResult(pages_saved=saved_count, output_dir=out_dir, index_file=jsonl_path)

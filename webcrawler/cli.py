@@ -64,6 +64,22 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional custom user agent string",
     )
+    parser.add_argument(
+        "--render-js",
+        action="store_true",
+        help="Use Playwright to render JavaScript before extracting content (requires: pip install playwright && playwright install chromium)",
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=1,
+        help="Number of pages to fetch in parallel (default: 1)",
+    )
+    parser.add_argument(
+        "--proxy",
+        default=None,
+        help="HTTP/HTTPS proxy URL, e.g. http://user:pass@host:port",
+    )
     return parser
 
 
@@ -83,6 +99,9 @@ def main() -> None:
         show_progress=args.show_progress,
         min_words=args.min_words,
         user_agent=args.user_agent or None,
+        render_js=args.render_js,
+        concurrency=args.concurrency,
+        proxy=args.proxy,
     )
 
     print(f"Saved {result.pages_saved} page(s) to: {result.output_dir}")

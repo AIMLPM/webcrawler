@@ -26,6 +26,9 @@ A lot of crawlers are either too heavyweight for small ingestion jobs or too foc
 - Basic content cleanup for nav / footer / utility elements
 - Built-in text chunking for embeddings
 - Supabase / pgvector upload with OpenAI embeddings
+- Optional JavaScript rendering via Playwright
+- Concurrent page fetching
+- Proxy support
 
 ## Project structure
 
@@ -63,13 +66,29 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### Option 3: Install with Supabase upload support
+### Option 3: Install with JavaScript rendering support
+
+```bash
+pip install -e ".[js]"
+playwright install chromium
+```
+
+This adds Playwright for rendering JavaScript-heavy sites with `--render-js`.
+
+### Option 4: Install with Supabase upload support
 
 ```bash
 pip install -e ".[upload]"
 ```
 
 This adds the `openai` and `supabase` packages needed for the upload command. After installing this way, you can also run `website-crawler-upload` directly instead of `python -m webcrawler.upload_cli`.
+
+### Option 5: Install everything
+
+```bash
+pip install -e ".[all]"
+playwright install chromium
+```
 
 ## Quick start — full pipeline
 
@@ -126,6 +145,40 @@ python -m webcrawler.cli \
   --format text
 ```
 
+### Crawl a JavaScript-heavy site
+
+```bash
+python -m webcrawler.cli \
+  --base https://www.WEBSITE-TO-CRAWL.com/ \
+  --out ./output \
+  --render-js
+```
+
+This launches a headless Chromium browser to fully render each page before extracting content. Use this for React, Angular, Vue, or other SPA-based sites.
+
+### Faster crawling with concurrency
+
+```bash
+python -m webcrawler.cli \
+  --base https://www.WEBSITE-TO-CRAWL.com/ \
+  --out ./output \
+  --concurrency 5 \
+  --show-progress
+```
+
+Fetches up to 5 pages in parallel. The delay is applied between batches rather than between individual requests.
+
+### Crawl through a proxy
+
+```bash
+python -m webcrawler.cli \
+  --base https://www.WEBSITE-TO-CRAWL.com/ \
+  --out ./output \
+  --proxy http://user:pass@proxy-host:8080
+```
+
+Works with both `--render-js` (Playwright) and standard requests.
+
 ## CLI arguments
 
 | Argument | Description |
@@ -141,6 +194,9 @@ python -m webcrawler.cli \
 | `--show-progress` | Print progress and crawl events |
 | `--min-words` | Skip pages with very little content |
 | `--user-agent` | Override the default user agent |
+| `--render-js` | Render JavaScript with Playwright before extracting (requires `.[js]`) |
+| `--concurrency` | Number of pages to fetch in parallel (default: `1`) |
+| `--proxy` | HTTP/HTTPS proxy URL |
 
 ## Output
 
@@ -345,9 +401,7 @@ $$;
 ## Not currently designed for
 
 - authenticated crawling
-- JavaScript-heavy sites that require browser rendering
 - PDF extraction
-- highly parallel distributed crawling
 - anti-bot evasion
 
 ## Open-source roadmap
@@ -359,8 +413,10 @@ $$;
 - [ ] Duplicate-content detection
 - [x] Optional chunking for embeddings
 - [x] Supabase / pgvector upload
+- [x] Browser-rendered page mode (Playwright)
+- [x] Concurrent fetching
+- [x] Proxy support
 - [ ] PDF support
-- [ ] Browser-rendered page mode
 
 ## Legal and ethical use
 
