@@ -509,6 +509,8 @@ Once integrated, you can message your OpenClaw agent (via Telegram, WhatsApp, or
 >
 > "iD8's latest API update adds three new endpoints: /analyze for sentiment analysis, /extract for entity extraction, and /summarize for document summarization. All endpoints accept JSON and return results in under 2 seconds..."
 
+See the full skill documentation at [AIMLPM/markcrawl-clawhub-skill](https://github.com/AIMLPM/markcrawl-clawhub-skill).
+
 ### Using MarkCrawl with MCP clients
 
 See the [MCP section above](#using-with-ai-agents-mcp) for integration with Claude Desktop, Cursor, Windsurf, and other MCP-compatible agents.
