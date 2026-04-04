@@ -222,6 +222,16 @@ Use your **service-role key** (not the anon key) since it bypasses Row Level Sec
 
 > **Security note:** All credentials are read from environment variables only — they are never accepted as command-line arguments to avoid leaking secrets in shell history or process listings. Never commit your `.env` file to git.
 
+#### Credential management options
+
+| Approach | Security | Complexity | Best for |
+|---|---|---|---|
+| `.env` file + `.gitignore` | Basic | Low | Local dev, personal projects |
+| OS keychain (macOS Keychain, etc.) | Good | Medium | Single-user local tools |
+| Secret manager (AWS SSM, GCP Secret Manager, Vault) | High | Higher | Production, teams, CI/CD |
+
+This project uses the `.env` approach. If you deploy this as a service or share it with a team, consider upgrading to a secret manager.
+
 ### 3. Run the upload
 
 ```bash
