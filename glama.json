@@ -1,0 +1,47 @@
+{
+  "name": "markcrawl",
+  "display_name": "MarkCrawl",
+  "description": "Crawl any website into clean Markdown, search through pages, read full content, and extract structured data using OpenAI, Claude, Gemini, or Grok — with auto-citation and resume support.",
+  "repository": "https://github.com/AIMLPM/markcrawl",
+  "homepage": "https://github.com/AIMLPM/markcrawl",
+  "license": "MIT",
+  "author": {
+    "name": "iD8 (AIMLPM)",
+    "url": "https://github.com/AIMLPM"
+  },
+  "categories": [
+    "web-scraping",
+    "search",
+    "data-extraction",
+    "rag"
+  ],
+  "tools": [
+    {
+      "name": "crawl_site",
+      "description": "Crawl a website and save extracted content as Markdown or plain text files."
+    },
+    {
+      "name": "search_pages",
+      "description": "Search through crawled pages by keyword with relevance-ranked results."
+    },
+    {
+      "name": "read_page",
+      "description": "Read the full extracted content of a specific crawled page by URL."
+    },
+    {
+      "name": "list_pages",
+      "description": "List all crawled pages with their URLs, titles, and word counts."
+    },
+    {
+      "name": "extract_data",
+      "description": "Extract structured fields from crawled pages using an LLM with auto-field discovery."
+    }
+  ],
+  "installation": {
+    "pip": "markcrawl[mcp]"
+  },
+  "runtime": {
+    "command": "python",
+    "args": ["-m", "markcrawl.mcp_server"]
+  }
+}

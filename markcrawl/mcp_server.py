@@ -31,7 +31,13 @@ from .core import crawl as run_crawl
 
 mcp = FastMCP(
     "markcrawl",
-    description="Website crawler for AI ingestion — crawl sites, search pages, and extract structured data.",
+    description=(
+        "MarkCrawl web crawler for AI ingestion. Crawl any public website into clean "
+        "Markdown, search through crawled pages, read full page content, and extract "
+        "structured data using LLMs. Designed for RAG pipelines, competitive research, "
+        "and documentation analysis. All crawled content includes source URLs and "
+        "citations for verifiable AI responses."
+    ),
 )
 
 DEFAULT_OUTPUT_DIR = os.environ.get("WEBCRAWLER_OUTPUT_DIR", "./crawl_output")
@@ -55,18 +61,33 @@ def crawl_site(
     include_subdomains: bool = False,
     render_js: bool = False,
 ) -> str:
-    """Crawl a website and save extracted content as Markdown or plain text files.
+    """Crawl a website and save extracted content as clean Markdown or plain text.
 
-    Returns a summary of what was crawled. The output directory will contain
-    individual page files and a pages.jsonl index.
+    This tool fetches pages from the given URL, strips navigation, footers,
+    scripts, and boilerplate, then saves each page as a Markdown file with a
+    JSONL index (pages.jsonl). It respects robots.txt and uses sitemap-first
+    discovery when available.
+
+    Use this tool when asked to research, read, analyze, or archive a website.
+    The output_dir from this tool is required by search_pages, read_page,
+    list_pages, and extract_data.
+
+    Typical workflow: crawl_site → list_pages or search_pages → read_page.
 
     Args:
-        url: The base URL to crawl (e.g. "https://docs.example.com/")
-        output_dir: Directory to save output files (default: ./crawl_output)
-        format: Output format — "markdown" or "text"
-        max_pages: Maximum number of pages to save (default: 100, 0 for unlimited)
-        include_subdomains: Whether to include subdomains in the crawl scope
-        render_js: Use Playwright to render JavaScript-heavy sites (requires playwright)
+        url: The base URL to crawl (e.g. "https://docs.example.com/"). Only
+            public, non-authenticated pages will be fetched.
+        output_dir: Directory to save output files. Each crawl creates .md files
+            and a pages.jsonl index here. Default: ./crawl_output
+        format: Output format — "markdown" (preserves headings, code blocks,
+            lists) or "text" (plain text). Default: "markdown".
+        max_pages: Maximum number of pages to save. Set to 0 for unlimited.
+            Default: 100. Use lower values (10-20) for quick previews.
+        include_subdomains: If True, also crawl subdomains (e.g. docs.example.com
+            when crawling example.com). Default: False.
+        render_js: If True, use a headless Chromium browser to render JavaScript
+            before extracting content. Required for React/Vue/Angular sites.
+            Slower but necessary for SPAs. Default: False.
     """
     result = run_crawl(
         base_url=url,
@@ -84,7 +105,9 @@ def crawl_site(
     return (
         f"Crawled {result.pages_saved} page(s) from {url}\n"
         f"Output directory: {result.output_dir}\n"
-        f"Index file: {result.index_file}"
+        f"Index file: {result.index_file}\n"
+        f"Use output_dir='{result.output_dir}' with search_pages, read_page, "
+        f"list_pages, or extract_data to work with this content."
     )
 
 
@@ -103,15 +126,23 @@ def search_pages(
     jsonl_path: str = "",
     max_results: int = 10,
 ) -> str:
-    """Search through crawled pages by keyword.
+    """Search through previously crawled pages by keyword.
 
-    Searches the title and text of all pages in a pages.jsonl file
-    and returns matching results ranked by relevance.
+    Performs case-insensitive keyword search across page titles and text content.
+    Results are ranked by the number of matching query words found. Each result
+    includes the page URL, title, and a text snippet showing context around the
+    first match.
+
+    This is a read-only operation on local files — no network requests are made.
+    Requires a prior crawl_site call to have populated the pages.jsonl file.
 
     Args:
-        query: Search query (case-insensitive keyword search)
-        jsonl_path: Path to pages.jsonl (default: <output_dir>/pages.jsonl)
-        max_results: Maximum number of results to return (default: 10)
+        query: Search query — one or more keywords separated by spaces. All words
+            are searched independently (OR logic). Example: "authentication API key".
+        jsonl_path: Full path to the pages.jsonl file from a previous crawl. If
+            empty, defaults to <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+        max_results: Maximum number of results to return. Default: 10. Use lower
+            values for focused searches, higher for comprehensive surveys.
     """
     if not jsonl_path:
         jsonl_path = os.path.join(DEFAULT_OUTPUT_DIR, "pages.jsonl")
@@ -192,11 +223,20 @@ def read_page(
     url: str,
     jsonl_path: str = "",
 ) -> str:
-    """Read the full extracted content of a specific crawled page by URL.
+    """Read the full extracted content of a specific crawled page by its URL.
+
+    Returns the complete Markdown or text content of a single page, including
+    its title and source URL. Use this after search_pages to read the full
+    content of a relevant result.
+
+    This is a read-only operation on local files — no network requests are made.
+    URL matching is case-insensitive and tolerates trailing slashes.
 
     Args:
-        url: The URL of the page to read (must have been previously crawled)
-        jsonl_path: Path to pages.jsonl (default: <output_dir>/pages.jsonl)
+        url: The exact URL of the page to read. Must match a URL from a previous
+            crawl. Case-insensitive. Example: "https://docs.example.com/auth".
+        jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
+            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
     """
     if not jsonl_path:
         jsonl_path = os.path.join(DEFAULT_OUTPUT_DIR, "pages.jsonl")
@@ -234,10 +274,17 @@ def read_page(
 def list_pages(
     jsonl_path: str = "",
 ) -> str:
-    """List all crawled pages with their URLs and titles.
+    """List all pages from a previous crawl with their URLs, titles, and word counts.
+
+    Returns a summary of every page in the crawl index. Use this to get an
+    overview of available content before searching or reading specific pages.
+    Word counts help identify content-rich pages vs. thin landing pages.
+
+    This is a read-only operation on local files — no network requests are made.
 
     Args:
-        jsonl_path: Path to pages.jsonl (default: <output_dir>/pages.jsonl)
+        jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
+            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
     """
     if not jsonl_path:
         jsonl_path = os.path.join(DEFAULT_OUTPUT_DIR, "pages.jsonl")
@@ -285,14 +332,30 @@ def extract_data(
 ) -> str:
     """Extract structured fields from crawled pages using an LLM.
 
-    Either specify field names or let the LLM auto-discover them.
-    Requires OPENAI_API_KEY environment variable.
+    Analyzes each crawled page and pulls out specific data fields you define
+    (e.g. company_name, pricing, features, api_endpoints). If no fields are
+    specified, the LLM automatically discovers relevant fields by sampling
+    pages from the crawl.
+
+    This tool makes external API calls to OpenAI (requires OPENAI_API_KEY
+    environment variable). Results are saved to extracted.jsonl and include
+    LLM attribution metadata.
+
+    Use this for competitive research, API documentation analysis, or building
+    structured datasets from unstructured web content.
 
     Args:
-        jsonl_path: Path to pages.jsonl (default: <output_dir>/pages.jsonl)
-        fields: Comma-separated field names to extract (e.g. "company_name,pricing,features"). Leave empty to auto-discover.
-        context: Describe your analysis goal to improve field discovery (e.g. "competitor pricing analysis")
-        sample_size: Number of pages to sample for auto-field discovery (default: 3)
+        jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
+            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+        fields: Comma-separated field names to extract. Example:
+            "company_name,pricing,features,api_endpoints". Leave empty to
+            let the LLM auto-discover the most relevant fields.
+        context: Description of your analysis goal. Improves auto-field
+            discovery quality. Example: "competitor pricing analysis" or
+            "API documentation review". Ignored when fields are specified.
+        sample_size: Number of pages to sample for auto-field discovery.
+            Default: 3. Higher values give better field suggestions but
+            cost more tokens.
     """
     if not os.environ.get("OPENAI_API_KEY"):
         return "Error: OPENAI_API_KEY environment variable is required for extraction."
@@ -316,6 +379,7 @@ def extract_data(
         auto_fields=auto_fields,
         auto_fields_context=context or None,
         sample_size=sample_size,
+        extract_delay=0.25,
     )
 
     if not results:
