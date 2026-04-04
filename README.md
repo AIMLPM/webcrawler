@@ -4,6 +4,34 @@ A lightweight Python website crawler that extracts clean Markdown or plain text 
 
 This project starts with a sitemap when available, respects `robots.txt`, keeps crawling in-scope, and writes both page files and a `pages.jsonl` index for downstream processing.
 
+## How it works
+
+```mermaid
+flowchart LR
+    A["🌐 Website"] --> B["Crawl"]
+    B --> C["pages.jsonl\n+ .md files"]
+    C --> D{"What next?"}
+    D -->|"--auto-fields\nor --fields"| E["Extract\n(LLM)"]
+    D -->|"upload_cli"| F["Chunk +\nEmbed"]
+    E --> G["extracted.jsonl\nStructured data"]
+    F --> H["Supabase\npgvector"]
+    H --> I["Vector\nSearch / RAG"]
+
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#fff9c4
+    style E fill:#fce4ec
+    style F fill:#fce4ec
+    style G fill:#e8f5e9
+    style H fill:#e8f5e9
+    style I fill:#e8f5e9
+```
+
+> **Free path:** Crawl → pages.jsonl → done. No API keys needed.
+> **Extraction path:** Add `OPENAI_API_KEY` to pull structured fields from pages.
+> **RAG path:** Add Supabase credentials to chunk, embed, and store for vector search.
+
 ## Why this exists
 
 A lot of crawlers are either too heavyweight for small ingestion jobs or too focused on broad web scraping. This project is intentionally simple:
@@ -601,9 +629,22 @@ This produces an `extracted.jsonl` file with structured data:
 - `gpt-4o-mini` is fast and cheap for most extraction tasks; use `gpt-4o` for complex pages
 - Each page sends up to 8,000 characters to the LLM to stay within reasonable token limits
 
+## Using with AI agents (MCP)
+
+This crawler's output is designed to be consumed by AI agents and LLM-powered workflows. The `pages.jsonl` and `extracted.jsonl` formats are ready for integration with the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) — the emerging standard for connecting AI tools to data sources.
+
+**How this fits into an agentic workflow:**
+
+1. **Crawl** a target site → produces `pages.jsonl` with clean markdown
+2. **Extract** structured fields → produces `extracted.jsonl` with structured data
+3. **Upload** to Supabase → enables vector search via `match_documents` RPC
+4. **AI agent** (Claude, GPT, etc.) queries the vector store via MCP or direct API calls to answer questions grounded in real website data
+
+The JSONL output format is intentionally simple — any MCP server, LangChain loader, or custom agent can read it with a few lines of code. An MCP server entry point is on the roadmap to make this even more seamless.
+
 ## Good fit for
 
-- RAG ingestion
+- RAG ingestion and agentic AI workflows
 - knowledge base extraction
 - internal site archiving
 - documentation indexing
@@ -629,6 +670,7 @@ This produces an `extracted.jsonl` file with structured data:
 - [x] Proxy support
 - [x] Resume interrupted crawls
 - [x] LLM-powered structured extraction
+- [ ] MCP server entry point for AI agents
 - [ ] PDF support
 
 ## Legal and ethical use
