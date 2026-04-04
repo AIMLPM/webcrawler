@@ -273,6 +273,8 @@ output/
 # Getting Started
 
 > URL: https://docs.example.com/getting-started
+> Crawled: April 04, 2026
+> Citation: Getting Started. docs.example.com. Available at: https://docs.example.com/getting-started [Accessed April 04, 2026].
 
 Welcome to the platform. This guide walks you through installation,
 configuration, and making your first API call.
@@ -297,7 +299,7 @@ Set your API key as an environment variable:
     print(response.json())
 ```
 
-Notice: navigation, footer, cookie banners, and scripts are stripped. Only the main content remains, converted to clean Markdown with headings preserved.
+Notice: navigation, footer, cookie banners, and scripts are stripped. Only the main content remains, converted to clean Markdown with headings preserved. Every page includes a ready-to-use citation with the access date.
 
 **Example `pages.jsonl` row** (one line per page):
 
@@ -306,6 +308,8 @@ Notice: navigation, footer, cookie banners, and scripts are stripped. Only the m
   "url": "https://docs.example.com/getting-started",
   "title": "Getting Started",
   "path": "getting-started__0cc175b9c0.md",
+  "crawled_at": "2026-04-04T12:30:00Z",
+  "citation": "Getting Started. docs.example.com. Available at: https://docs.example.com/getting-started [Accessed April 04, 2026].",
   "text": "Welcome to the platform. This guide walks you through installation, configuration, and making your first API call.\n\n## Installation\n\nInstall the SDK using pip..."
 }
 ```
@@ -534,13 +538,17 @@ See full docs at [AIMLPM/markcrawl-clawhub-skill](https://github.com/AIMLPM/mark
 
 ### Auto-citation
 
-Every output includes source metadata for verifiable LLM responses:
+Every output includes a ready-to-use academic-style citation with access date:
 
-- **`.md` files** include `> URL: https://...` at the top of each page
-- **`pages.jsonl`** includes `"url"` on every row
+- **`.md` files** include URL, crawl date, and full citation in the header
+- **`pages.jsonl`** includes `"crawled_at"` (ISO 8601) and `"citation"` on every row
 - **`extracted.jsonl`** includes `"url"` and `"source_file"` for multi-site analysis
 
-When an LLM uses MarkCrawl data to answer a question, the source URL is always available for citation.
+Citation format:
+
+> *Page Title*. website.com. Available at: https://website.com/page [Accessed April 04, 2026].
+
+When an LLM uses MarkCrawl data to answer a question, the citation is always available — no need to reconstruct it after the fact.
 
 ### Using as a Python library
 

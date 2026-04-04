@@ -25,6 +25,7 @@ import re
 import signal
 import time
 import urllib.parse as up
+from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -645,6 +646,8 @@ def crawl(
 
     saved_count = saved_count_start if resumed else 0
     ext = "md" if fmt == "markdown" else "txt"
+    crawl_timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    crawl_date_display = datetime.now(timezone.utc).strftime("%B %d, %Y")
 
     # Interrupt handler — save state on Ctrl+C
     interrupted = False
@@ -678,6 +681,11 @@ def crawl(
 
         return {"url": url, "title": title, "content": content, "html": html}
 
+    def _build_citation(title: str, url: str) -> str:
+        """Build a web citation string in standard format."""
+        site_name = up.urlsplit(url).netloc
+        return f"{title}. {site_name}. Available at: {url} [Accessed {crawl_date_display}]."
+
     def write_page(page_data: Dict) -> str:
         """Write a page to disk and return the filename."""
         url = page_data["url"]
@@ -686,13 +694,14 @@ def crawl(
 
         filename = safe_filename(url, ext)
         output_path = os.path.join(out_dir, filename)
+        citation = _build_citation(title or "Untitled", url)
         with open(output_path, "w", encoding="utf-8") as output_file:
             if fmt == "markdown":
                 header = f"# {title}\n\n" if title else ""
-                meta = f"> URL: {url}\n\n"
+                meta = f"> URL: {url}\n> Crawled: {crawl_date_display}\n> Citation: {citation}\n\n"
             else:
                 header = f"Title: {title}\n\n" if title else ""
-                meta = f"URL: {url}\n\n"
+                meta = f"URL: {url}\nCrawled: {crawl_date_display}\nCitation: {citation}\n\n"
             output_file.write(header + meta + content + "\n")
         return filename
 
@@ -735,7 +744,14 @@ def crawl(
                     filename = write_page(page_data)
                     jsonl_file.write(
                         json.dumps(
-                            {"url": url, "title": page_data["title"], "path": filename, "text": page_data["content"]},
+                            {
+                                "url": url,
+                                "title": page_data["title"],
+                                "path": filename,
+                                "crawled_at": crawl_timestamp,
+                                "citation": _build_citation(page_data["title"] or "Untitled", url),
+                                "text": page_data["content"],
+                            },
                             ensure_ascii=False,
                         )
                         + "\n"
@@ -811,7 +827,14 @@ def crawl(
                         filename = write_page(page_data)
                         jsonl_file.write(
                             json.dumps(
-                                {"url": url, "title": page_data["title"], "path": filename, "text": page_data["content"]},
+                                {
+                                "url": url,
+                                "title": page_data["title"],
+                                "path": filename,
+                                "crawled_at": crawl_timestamp,
+                                "citation": _build_citation(page_data["title"] or "Untitled", url),
+                                "text": page_data["content"],
+                            },
                                 ensure_ascii=False,
                             )
                             + "\n"
