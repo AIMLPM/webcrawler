@@ -3,14 +3,27 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "website-crawler-ai"
+name = "markcrawl"
 version = "0.1.0"
-description = "A lightweight website crawler for AI, RAG, and search indexing workflows."
+description = "Fast Python web crawler for AI & RAG ingestion — crawl, extract, and embed website content with one tool."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
-  { name = "AIMLPM" }
+  { name = "iD8 (AIMLPM)" }
+]
+keywords = ["webcrawler", "rag", "ai", "llm", "embeddings", "scraper", "markdown", "mcp", "supabase", "pgvector"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
   "beautifulsoup4>=4.12.0",
@@ -44,11 +57,16 @@ all = [
   "mcp[cli]>=1.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/AIMLPM/markcrawl"
+Repository = "https://github.com/AIMLPM/markcrawl"
+Issues = "https://github.com/AIMLPM/markcrawl/issues"
+
 [project.scripts]
-website-crawler = "webcrawler.cli:main"
-website-crawler-upload = "webcrawler.upload_cli:main"
-website-crawler-extract = "webcrawler.extract_cli:main"
-website-crawler-mcp = "webcrawler.mcp_server:main"
+markcrawl = "webcrawler.cli:main"
+markcrawl-upload = "webcrawler.upload_cli:main"
+markcrawl-extract = "webcrawler.extract_cli:main"
+markcrawl-mcp = "webcrawler.mcp_server:main"
 
 [tool.setuptools.packages.find]
 include = ["webcrawler*"]
