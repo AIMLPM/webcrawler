@@ -2,6 +2,7 @@
 ### Turn any website into clean Markdown for LLM pipelines — in one command.
 
 [![CI](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml)
+![PyPI Version](https://img.shields.io/pypi/v/markcrawl)
 
 ```bash
 pip install markcrawl
