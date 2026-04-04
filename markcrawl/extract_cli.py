@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 
-from .extract import PROVIDER_ANTHROPIC, PROVIDER_GEMINI, PROVIDER_OPENAI, extract_from_jsonl
+from .extract import PROVIDER_ANTHROPIC, PROVIDER_GEMINI, PROVIDER_GROK, PROVIDER_OPENAI, extract_from_jsonl
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -35,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--provider",
         default=PROVIDER_OPENAI,
-        choices=[PROVIDER_OPENAI, PROVIDER_ANTHROPIC, PROVIDER_GEMINI],
+        choices=[PROVIDER_OPENAI, PROVIDER_ANTHROPIC, PROVIDER_GEMINI, PROVIDER_GROK],
         help="LLM provider (default: openai). Set the matching API key env var.",
     )
     parser.add_argument(

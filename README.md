@@ -91,7 +91,7 @@ flowchart LR
 | Path | What you get | API keys? |
 |---|---|---|
 | **Crawl only** | Markdown files + `pages.jsonl` | None (free) |
-| **+ Extract** | Structured fields (pricing, features, API endpoints, etc.) | One of: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` |
+| **+ Extract** | Structured fields (pricing, features, API endpoints, etc.) | One of: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `XAI_API_KEY` |
 | **+ RAG upload** | Chunked embeddings in Supabase for vector search | `OPENAI_API_KEY` + Supabase credentials |
 
 ## Common use cases
@@ -408,6 +408,7 @@ markcrawl-extract \
 markcrawl-extract --jsonl ... --fields pricing --provider openai                        # default
 markcrawl-extract --jsonl ... --fields pricing --provider anthropic                     # Claude
 markcrawl-extract --jsonl ... --fields pricing --provider gemini                        # Gemini
+markcrawl-extract --jsonl ... --fields pricing --provider grok                          # Grok
 markcrawl-extract --jsonl ... --fields pricing --provider openai --model gpt-4o         # override model
 ```
 
@@ -416,6 +417,7 @@ markcrawl-extract --jsonl ... --fields pricing --provider openai --model gpt-4o 
 | OpenAI | `OPENAI_API_KEY` | `gpt-4o-mini` | `gpt-4o`, `gpt-4.1-mini`, `gpt-4.1` |
 | Anthropic (Claude) | `ANTHROPIC_API_KEY` | `claude-sonnet-4-20250514` | `claude-opus-4-20250514`, `claude-haiku-4-20250414` |
 | Google Gemini | `GEMINI_API_KEY` | `gemini-2.0-flash` | `gemini-2.5-pro`, `gemini-2.5-flash` |
+| xAI (Grok) | `XAI_API_KEY` | `grok-3-mini-fast` | `grok-3`, `grok-3-fast`, `grok-3-mini` |
 
 <details>
 <summary>All extraction CLI arguments</summary>
@@ -487,6 +489,34 @@ pip install markcrawl[mcp]
 > **Agent:** "Stripe supports three authentication methods: API keys, OAuth 2.0, and..."
 </details>
 
+## Integrations
+
+### Using MarkCrawl with OpenClaw
+
+MarkCrawl is designed to work seamlessly as a **Skill** for the [OpenClaw](https://github.com/openclaw) autonomous agent. This allows your agent to "read" the web and perform research directly from your chat app.
+
+Install the Skill via ClawHub:
+
+```bash
+npx clawhub install markcrawl-skill
+```
+
+Once integrated, you can message your OpenClaw agent (via Telegram, WhatsApp, or Slack) to perform deep research:
+
+> **You:** "Hey, crawl the iD8 documentation and summarize the new API features."
+>
+> **OpenClaw:** *(Uses MarkCrawl to fetch clean Markdown, then summarizes it)*
+>
+> "iD8's latest API update adds three new endpoints: /analyze for sentiment analysis, /extract for entity extraction, and /summarize for document summarization. All endpoints accept JSON and return results in under 2 seconds..."
+
+### Using MarkCrawl with MCP clients
+
+See the [MCP section above](#using-with-ai-agents-mcp) for integration with Claude Desktop, Cursor, Windsurf, and other MCP-compatible agents.
+
+### Using MarkCrawl as a Python library
+
+See [Extending MarkCrawl](#extending-markcrawl) below and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for using MarkCrawl programmatically in your own pipelines.
+
 ## When NOT to use MarkCrawl
 
 - **JavaScript-heavy SPAs without `--render-js`** — The base crawler fetches raw HTML. If a site renders content client-side (React, Vue, Angular), you need `pip install markcrawl[js]` and `--render-js`, which is slower.
@@ -519,6 +549,7 @@ Create a file called `.env` in the directory where you run MarkCrawl:
 OPENAI_API_KEY="sk-..."           # For extraction (--provider openai) and Supabase upload
 ANTHROPIC_API_KEY="sk-ant-..."    # For extraction (--provider anthropic)
 GEMINI_API_KEY="AI..."            # For extraction (--provider gemini)
+XAI_API_KEY="xai-..."             # For extraction (--provider grok)
 SUPABASE_URL="https://..."        # For Supabase upload
 SUPABASE_KEY="eyJ..."             # For Supabase upload (use service-role key)
 ```

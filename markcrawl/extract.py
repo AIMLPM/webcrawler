@@ -19,11 +19,13 @@ logger = logging.getLogger(__name__)
 PROVIDER_OPENAI = "openai"
 PROVIDER_ANTHROPIC = "anthropic"
 PROVIDER_GEMINI = "gemini"
+PROVIDER_GROK = "grok"
 
 DEFAULT_MODELS = {
     PROVIDER_OPENAI: "gpt-4o-mini",
     PROVIDER_ANTHROPIC: "claude-sonnet-4-20250514",
     PROVIDER_GEMINI: "gemini-2.0-flash",
+    PROVIDER_GROK: "grok-3-mini-fast",
 }
 
 
@@ -66,8 +68,20 @@ class LLMClient:
                 sys.exit("Error: GEMINI_API_KEY environment variable is required")
             return genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
+        elif self.provider == PROVIDER_GROK:
+            try:
+                import openai
+            except ImportError:
+                sys.exit("Install openai:  pip install openai")
+            if not os.environ.get("XAI_API_KEY"):
+                sys.exit("Error: XAI_API_KEY environment variable is required")
+            return openai.OpenAI(
+                api_key=os.environ["XAI_API_KEY"],
+                base_url="https://api.x.ai/v1",
+            )
+
         else:
-            sys.exit(f"Unknown provider: {self.provider}. Use: openai, anthropic, or gemini")
+            sys.exit(f"Unknown provider: {self.provider}. Use: openai, anthropic, gemini, or grok")
 
     @property
     def default_model(self) -> str:
@@ -77,7 +91,7 @@ class LLMClient:
         """Send a prompt and return the response text."""
         model = model or self.default_model
 
-        if self.provider == PROVIDER_OPENAI:
+        if self.provider in (PROVIDER_OPENAI, PROVIDER_GROK):
             response = self._client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
