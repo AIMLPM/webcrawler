@@ -137,7 +137,7 @@ For each URL in the queue:
 You don't have to use the CLI. Import and call directly:
 
 ```python
-from webcrawler.core import crawl
+from markcrawl.core import crawl
 
 result = crawl(
     base_url="https://example.com",
@@ -164,7 +164,7 @@ with open("./output/pages.jsonl") as f:
 ### Use the chunker independently
 
 ```python
-from webcrawler.chunker import chunk_text
+from markcrawl.chunker import chunk_text
 
 chunks = chunk_text(
     "Your long text here...",
@@ -178,7 +178,7 @@ for chunk in chunks:
 ### Use extraction with your own LLM client
 
 ```python
-from webcrawler.extract import LLMClient, extract_fields
+from markcrawl.extract import LLMClient, extract_fields
 
 client = LLMClient(provider="anthropic")
 result = extract_fields(

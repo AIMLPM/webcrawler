@@ -1,8 +1,8 @@
-"""Tests for webcrawler.chunker — text chunking for embeddings."""
+"""Tests for markcrawl.chunker — text chunking for embeddings."""
 
 from __future__ import annotations
 
-from webcrawler.chunker import Chunk, chunk_text
+from markcrawl.chunker import Chunk, chunk_text
 
 
 class TestChunkText:

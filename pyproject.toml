@@ -12,7 +12,7 @@ license = "MIT"
 authors = [
   { name = "iD8 (AIMLPM)" }
 ]
-keywords = ["webcrawler", "rag", "ai", "llm", "embeddings", "scraper", "markdown", "mcp", "supabase", "pgvector"]
+keywords = ["markcrawl", "webcrawler", "rag", "ai", "llm", "embeddings", "scraper", "markdown", "mcp", "supabase", "pgvector"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
@@ -63,10 +63,10 @@ Repository = "https://github.com/AIMLPM/markcrawl"
 Issues = "https://github.com/AIMLPM/markcrawl/issues"
 
 [project.scripts]
-markcrawl = "webcrawler.cli:main"
-markcrawl-upload = "webcrawler.upload_cli:main"
-markcrawl-extract = "webcrawler.extract_cli:main"
-markcrawl-mcp = "webcrawler.mcp_server:main"
+markcrawl = "markcrawl.cli:main"
+markcrawl-upload = "markcrawl.upload_cli:main"
+markcrawl-extract = "markcrawl.extract_cli:main"
+markcrawl-mcp = "markcrawl.mcp_server:main"
 
 [tool.setuptools.packages.find]
-include = ["webcrawler*"]
+include = ["markcrawl*"]

@@ -457,7 +457,7 @@ pip install markcrawl[mcp]
   "mcpServers": {
     "markcrawl": {
       "command": "python",
-      "args": ["-m", "webcrawler.mcp_server"]
+      "args": ["-m", "markcrawl.mcp_server"]
     }
   }
 }
@@ -559,7 +559,7 @@ Then restart your terminal or run `source ~/.zshrc`.
 ├── tests/
 │   ├── test_core.py
 │   └── test_chunker.py
-└── webcrawler/
+└── markcrawl/
     ├── __init__.py
     ├── cli.py
     ├── core.py
@@ -577,9 +577,9 @@ Then restart your terminal or run `source ~/.zshrc`.
 MarkCrawl works as a CLI, but every component is importable as a Python library:
 
 ```python
-from webcrawler.core import crawl            # Crawl a site programmatically
-from webcrawler.chunker import chunk_text    # Chunk text for embeddings
-from webcrawler.extract import LLMClient, extract_fields  # Extract with any provider
+from markcrawl.core import crawl            # Crawl a site programmatically
+from markcrawl.chunker import chunk_text    # Chunk text for embeddings
+from markcrawl.extract import LLMClient, extract_fields  # Extract with any provider
 ```
 
 ```python

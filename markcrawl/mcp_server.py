@@ -1,14 +1,14 @@
-"""MCP server exposing webcrawler tools for AI agents.
+"""MCP server exposing MarkCrawl tools for AI agents.
 
 Run with:
-    python -m webcrawler.mcp_server
+    python -m markcrawl.mcp_server
 
 Or configure in your MCP client (Claude Desktop, Cursor, etc.):
     {
         "mcpServers": {
-            "webcrawler": {
+            "markcrawl": {
                 "command": "python",
-                "args": ["-m", "webcrawler.mcp_server"]
+                "args": ["-m", "markcrawl.mcp_server"]
             }
         }
     }
@@ -27,7 +27,7 @@ from mcp.server.fastmcp import FastMCP
 from .core import crawl as run_crawl
 
 mcp = FastMCP(
-    "webcrawler",
+    "markcrawl",
     description="Website crawler for AI ingestion — crawl sites, search pages, and extract structured data.",
 )
 

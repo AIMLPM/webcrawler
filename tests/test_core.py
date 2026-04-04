@@ -1,4 +1,4 @@
-"""Tests for webcrawler.core — URL helpers, HTML extraction, and crawl flow."""
+"""Tests for markcrawl.core — URL helpers, HTML extraction, and crawl flow."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from webcrawler.core import (
+from markcrawl.core import (
     compact_blank_lines,
     extract_links,
     html_to_markdown,
@@ -236,9 +236,9 @@ class TestCrawlIntegration:
         resp.headers = {"Content-Type": "text/html; charset=utf-8"}
         return resp
 
-    @patch("webcrawler.core.build_session")
+    @patch("markcrawl.core.build_session")
     def test_crawl_saves_page_and_jsonl(self, mock_build, tmp_path):
-        from webcrawler.core import crawl
+        from markcrawl.core import crawl
 
         html = textwrap.dedent("""\
             <html><head><title>Test</title></head>
@@ -279,9 +279,9 @@ class TestCrawlIntegration:
         output_files = list(Path(result.output_dir).glob("*.md"))
         assert len(output_files) == 1
 
-    @patch("webcrawler.core.build_session")
+    @patch("markcrawl.core.build_session")
     def test_crawl_skips_low_word_count(self, mock_build, tmp_path):
-        from webcrawler.core import crawl
+        from markcrawl.core import crawl
 
         html = "<html><body><main><p>Short</p></main></body></html>"
 
@@ -302,10 +302,10 @@ class TestCrawlIntegration:
 
         assert result.pages_saved == 0
 
-    @patch("webcrawler.core.fetch")
-    @patch("webcrawler.core.build_session")
+    @patch("markcrawl.core.fetch")
+    @patch("markcrawl.core.build_session")
     def test_crawl_skips_duplicate_content(self, mock_build, mock_fetch, tmp_path):
-        from webcrawler.core import crawl
+        from markcrawl.core import crawl
 
         # Both pages have identical main content; page1 has a nav link to page2
         html1 = textwrap.dedent("""\

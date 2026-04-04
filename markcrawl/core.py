@@ -49,7 +49,7 @@ except Exception:
     md_convert = None
 
 DEFAULT_UA = (
-    "Mozilla/5.0 (compatible; WebsiteCrawler/0.1; +https://github.com/AIMLPM/webcrawler) "
+    "Mozilla/5.0 (compatible; MarkCrawl/0.1; +https://github.com/AIMLPM/markcrawl) "
     "Python-requests"
 )
 

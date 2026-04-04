@@ -42,10 +42,10 @@ jobs:
 
       - name: Check syntax
         run: |
-          python -m py_compile webcrawler/core.py
-          python -m py_compile webcrawler/cli.py
-          python -m py_compile webcrawler/chunker.py
-          python -m py_compile webcrawler/upload.py
-          python -m py_compile webcrawler/upload_cli.py
-          python -m py_compile webcrawler/extract.py
-          python -m py_compile webcrawler/extract_cli.py
+          python -m py_compile markcrawl/core.py
+          python -m py_compile markcrawl/cli.py
+          python -m py_compile markcrawl/chunker.py
+          python -m py_compile markcrawl/upload.py
+          python -m py_compile markcrawl/upload_cli.py
+          python -m py_compile markcrawl/extract.py
+          python -m py_compile markcrawl/extract_cli.py
