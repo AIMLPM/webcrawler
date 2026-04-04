@@ -1,64 +1,6 @@
 {
-  "name": "markcrawl",
-  "display_name": "MarkCrawl",
-  "description": "Crawl any website into clean Markdown, search through pages, read full content, and extract structured data using OpenAI, Claude, Gemini, or Grok — with auto-citation and resume support.",
-  "repository": "https://github.com/AIMLPM/markcrawl",
-  "homepage": "https://github.com/AIMLPM/markcrawl",
-  "license": "MIT",
-  "author": {
-    "name": "iD8 (AIMLPM)",
-    "url": "https://github.com/AIMLPM"
-  },
-  "categories": [
-    "web-scraping",
-    "search",
-    "data-extraction",
-    "rag"
-  ],
-  "tools": [
-    {
-      "name": "crawl_site",
-      "description": "Crawl a website and save extracted content as Markdown or plain text files."
-    },
-    {
-      "name": "search_pages",
-      "description": "Search through crawled pages by keyword with relevance-ranked results."
-    },
-    {
-      "name": "read_page",
-      "description": "Read the full extracted content of a specific crawled page by URL."
-    },
-    {
-      "name": "list_pages",
-      "description": "List all crawled pages with their URLs, titles, and word counts."
-    },
-    {
-      "name": "extract_data",
-      "description": "Extract structured fields from crawled pages using an LLM with auto-field discovery."
-    }
-  ],
-  "related_servers": [
-    {
-      "name": "firecrawl-mcp-server",
-      "repository": "https://github.com/mendableai/firecrawl-mcp-server",
-      "description": "Firecrawl web scraping MCP server"
-    },
-    {
-      "name": "crawl4ai-mcp-server",
-      "repository": "https://github.com/BjornMelin/crawl4ai-mcp-server",
-      "description": "Crawl4AI web crawler MCP server"
-    },
-    {
-      "name": "mcp-server-rag-web-browser",
-      "repository": "https://github.com/apify/mcp-server-rag-web-browser",
-      "description": "Apify RAG web browser MCP server"
-    }
-  ],
-  "installation": {
-    "pip": "markcrawl[mcp]"
-  },
-  "runtime": {
-    "command": "python",
-    "args": ["-m", "markcrawl.mcp_server"]
-  }
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": [
+    "AIMLPM"
+  ]
 }
