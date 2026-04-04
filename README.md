@@ -1,6 +1,8 @@
 # MarkCrawl by iD8 🕷️📝
 ### Turn any website into clean Markdown for LLM pipelines — in one command.
 
+[![CI](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml)
+
 ```bash
 pip install markcrawl
 markcrawl --base https://docs.example.com --out ./output --show-progress
