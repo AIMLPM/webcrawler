@@ -411,6 +411,12 @@ def extract_from_jsonl(
     if output_path is None:
         output_path = str(Path(jsonl_paths[0]).parent / "extracted.jsonl")
 
+    effective_model = model or client.default_model
+    extraction_metadata = {
+        "extracted_by": f"{effective_model} ({provider})",
+        "extraction_note": "Field values were extracted by an LLM and may be interpreted, not verbatim.",
+    }
+
     results: List[Dict] = []
 
     with open(output_path, "w", encoding="utf-8") as out:
@@ -429,7 +435,10 @@ def extract_from_jsonl(
             row = {
                 "url": page.get("url", ""),
                 "title": page.get("title", ""),
+                "crawled_at": page.get("crawled_at", ""),
+                "citation": page.get("citation", ""),
                 **extracted,
+                **extraction_metadata,
             }
             if len(jsonl_paths) > 1 and "_source" in page:
                 row["source_file"] = page["_source"]

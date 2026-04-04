@@ -310,6 +310,7 @@ Notice: navigation, footer, cookie banners, and scripts are stripped. Only the m
   "path": "getting-started__0cc175b9c0.md",
   "crawled_at": "2026-04-04T12:30:00Z",
   "citation": "Getting Started. docs.example.com. Available at: https://docs.example.com/getting-started [Accessed April 04, 2026].",
+  "tool": "markcrawl",
   "text": "Welcome to the platform. This guide walks you through installation, configuration, and making your first API call.\n\n## Installation\n\nInstall the SDK using pip..."
 }
 ```
@@ -320,10 +321,14 @@ Notice: navigation, footer, cookie banners, and scripts are stripped. Only the m
 {
   "url": "https://docs.example.com/api-authentication",
   "title": "API Authentication",
+  "crawled_at": "2026-04-04T12:30:00Z",
+  "citation": "API Authentication. docs.example.com. Available at: https://docs.example.com/api-authentication [Accessed April 04, 2026].",
   "auth_methods": "API key, OAuth 2.0, JWT tokens",
   "api_key_location": "Authorization header as Bearer token",
   "rate_limit": "1000 requests per minute",
-  "sdk_support": "Python, Node.js, Go, Ruby"
+  "sdk_support": "Python, Node.js, Go, Ruby",
+  "extracted_by": "gpt-4o-mini (openai)",
+  "extraction_note": "Field values were extracted by an LLM and may be interpreted, not verbatim."
 }
 ```
 
