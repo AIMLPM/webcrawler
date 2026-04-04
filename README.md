@@ -670,26 +670,57 @@ Then restart your terminal or run `source ~/.zshrc`.
 
 ## Extending MarkCrawl
 
-MarkCrawl works as a CLI, but every component is importable as a Python library:
+### Simplest usage — 3 lines
 
 ```python
-from markcrawl.core import crawl            # Crawl a site programmatically
-from markcrawl.chunker import chunk_text    # Chunk text for embeddings
-from markcrawl.extract import LLMClient, extract_fields  # Extract with any provider
+from markcrawl import crawl
+
+result = crawl("https://example.com", out_dir="./output")
+print(f"Saved {result.pages_saved} pages")
 ```
 
-```python
-# Example: crawl + feed into your own pipeline
-result = crawl(base_url="https://example.com", out_dir="./output", fmt="markdown", max_pages=50)
+That's it. `crawl()` returns a `CrawlResult` with `pages_saved`, `output_dir`, and `index_file`.
 
+### Process crawl output in your own pipeline
+
+```python
+from markcrawl import crawl
 import json
+
+result = crawl("https://docs.example.com", out_dir="./output", fmt="markdown", max_pages=50)
+
 with open(result.index_file) as f:
     for line in f:
         page = json.loads(line)
-        your_pipeline.process(page["text"])  # Feed to Pinecone, Weaviate, Elasticsearch, etc.
+        # page["url"], page["title"], page["text"], page["citation"]
+        your_db.insert(page)           # Pinecone, Weaviate, Elasticsearch, etc.
 ```
 
-For full extensibility examples (custom storage, swap parsers, use chunker/extractor independently), see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+### Use individual components
+
+```python
+from markcrawl import chunk_text                           # Chunk text for embeddings
+from markcrawl.extract import LLMClient, extract_fields   # LLM extraction
+from markcrawl.langchain import all_tools                  # LangChain tools
+```
+
+```python
+# Chunk independently
+chunks = chunk_text("Your long document text...", max_words=400, overlap_words=50)
+for chunk in chunks:
+    embed(chunk.text)  # Send to your embedding API
+
+# Extract with any provider
+client = LLMClient(provider="anthropic")
+result = extract_fields(
+    text="Page content here...",
+    fields=["company_name", "pricing"],
+    client=client,
+)
+# {"company_name": "Acme", "pricing": "$29/mo"}
+```
+
+For full extensibility docs (custom storage adapters, swap output formats, module map), see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
 ## Roadmap
 
