@@ -4,9 +4,7 @@
 [![CI](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml)
 ![PyPI Version](https://img.shields.io/pypi/v/markcrawl)
 ![License](https://img.shields.io/github/license/AIMLPM/markcrawl)
-<!-- Glama badge — uncomment once badge endpoint returns 200:
 [![MCP Server](https://glama.ai/mcp/servers/AIMLPM/markcrawl/badges/score.svg)](https://glama.ai/mcp/servers/AIMLPM/markcrawl)
--->
 
 ```bash
 pip install markcrawl
