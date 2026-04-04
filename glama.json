@@ -37,6 +37,23 @@
       "description": "Extract structured fields from crawled pages using an LLM with auto-field discovery."
     }
   ],
+  "related_servers": [
+    {
+      "name": "firecrawl-mcp-server",
+      "repository": "https://github.com/mendableai/firecrawl-mcp-server",
+      "description": "Firecrawl web scraping MCP server"
+    },
+    {
+      "name": "crawl4ai-mcp-server",
+      "repository": "https://github.com/BjornMelin/crawl4ai-mcp-server",
+      "description": "Crawl4AI web crawler MCP server"
+    },
+    {
+      "name": "mcp-server-rag-web-browser",
+      "repository": "https://github.com/apify/mcp-server-rag-web-browser",
+      "description": "Apify RAG web browser MCP server"
+    }
+  ],
   "installation": {
     "pip": "markcrawl[mcp]"
   },
