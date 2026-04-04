@@ -20,6 +20,10 @@ env/
 .vscode/
 .idea/
 
+# Secrets
+.env
+.env.*
+
 # Local output
 output/
 *.jsonl

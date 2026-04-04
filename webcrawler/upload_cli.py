@@ -19,16 +19,9 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Path to pages.jsonl produced by the crawler",
     )
-    parser.add_argument(
-        "--supabase-url",
-        default=os.environ.get("SUPABASE_URL"),
-        help="Supabase project URL (or set SUPABASE_URL env var)",
-    )
-    parser.add_argument(
-        "--supabase-key",
-        default=os.environ.get("SUPABASE_KEY"),
-        help="Supabase service-role key (or set SUPABASE_KEY env var)",
-    )
+    # Supabase credentials are read from environment variables only
+    # to avoid leaking secrets in shell history or process listings.
+    # Set SUPABASE_URL, SUPABASE_KEY, and OPENAI_API_KEY before running.
     parser.add_argument(
         "--table",
         default="documents",
@@ -63,17 +56,20 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
     args = build_parser().parse_args()
 
-    if not args.supabase_url:
-        sys.exit("Error: --supabase-url or SUPABASE_URL env var is required")
-    if not args.supabase_key:
-        sys.exit("Error: --supabase-key or SUPABASE_KEY env var is required")
+    supabase_url = os.environ.get("SUPABASE_URL")
+    supabase_key = os.environ.get("SUPABASE_KEY")
+
+    if not supabase_url:
+        sys.exit("Error: SUPABASE_URL environment variable is required")
+    if not supabase_key:
+        sys.exit("Error: SUPABASE_KEY environment variable is required")
     if not os.environ.get("OPENAI_API_KEY"):
-        sys.exit("Error: OPENAI_API_KEY env var is required for embedding generation")
+        sys.exit("Error: OPENAI_API_KEY environment variable is required")
 
     inserted = upload(
         jsonl_path=args.jsonl,
-        supabase_url=args.supabase_url,
-        supabase_key=args.supabase_key,
+        supabase_url=supabase_url,
+        supabase_key=supabase_key,
         table=args.table,
         max_words=args.max_words,
         overlap_words=args.overlap_words,

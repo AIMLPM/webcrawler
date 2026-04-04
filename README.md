@@ -203,13 +203,24 @@ create index on documents using hnsw (embedding vector_cosine_ops);
 
 ### 2. Set environment variables
 
+Create a `.env` file in the project root (it is already in `.gitignore` so it won't be committed):
+
 ```bash
-export SUPABASE_URL="https://your-project-id.supabase.co"
-export SUPABASE_KEY="your-service-role-key"
-export OPENAI_API_KEY="your-openai-api-key"
+# .env
+SUPABASE_URL="https://your-project-id.supabase.co"
+SUPABASE_KEY="your-service-role-key"
+OPENAI_API_KEY="your-openai-api-key"
+```
+
+Then load it before running the upload:
+
+```bash
+source .env
 ```
 
 Use your **service-role key** (not the anon key) since it bypasses Row Level Security for inserts.
+
+> **Security note:** All credentials are read from environment variables only — they are never accepted as command-line arguments to avoid leaking secrets in shell history or process listings. Never commit your `.env` file to git.
 
 ### 3. Run the upload
 
@@ -224,13 +235,17 @@ python -m webcrawler.upload_cli \
 | Argument | Description |
 |---|---|
 | `--jsonl` | Path to `pages.jsonl` from the crawler |
-| `--supabase-url` | Supabase project URL (or `SUPABASE_URL` env var) |
-| `--supabase-key` | Supabase service-role key (or `SUPABASE_KEY` env var) |
 | `--table` | Target table name (default: `documents`) |
 | `--max-words` | Max words per chunk (default: `400`) |
 | `--overlap-words` | Overlap words between chunks (default: `50`) |
 | `--embedding-model` | OpenAI embedding model (default: `text-embedding-3-small`) |
 | `--show-progress` | Print progress during upload |
+
+| Environment variable | Description |
+|---|---|
+| `SUPABASE_URL` | Supabase project URL (required) |
+| `SUPABASE_KEY` | Supabase service-role key (required) |
+| `OPENAI_API_KEY` | OpenAI API key for embeddings (required) |
 
 ### 4. Query with vector search
 
