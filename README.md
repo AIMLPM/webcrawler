@@ -565,6 +565,10 @@ Citation format:
 
 When an LLM uses MarkCrawl data to answer a question, the citation is always available — no need to reconstruct it after the fact.
 
+### LLM assistant prompt
+
+Want an AI that knows how to use MarkCrawl? Copy the system prompt from **[docs/LLM_PROMPT.md](docs/LLM_PROMPT.md)** into Claude, ChatGPT, or any LLM. It includes every command, flag, workflow, and troubleshooting step — so the AI generates correct commands instead of hallucinating features.
+
 ### Using as a Python library
 
 See [Extending MarkCrawl](#extending-markcrawl) below and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for using MarkCrawl programmatically in your own pipelines.
