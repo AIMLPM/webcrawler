@@ -25,12 +25,12 @@ import re
 import signal
 import time
 import urllib.parse as up
-from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Callable, Deque, Dict, Iterable, List, Optional, Set, Tuple
+from datetime import datetime, timezone
+from typing import Callable, Deque, Dict, List, Optional, Set, Tuple
 from urllib import robotparser
 
 import requests
@@ -231,7 +231,8 @@ def safe_filename(url: str, ext: str) -> str:
 # Robots / sitemap
 # ---------------------------------------------------------------------------
 
-def parse_robots_txt(session: requests.Session, robots_url: str) -> robotparser.RobotFileParser:
+def parse_robots_txt(session: requests.Session, robots_url: str) -> Tuple[robotparser.RobotFileParser, str]:
+    """Fetch and parse robots.txt, returning both the parser and raw text."""
     rp = robotparser.RobotFileParser()
     try:
         response = session.get(robots_url, timeout=10)
@@ -239,25 +240,33 @@ def parse_robots_txt(session: requests.Session, robots_url: str) -> robotparser.
     except requests.RequestException:
         content = ""
     rp.parse(content.splitlines())
-    return rp
+    return rp, content
 
 
-def discover_sitemaps(session: requests.Session, base: str) -> List[str]:
-    """Find sitemap URLs declared in the site's ``robots.txt``."""
-    robots_url = up.urljoin(base, "/robots.txt")
-    try:
-        response = session.get(robots_url, timeout=10)
-        if not response.ok:
+def discover_sitemaps(session: requests.Session, base: str, robots_text: Optional[str] = None) -> List[str]:
+    """Find sitemap URLs declared in the site's ``robots.txt``.
+
+    If *robots_text* is provided, it is parsed directly instead of
+    re-fetching ``/robots.txt`` (avoids a duplicate HTTP request when
+    ``parse_robots_txt`` has already fetched it).
+    """
+    if robots_text is None:
+        robots_url = up.urljoin(base, "/robots.txt")
+        try:
+            response = session.get(robots_url, timeout=10)
+            if not response.ok:
+                return []
+            robots_text = response.text
+        except requests.RequestException:
             return []
-        sitemaps: List[str] = []
-        for line in response.text.splitlines():
-            if line.lower().startswith("sitemap:"):
-                sitemap_url = line.split(":", 1)[1].strip()
-                if sitemap_url:
-                    sitemaps.append(sitemap_url)
-        return sitemaps
-    except requests.RequestException:
-        return []
+
+    sitemaps: List[str] = []
+    for line in robots_text.splitlines():
+        if line.lower().startswith("sitemap:"):
+            sitemap_url = line.split(":", 1)[1].strip()
+            if sitemap_url:
+                sitemaps.append(sitemap_url)
+    return sitemaps
 
 
 def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List[str]:
@@ -266,7 +275,7 @@ def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List
         response = session.get(url, timeout=timeout)
         if not response.ok:
             return []
-        content_type = response.headers.get("Content-Type", "").lower()
+        content_type = response.headers.get("content-type", "").lower()
         if not (content_type.startswith("application/xml") or response.text.strip().startswith("<")):
             return []
         root = ET.fromstring(response.content)
@@ -504,7 +513,7 @@ class CrawlEngine:
     # -- Robots / scope -----------------------------------------------------
 
     def setup_robots(self, base_url: str) -> None:
-        self._rp = parse_robots_txt(self.session, up.urljoin(base_url, "/robots.txt"))
+        self._rp, self._robots_text = parse_robots_txt(self.session, up.urljoin(base_url, "/robots.txt"))
 
     def allowed(self, url: str) -> bool:
         try:
@@ -779,7 +788,7 @@ def crawl(
 
     if not resumed:
         if use_sitemap:
-            for sitemap_url in discover_sitemaps(engine.session, base_url):
+            for sitemap_url in discover_sitemaps(engine.session, base_url, robots_text=engine._robots_text):
                 engine.seeds.extend(parse_sitemap_xml(engine.session, sitemap_url, timeout))
             engine.seeds = [norm_url(u) for u in engine.seeds if u]
             engine.seeds = [u for u in engine.seeds if engine.in_scope(u, base_netloc)]

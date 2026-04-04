@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from markcrawl.chunker import Chunk, chunk_text
+from markcrawl.chunker import chunk_text
 
 
 class TestChunkText:

@@ -8,8 +8,6 @@ import textwrap
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from markcrawl.core import (
     compact_blank_lines,
     extract_links,
@@ -19,7 +17,6 @@ from markcrawl.core import (
     safe_filename,
     same_scope,
 )
-
 
 # ---------------------------------------------------------------------------
 # norm_url
@@ -254,7 +251,7 @@ class TestCrawlIntegration:
         # base page returns our HTML
         page_resp = self._mock_response("https://example.com/", html)
 
-        session.get.side_effect = [robots_resp, robots_resp, page_resp]
+        session.get.side_effect = [robots_resp, page_resp]
 
         result = crawl(
             base_url="https://example.com/",
@@ -290,7 +287,7 @@ class TestCrawlIntegration:
 
         robots_resp = self._mock_response("robots", "")
         page_resp = self._mock_response("https://example.com/", html)
-        session.get.side_effect = [robots_resp, robots_resp, page_resp]
+        session.get.side_effect = [robots_resp, page_resp]
 
         result = crawl(
             base_url="https://example.com/",

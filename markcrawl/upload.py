@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import json
 import logging
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .chunker import chunk_text
 from .exceptions import MarkcrawlDependencyError
@@ -57,15 +55,7 @@ def generate_embeddings(
     return all_embeddings
 
 
-def load_pages(jsonl_path: str) -> List[Dict[str, str]]:
-    """Load pages from a crawl-produced JSONL file."""
-    pages: List[Dict[str, str]] = []
-    with open(jsonl_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                pages.append(json.loads(line))
-    return pages
+from .utils import load_pages  # noqa: E402 — shared with extract.py
 
 
 def upload(
@@ -124,13 +114,42 @@ def upload(
     for row, embedding in zip(rows, embeddings):
         row["embedding"] = embedding
 
-    # Insert in batches
+    # Insert in batches with retry
     inserted = 0
+    total_batches = (len(rows) + batch_size - 1) // batch_size
     for i in range(0, len(rows), batch_size):
         batch = rows[i : i + batch_size]
-        supabase.table(table).insert(batch).execute()
+        try:
+            _insert_with_retry(supabase, table, batch)
+        except Exception as exc:
+            logger.error(
+                "Failed at batch %d/%d (%d rows inserted so far): %s",
+                i // batch_size + 1, total_batches, inserted, exc,
+            )
+            raise
         inserted += len(batch)
         if show_progress:
             print(f"[prog] inserted {inserted}/{len(rows)} row(s)")
 
     return inserted
+
+
+_RETRY_MAX = 3
+_RETRY_BASE_DELAY = 1.0
+
+
+def _insert_with_retry(supabase, table: str, batch: list, max_retries: int = _RETRY_MAX) -> None:
+    """Insert a batch into Supabase with exponential backoff retry."""
+    for attempt in range(max_retries):
+        try:
+            supabase.table(table).insert(batch).execute()
+            return
+        except Exception as exc:
+            if attempt == max_retries - 1:
+                raise
+            delay = _RETRY_BASE_DELAY * (2 ** attempt)
+            logger.warning(
+                "Insert failed (attempt %d/%d), retrying in %.1fs: %s",
+                attempt + 1, max_retries, delay, exc,
+            )
+            time.sleep(delay)

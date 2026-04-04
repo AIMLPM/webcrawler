@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -292,21 +293,10 @@ Return ONLY the JSON object.
 
 
 # ---------------------------------------------------------------------------
-# Page loading
+# Page loading (delegated to utils to avoid duplication with upload.py)
 # ---------------------------------------------------------------------------
 
-def load_pages(jsonl_path: str, tag_source: bool = False) -> List[Dict]:
-    """Load pages from a crawl JSONL file."""
-    pages: List[Dict] = []
-    with open(jsonl_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                page = json.loads(line)
-                if tag_source:
-                    page["_source"] = jsonl_path
-                pages.append(page)
-    return pages
+from .utils import load_pages  # noqa: E402 — re-exported for backward compat
 
 
 def load_pages_multi(jsonl_paths: List[str]) -> List[Dict]:
@@ -331,6 +321,7 @@ def extract_from_jsonl(
     auto_fields_context: Optional[str] = None,
     sample_size: int = 3,
     provider: str = PROVIDER_OPENAI,
+    extract_delay: float = 0.25,
 ) -> List[Dict]:
     """Run structured extraction on pages from one or more crawl JSONL files.
 
@@ -446,6 +437,10 @@ def extract_from_jsonl(
             results.append(row)
 
             out.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+            # Rate-limit buffer between LLM calls
+            if extract_delay > 0 and i < len(pages) - 1:
+                time.sleep(extract_delay)
 
     if show_progress:
         print(f"[done] extracted {len(results)} page(s) -> {output_path}")

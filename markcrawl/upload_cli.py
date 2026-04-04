@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 
-from .exceptions import MarkcrawlConfigError, MarkcrawlError
+from .exceptions import MarkcrawlError
 from .upload import DEFAULT_EMBEDDING_MODEL, upload
 
 

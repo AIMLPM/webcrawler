@@ -66,6 +66,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print progress during extraction",
     )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.25,
+        help="Delay in seconds between LLM extraction calls (default: 0.25)",
+    )
     return parser
 
 
@@ -91,9 +97,8 @@ def _run(args):
         auto_fields_context=args.context,
         sample_size=args.sample_size,
         provider=args.provider,
+        extract_delay=args.delay,
     )
-
-    print(f"Extracted {len(results)} page(s).")
 
 
 if __name__ == "__main__":

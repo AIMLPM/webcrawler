@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -19,7 +18,6 @@ from markcrawl.extract import (
     load_pages,
     load_pages_multi,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -288,6 +286,7 @@ class TestExtractFromJsonl:
             jsonl_paths=[path],
             fields=["company_name", "pricing"],
             output_path=output_path,
+            extract_delay=0,
         )
 
         assert len(results) == 2
@@ -315,6 +314,7 @@ class TestExtractFromJsonl:
             jsonl_paths=[path],
             fields=["name"],
             output_path=output_path,
+            extract_delay=0,
         )
 
         assert results[0]["crawled_at"] == "2026-04-04T12:00:00Z"
@@ -338,6 +338,7 @@ class TestExtractFromJsonl:
             jsonl_paths=[path],
             auto_fields=True,
             auto_fields_context="test",
+            extract_delay=0,
         )
 
         assert len(results) == 2
@@ -348,7 +349,7 @@ class TestExtractFromJsonl:
         path = str(tmp_path / "pages.jsonl")
         _write_jsonl(path, [])
 
-        results = extract_from_jsonl(jsonl_paths=[path], fields=["name"])
+        results = extract_from_jsonl(jsonl_paths=[path], fields=["name"], extract_delay=0)
         assert results == []
 
     @patch("markcrawl.extract.LLMClient")
@@ -366,6 +367,7 @@ class TestExtractFromJsonl:
             jsonl_paths=[path1, path2],
             fields=["name"],
             output_path=str(tmp_path / "out.jsonl"),
+            extract_delay=0,
         )
 
         assert len(results) == 2

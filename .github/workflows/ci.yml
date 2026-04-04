@@ -40,12 +40,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check syntax
-        run: |
-          python -m py_compile markcrawl/core.py
-          python -m py_compile markcrawl/cli.py
-          python -m py_compile markcrawl/chunker.py
-          python -m py_compile markcrawl/upload.py
-          python -m py_compile markcrawl/upload_cli.py
-          python -m py_compile markcrawl/extract.py
-          python -m py_compile markcrawl/extract_cli.py
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint with ruff
+        run: ruff check .
