@@ -47,6 +47,9 @@ upload = [
 mcp = [
   "mcp[cli]>=1.0.0",
 ]
+langchain = [
+  "langchain-core>=0.2.0",
+]
 all = [
   "playwright>=1.40.0",
   "openai>=1.0.0",
@@ -54,6 +57,7 @@ all = [
   "google-genai>=1.0.0",
   "supabase>=2.0.0",
   "mcp[cli]>=1.0.0",
+  "langchain-core>=0.2.0",
 ]
 
 [project.urls]

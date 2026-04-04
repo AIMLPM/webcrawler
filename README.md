@@ -173,6 +173,7 @@ pip install markcrawl[extract]       # + LLM extraction (OpenAI, Claude, Gemini)
 pip install markcrawl[js]            # + JavaScript rendering (Playwright)
 pip install markcrawl[upload]        # + Supabase upload with embeddings
 pip install markcrawl[mcp]           # + MCP server for AI agents
+pip install markcrawl[langchain]     # + LangChain tool wrappers
 pip install markcrawl[all]           # Everything
 ```
 
@@ -448,9 +449,11 @@ Requires `SUPABASE_URL`, `SUPABASE_KEY`, and `OPENAI_API_KEY` environment variab
 
 For full setup instructions including table creation SQL, vector search queries, and Python examples, see **[docs/SUPABASE.md](docs/SUPABASE.md)**.
 
-## Using with AI agents (MCP)
+## Agentic integrations
 
-MarkCrawl includes a built-in [MCP](https://modelcontextprotocol.io/) server — plug it into Claude Desktop, Cursor, Windsurf, or any MCP-compatible agent:
+MarkCrawl is built for the agent-first era. Every piece of extracted Markdown includes source URL metadata, so LLM responses built on MarkCrawl output are always citable and verifiable.
+
+### MCP Server — Claude Desktop, Cursor, Windsurf
 
 ```bash
 pip install markcrawl[mcp]
@@ -489,33 +492,57 @@ pip install markcrawl[mcp]
 > **Agent:** "Stripe supports three authentication methods: API keys, OAuth 2.0, and..."
 </details>
 
-## Integrations
+### LangChain Tool — custom RAG agents and chains
 
-### Using MarkCrawl with OpenClaw
+```bash
+pip install markcrawl[langchain]
+```
 
-MarkCrawl is designed to work seamlessly as a **Skill** for the [OpenClaw](https://github.com/openclaw) autonomous agent. This allows your agent to "read" the web and perform research directly from your chat app.
+```python
+from markcrawl.langchain import crawl_tool, search_tool, read_tool, extract_tool, all_tools
 
-Install the Skill via ClawHub:
+# Use individual tools
+from langchain_openai import ChatOpenAI
+from langchain.agents import initialize_agent, AgentType
+
+llm = ChatOpenAI(model="gpt-4o-mini")
+agent = initialize_agent(
+    tools=all_tools,
+    llm=llm,
+    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+)
+agent.run("Crawl docs.example.com and summarize their authentication guide")
+```
+
+Five tools are available: `crawl_tool`, `search_tool`, `read_tool`, `list_tool`, `extract_tool` — or use `all_tools` to include them all.
+
+### OpenClaw Skill — WhatsApp, Telegram, Slack agents
 
 ```bash
 npx clawhub install markcrawl-skill
 ```
 
-Once integrated, you can message your OpenClaw agent (via Telegram, WhatsApp, or Slack) to perform deep research:
+Once installed, message your OpenClaw agent from any chat app:
 
 > **You:** "Hey, crawl the iD8 documentation and summarize the new API features."
 >
-> **OpenClaw:** *(Uses MarkCrawl to fetch clean Markdown, then summarizes it)*
+> **OpenClaw:** *(Crawls site, extracts Markdown, summarizes)*
 >
-> "iD8's latest API update adds three new endpoints: /analyze for sentiment analysis, /extract for entity extraction, and /summarize for document summarization. All endpoints accept JSON and return results in under 2 seconds..."
+> "iD8's latest API adds three new endpoints: /analyze, /extract, and /summarize..."
 
-See the full skill documentation at [AIMLPM/markcrawl-clawhub-skill](https://github.com/AIMLPM/markcrawl-clawhub-skill).
+See full docs at [AIMLPM/markcrawl-clawhub-skill](https://github.com/AIMLPM/markcrawl-clawhub-skill).
 
-### Using MarkCrawl with MCP clients
+### Auto-citation
 
-See the [MCP section above](#using-with-ai-agents-mcp) for integration with Claude Desktop, Cursor, Windsurf, and other MCP-compatible agents.
+Every output includes source metadata for verifiable LLM responses:
 
-### Using MarkCrawl as a Python library
+- **`.md` files** include `> URL: https://...` at the top of each page
+- **`pages.jsonl`** includes `"url"` on every row
+- **`extracted.jsonl`** includes `"url"` and `"source_file"` for multi-site analysis
+
+When an LLM uses MarkCrawl data to answer a question, the source URL is always available for citation.
+
+### Using as a Python library
 
 See [Extending MarkCrawl](#extending-markcrawl) below and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for using MarkCrawl programmatically in your own pipelines.
 
