@@ -19,11 +19,30 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="Path to pages.jsonl produced by the crawler",
     )
-    parser.add_argument(
+
+    # Fields: either specify manually or auto-discover
+    fields_group = parser.add_mutually_exclusive_group(required=True)
+    fields_group.add_argument(
         "--fields",
-        required=True,
         nargs="+",
         help="Field names to extract (e.g. company_name pricing api_endpoints)",
+    )
+    fields_group.add_argument(
+        "--auto-fields",
+        action="store_true",
+        help="Automatically discover field names by analyzing a sample of crawled pages",
+    )
+
+    parser.add_argument(
+        "--context",
+        default=None,
+        help="Describe your analysis goal to improve auto-field discovery (e.g. 'competitor pricing analysis', 'API documentation review')",
+    )
+    parser.add_argument(
+        "--sample-size",
+        type=int,
+        default=3,
+        help="Number of pages to sample for --auto-fields discovery (default: 3)",
     )
     parser.add_argument(
         "--output",
@@ -56,6 +75,9 @@ def main() -> None:
         output_path=args.output,
         model=args.model,
         show_progress=args.show_progress,
+        auto_fields=args.auto_fields,
+        auto_fields_context=args.context,
+        sample_size=args.sample_size,
     )
 
     print(f"Extracted {len(results)} page(s).")

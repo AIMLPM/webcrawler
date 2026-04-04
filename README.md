@@ -474,7 +474,43 @@ $$;
 
 After crawling, you can use an LLM to extract specific fields from each page — useful for competitive research, API documentation analysis, or building structured datasets.
 
-### Example: Extract company info from competitor sites
+### Option A: Let the LLM discover fields automatically
+
+Don't know what fields to look for? Point the tool at your crawled pages and let it figure out what's worth extracting:
+
+```bash
+python -m webcrawler.extract_cli \
+  --jsonl ./output/pages.jsonl \
+  --auto-fields \
+  --context "competitor pricing and product analysis" \
+  --show-progress
+```
+
+The tool samples a few pages, analyzes their content, and suggests 5-15 relevant field names. Example output:
+
+```
+[discover] analyzing 3 sample page(s) to suggest fields...
+[discover] context: competitor pricing and product analysis
+[discover] suggested fields: company_name, product_name, pricing_tiers, free_trial, key_features, target_market, integrations, support_options, api_available, deployment_model
+[extract] 1/47 — https://competitor.com/
+[extract] 2/47 — https://competitor.com/pricing
+...
+```
+
+You can also control how many pages to sample:
+
+```bash
+python -m webcrawler.extract_cli \
+  --jsonl ./output/pages.jsonl \
+  --auto-fields \
+  --context "API documentation review" \
+  --sample-size 5 \
+  --show-progress
+```
+
+### Option B: Specify fields manually
+
+If you already know what you're looking for:
 
 ```bash
 python -m webcrawler.extract_cli \
@@ -512,7 +548,10 @@ This produces an `extracted.jsonl` file with structured data:
 | Argument | Description |
 |---|---|
 | `--jsonl` | Path to `pages.jsonl` from the crawler |
-| `--fields` | Field names to extract (space-separated) |
+| `--fields` | Field names to extract (space-separated). Mutually exclusive with `--auto-fields`. |
+| `--auto-fields` | Automatically discover fields by analyzing sample pages. Mutually exclusive with `--fields`. |
+| `--context` | Describe your goal to improve auto-field discovery (e.g. `"competitor analysis"`) |
+| `--sample-size` | Number of pages to sample for `--auto-fields` (default: `3`) |
 | `--output` | Output JSONL path (default: `extracted.jsonl` in same directory) |
 | `--model` | OpenAI model for extraction (default: `gpt-4o-mini`) |
 | `--show-progress` | Print progress during extraction |

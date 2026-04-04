@@ -81,12 +81,96 @@ Source URL: {url}
         return {f: None for f in fields}
 
 
+def discover_fields(
+    pages: List[Dict],
+    client: Any,
+    model: str = "gpt-4o-mini",
+    sample_size: int = 3,
+    context: Optional[str] = None,
+) -> List[str]:
+    """Analyze a sample of crawled pages and suggest field names for extraction.
+
+    Parameters
+    ----------
+    pages:
+        List of page dicts from the crawl JSONL (must have "text" and "url" keys).
+    client:
+        An OpenAI client instance.
+    model:
+        The model to use for field discovery.
+    sample_size:
+        Number of pages to sample (default: 3).
+    context:
+        Optional description of what the user is looking for
+        (e.g. "competitor analysis", "API documentation").
+
+    Returns
+    -------
+    List of suggested field names.
+    """
+    sample = pages[:sample_size]
+
+    page_summaries = []
+    for i, page in enumerate(sample, 1):
+        text = page.get("text", "")[:4000]
+        url = page.get("url", "")
+        page_summaries.append(f"--- PAGE {i}: {url} ---\n{text}")
+
+    pages_text = "\n\n".join(page_summaries)
+
+    context_line = ""
+    if context:
+        context_line = f"\nThe user's goal: {context}\n"
+
+    prompt = f"""You are analyzing crawled web pages to determine what structured fields should be extracted.
+
+Review the sample pages below and suggest 5-15 field names that would be most useful to extract from these types of pages. Field names should be lowercase_with_underscores and descriptive.
+{context_line}
+Return a JSON object with a single key "fields" containing an array of field name strings, ordered from most to least important.
+
+Example response:
+{{"fields": ["company_name", "product_description", "pricing", "contact_email", "features"]}}
+
+Return ONLY the JSON object.
+
+{pages_text}
+"""
+
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0,
+        response_format={"type": "json_object"},
+    )
+
+    try:
+        result = json.loads(response.choices[0].message.content)
+        return result.get("fields", [])
+    except (json.JSONDecodeError, IndexError, AttributeError):
+        logger.warning("Failed to parse field discovery response")
+        return []
+
+
+def load_pages(jsonl_path: str) -> List[Dict]:
+    """Load pages from a crawl JSONL file."""
+    pages: List[Dict] = []
+    with open(jsonl_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                pages.append(json.loads(line))
+    return pages
+
+
 def extract_from_jsonl(
     jsonl_path: str,
-    fields: List[str],
+    fields: Optional[List[str]] = None,
     output_path: Optional[str] = None,
     model: str = "gpt-4o-mini",
     show_progress: bool = False,
+    auto_fields: bool = False,
+    auto_fields_context: Optional[str] = None,
+    sample_size: int = 3,
 ) -> List[Dict]:
     """Run structured extraction on all pages in a crawl JSONL file.
 
@@ -95,13 +179,20 @@ def extract_from_jsonl(
     jsonl_path:
         Path to pages.jsonl from the crawler.
     fields:
-        Field names to extract from each page.
+        Field names to extract from each page. If None and auto_fields is True,
+        fields are discovered automatically from a sample of pages.
     output_path:
         Where to write the extracted JSONL. Defaults to <jsonl_dir>/extracted.jsonl.
     model:
         OpenAI model to use.
     show_progress:
         Print progress.
+    auto_fields:
+        If True and fields is empty, automatically discover fields from sample pages.
+    auto_fields_context:
+        Optional description of what the user is looking for, passed to field discovery.
+    sample_size:
+        Number of pages to sample for field discovery (default: 3).
 
     Returns
     -------
@@ -109,15 +200,36 @@ def extract_from_jsonl(
     """
     client = _get_openai_client()
 
-    pages: List[Dict] = []
-    with open(jsonl_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                pages.append(json.loads(line))
+    pages = load_pages(jsonl_path)
 
     if not pages:
         logger.warning("No pages found in %s", jsonl_path)
+        return []
+
+    # Auto-discover fields if none provided
+    if not fields and auto_fields:
+        if show_progress:
+            print(f"[discover] analyzing {min(sample_size, len(pages))} sample page(s) to suggest fields...")
+            if auto_fields_context:
+                print(f"[discover] context: {auto_fields_context}")
+
+        fields = discover_fields(
+            pages=pages,
+            client=client,
+            model=model,
+            sample_size=sample_size,
+            context=auto_fields_context,
+        )
+
+        if not fields:
+            logger.warning("Field discovery returned no fields")
+            return []
+
+        if show_progress:
+            print(f"[discover] suggested fields: {', '.join(fields)}")
+
+    if not fields:
+        logger.warning("No fields specified and --auto-fields not enabled")
         return []
 
     if output_path is None:
