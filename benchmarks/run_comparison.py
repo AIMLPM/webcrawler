@@ -870,8 +870,38 @@ def main():
     generate_comparison_report(results, available, args.output)
     print(f"Report saved to: {args.output}")
 
-    # Cleanup
+    # Save run data (keep last 2 runs)
+    _save_run_data(base_dir)
+
+
+def _save_run_data(base_dir: str) -> None:
+    """Copy run output to benchmarks/runs/ with timestamp. Keep last 2 runs."""
+    runs_dir = os.path.join(os.path.dirname(__file__), "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+
+    # Save current run
+    timestamp = time.strftime("%Y%m%d_%H%M%S", time.gmtime())
+    run_dest = os.path.join(runs_dir, f"run_{timestamp}")
+    try:
+        shutil.copytree(base_dir, run_dest)
+        print(f"Run data saved to: {run_dest}")
+    except Exception as exc:
+        print(f"Warning: could not save run data: {exc}")
+        shutil.rmtree(base_dir, ignore_errors=True)
+        return
+
+    # Clean up temp dir
     shutil.rmtree(base_dir, ignore_errors=True)
+
+    # Keep only the last 2 runs
+    existing_runs = sorted(
+        [d for d in os.listdir(runs_dir) if d.startswith("run_") and os.path.isdir(os.path.join(runs_dir, d))],
+    )
+    while len(existing_runs) > 2:
+        oldest = existing_runs.pop(0)
+        oldest_path = os.path.join(runs_dir, oldest)
+        shutil.rmtree(oldest_path, ignore_errors=True)
+        print(f"Removed old run: {oldest}")
 
 
 if __name__ == "__main__":

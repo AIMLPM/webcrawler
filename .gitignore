@@ -29,3 +29,4 @@ output/
 *.jsonl
 *.log
 .crawl_state.json
+benchmarks/runs/
