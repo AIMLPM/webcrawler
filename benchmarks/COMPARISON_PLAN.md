@@ -176,6 +176,72 @@ This script:
 
 Anyone can re-run it and verify our numbers. If our results are biased, the community can check.
 
+## Benchmark 2: MarkCrawl full pipeline (end-to-end)
+
+This is a **separate, MarkCrawl-only benchmark** that times the complete RAG pipeline that no other single tool offers. It answers: "If I crawl 50 pages, extract structured fields, and upload to Supabase, how long does the whole thing take?"
+
+### What we time (per stage)
+
+```
+Stage 1: Crawl           → pages.jsonl + .md files       (no API keys needed)
+Stage 2: Extract fields  → extracted.jsonl                (needs OPENAI_API_KEY or similar)
+Stage 3: Chunk + embed   → embedding vectors              (needs OPENAI_API_KEY)
+Stage 4: Upload          → rows in Supabase               (needs SUPABASE_URL + KEY)
+```
+
+### Report format
+
+```markdown
+## Full Pipeline: FastAPI docs (25 pages)
+
+| Stage | Time (s) | Cost | Output |
+|---|---|---|---|
+| Crawl (25 pages) | 4.8 | free | 25 .md files, 687 KB |
+| Extract (5 fields) | 18.2 | ~$0.50 | extracted.jsonl |
+| Chunk + embed | 3.1 | ~$0.003 | 89 chunks, 89 vectors |
+| Upload to Supabase | 1.4 | free | 89 rows inserted |
+| **Total** | **27.5** | **~$0.50** | **End-to-end RAG pipeline** |
+```
+
+### How it handles missing credentials
+
+The script runs as much as possible without requiring setup:
+
+| What's available | What runs |
+|---|---|
+| Nothing (just `pip install markcrawl`) | Stage 1 only — crawl timing |
+| `OPENAI_API_KEY` set | Stages 1-3 — crawl + extract + embed |
+| `OPENAI_API_KEY` + `SUPABASE_URL` + `SUPABASE_KEY` | All 4 stages — full pipeline |
+
+Stages that can't run due to missing credentials are reported as "skipped (no API key)" rather than failing. This way anyone can run the benchmark and see at least the crawl timing.
+
+### Mocked upload option
+
+For users who want full pipeline timing without a real Supabase instance, the script offers a `--mock-upload` flag that:
+- Runs the real chunking and embedding (measures actual OpenAI API time)
+- Replaces the Supabase insert with a no-op (measures everything except network latency to Supabase)
+- Reports the upload stage as "mocked — actual insert time depends on network to your Supabase instance"
+
+### Script
+
+```bash
+# Crawl only (no API keys needed)
+python benchmarks/run_pipeline.py
+
+# With extraction (needs OPENAI_API_KEY)
+python benchmarks/run_pipeline.py --extract
+
+# Full pipeline with mock upload
+python benchmarks/run_pipeline.py --extract --mock-upload
+
+# Full pipeline with real Supabase
+python benchmarks/run_pipeline.py --extract --upload
+```
+
+### Why this matters for positioning
+
+No other single tool in the comparison offers this pipeline. The message isn't "we're faster at crawling" — it's "we're the only tool where `pip install markcrawl` gets you from URL to searchable vector database in 3 commands." The pipeline benchmark quantifies that value with real numbers.
+
 ## Where results are published
 
 - Full results: `benchmarks/COMPARISON.md` (separate doc, not in README)
