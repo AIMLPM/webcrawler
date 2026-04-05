@@ -801,6 +801,71 @@ def main():
 
             results[tool_name][site_name] = aggregate_runs(runs, site_config)
 
+    # Phase 3: Quality scoring (cross-tool consensus on last iteration's output)
+    print("\n--- Phase 3: Extraction Quality Scoring ---")
+    try:
+        from benchmarks.quality_scorer import (
+            PageQuality,
+            generate_quality_report,
+            score_consensus,
+            score_density,
+            score_signals,
+        )
+
+        quality_results: dict[str, dict[str, list]] = {}
+
+        for site_name in sites:
+            quality_results[site_name] = {}
+
+            # Load each tool's output from the last iteration
+            tool_outputs_by_url: dict[str, dict[str, str]] = {}  # {url: {tool: markdown}}
+
+            for tool_name in available:
+                out_dir = os.path.join(base_dir, tool_name, site_name)
+                jsonl_path = os.path.join(out_dir, "pages.jsonl")
+                if not os.path.isfile(jsonl_path):
+                    continue
+                with open(jsonl_path) as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        page = json.loads(line)
+                        url = page.get("url", "").rstrip("/")  # normalize trailing slash
+                        text = page.get("text", "")
+                        if url and text:
+                            if url not in tool_outputs_by_url:
+                                tool_outputs_by_url[url] = {}
+                            tool_outputs_by_url[url][tool_name] = text
+
+            # Score each tool
+            for tool_name in available:
+                pages = []
+                for url, outputs in tool_outputs_by_url.items():
+                    if tool_name not in outputs:
+                        continue
+                    markdown = outputs[tool_name]
+                    signal = score_signals(markdown)
+                    density = score_density(markdown)
+                    consensus = score_consensus(markdown, outputs, tool_name)
+                    pages.append(PageQuality(
+                        url=url, tool=tool_name,
+                        signal=signal, density=density, consensus=consensus,
+                    ))
+                quality_results[site_name][tool_name] = pages
+
+            print(f"  {site_name}: scored {sum(len(p) for p in quality_results[site_name].values())} pages across {len(available)} tools")
+
+        # Generate quality report
+        quality_report_path = args.output.replace(".md", "_quality.md")
+        quality_report = generate_quality_report(quality_results, available)
+        with open(quality_report_path, "w", encoding="utf-8") as f:
+            f.write(quality_report)
+        print(f"Quality report saved to: {quality_report_path}")
+
+    except Exception as exc:
+        print(f"  Quality scoring failed: {exc}")
+
     print("\n" + "=" * 60)
     generate_comparison_report(results, available, args.output)
     print(f"Report saved to: {args.output}")
