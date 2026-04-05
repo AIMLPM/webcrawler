@@ -540,59 +540,81 @@ def check_playwright_raw() -> bool:
         return False
 
 
+_CRAWLEE_WORKER = Path(__file__).parent / "_crawlee_worker.py"
+
+
+def _write_crawlee_worker():
+    """Write the crawlee worker script once, reused for every subprocess call."""
+    if _CRAWLEE_WORKER.exists():
+        return
+    _CRAWLEE_WORKER.write_text(
+        '#!/usr/bin/env python3\n'
+        '"""Crawlee worker — runs in a subprocess so each invocation gets a fresh event loop.\n'
+        'Args: url out_dir max_pages [url1 url2 ...]\n'
+        '"""\n'
+        'import asyncio, json, os, sys\n'
+        'from pathlib import Path\n'
+        '\n'
+        'url = sys.argv[1]\n'
+        'out_dir = sys.argv[2]\n'
+        'max_pages = int(sys.argv[3])\n'
+        'url_list = sys.argv[4:] if len(sys.argv) > 4 else [url]\n'
+        '\n'
+        'os.makedirs(out_dir, exist_ok=True)\n'
+        'pages_saved = 0\n'
+        'jsonl_path = os.path.join(out_dir, "pages.jsonl")\n'
+        '\n'
+        'async def _run():\n'
+        '    global pages_saved\n'
+        '    from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext\n'
+        '    from markdownify import markdownify as md\n'
+        '    crawler = PlaywrightCrawler(max_requests_per_crawl=max_pages, headless=True)\n'
+        '\n'
+        '    @crawler.router.default_handler\n'
+        '    async def handler(context: PlaywrightCrawlingContext) -> None:\n'
+        '        global pages_saved\n'
+        '        if pages_saved >= max_pages:\n'
+        '            return\n'
+        '        page_url = context.request.url\n'
+        '        title = await context.page.title()\n'
+        '        content = await context.page.content()\n'
+        '        markdown = md(content, heading_style="ATX", strip=["img","script","style","nav","footer"])\n'
+        '        if len(markdown.split()) < 5:\n'
+        '            return\n'
+        '        safe_name = page_url.replace("://","_").replace("/","_")[:80]\n'
+        '        with open(os.path.join(out_dir, f"{safe_name}.md"), "w", encoding="utf-8") as f:\n'
+        '            f.write(markdown)\n'
+        '        with open(jsonl_path, "a", encoding="utf-8") as f:\n'
+        '            f.write(json.dumps({"url": page_url, "title": title, "text": markdown}, ensure_ascii=False) + "\\n")\n'
+        '        pages_saved += 1\n'
+        '        if len(url_list) == 1 and url_list[0] == url:\n'
+        '            await context.enqueue_links()\n'
+        '\n'
+        '    await crawler.run(url_list[:max_pages])\n'
+        '\n'
+        'asyncio.run(_run())\n'
+        'print(pages_saved)\n'
+    )
+
+
 def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
-    """Run Crawlee (Python) with Playwright and return pages saved."""
-    import asyncio
+    """Run Crawlee (Python) with Playwright in a subprocess.
 
-    from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
-
+    Each call gets a fresh event loop, avoiding the asyncio.Lock/event-loop
+    mismatch that occurs when crawlee is invoked multiple times in the same
+    process (Python 3.13 regression in crawlee's storage client).
+    """
+    _write_crawlee_worker()
     os.makedirs(out_dir, exist_ok=True)
-    pages_saved = 0
-    jsonl_path = os.path.join(out_dir, "pages.jsonl")
-    urls_to_visit = url_list if url_list else [url]
-
-    async def _run():
-        nonlocal pages_saved
-        crawler = PlaywrightCrawler(max_requests_per_crawl=max_pages, headless=True)
-
-        @crawler.router.default_handler
-        async def handler(context: PlaywrightCrawlingContext) -> None:
-            nonlocal pages_saved
-            if pages_saved >= max_pages:
-                return
-
-            page_url = context.request.url
-            title = await context.page.title()
-            content = await context.page.content()
-
-            # Convert to markdown using markdownify
-            from markdownify import markdownify as md
-            markdown = md(content, heading_style="ATX", strip=["img", "script", "style", "nav", "footer"])
-
-            if len(markdown.split()) < 5:
-                return
-
-            safe_name = page_url.replace("://", "_").replace("/", "_")[:80]
-            md_path = os.path.join(out_dir, f"{safe_name}.md")
-            with open(md_path, "w", encoding="utf-8") as f:
-                f.write(markdown)
-
-            with open(jsonl_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps({
-                    "url": page_url,
-                    "title": title,
-                    "text": markdown,
-                }, ensure_ascii=False) + "\n")
-
-            pages_saved += 1
-
-            if not url_list:
-                await context.enqueue_links()
-
-        await crawler.run(urls_to_visit)
-
-    asyncio.run(_run())
-    return pages_saved
+    cmd = [sys.executable, str(_CRAWLEE_WORKER), url, out_dir, str(max_pages)]
+    if url_list:
+        cmd.extend(url_list[:max_pages])
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, check=False)
+        last_line = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "0"
+        return int(last_line)
+    except (subprocess.TimeoutExpired, ValueError):
+        return 0
 
 
 def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
@@ -668,7 +690,7 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
             try:
                 context = browser.new_context()
                 page = context.new_page()
-                page.goto(page_url, timeout=15000, wait_until="networkidle")
+                page.goto(page_url, timeout=15000, wait_until="domcontentloaded")
                 html = page.content()
                 title = page.title()
                 context.close()
