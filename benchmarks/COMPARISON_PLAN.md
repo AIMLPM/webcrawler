@@ -238,6 +238,48 @@ python benchmarks/run_pipeline.py --extract --mock-upload
 python benchmarks/run_pipeline.py --extract --upload
 ```
 
+### Stage 5: Retrieval quality check (the real test)
+
+The pipeline benchmark ends with a quality check that answers: "If I ask a question about the content I just crawled, do I get the right answer back?"
+
+**How it works:**
+
+1. After embedding, store all chunks + vectors in memory
+2. Embed 5 test queries using the same embedding model
+3. Compute cosine similarity between each query and all chunks
+4. Check if the top-3 most similar chunks contain the correct source page
+5. Report hit rate: "X/5 queries returned the correct page in top 3"
+
+**Test queries for FastAPI docs (example):**
+
+| Query | Expected source page | What it tests |
+|---|---|---|
+| "How do I add authentication to a FastAPI endpoint?" | Security/OAuth2 tutorial page | Can it find conceptual content? |
+| "What is the default response status code?" | Response model docs | Can it find specific technical details? |
+| "How do I define query parameters?" | Query parameters tutorial | Can it find tutorial content? |
+| "What Python types does FastAPI support for request bodies?" | Request body docs | Can it find reference content? |
+| "How do I handle file uploads?" | File upload tutorial | Can it find procedural content? |
+
+**Why this is the most important metric:**
+
+Pages/second measures how fast the pipe runs. Retrieval accuracy measures whether the pipe produces useful output. A crawler that's 10x faster but produces chunks that can't answer questions is worthless for RAG. This single metric — "does retrieval work?" — validates the entire pipeline: crawl quality, cleaning quality, chunk coherence, and embedding usefulness.
+
+**No Supabase needed:** The similarity search runs in memory using numpy. The test is self-contained and reproducible.
+
+```python
+# Pseudocode for retrieval test
+import numpy as np
+
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+for query, expected_url in test_queries:
+    query_vec = embed(query)
+    scores = [(cosine_similarity(query_vec, chunk.vec), chunk) for chunk in all_chunks]
+    top_3 = sorted(scores, reverse=True)[:3]
+    hit = any(expected_url in chunk.url for _, chunk in top_3)
+```
+
 ### Why this matters for positioning
 
 No other single tool in the comparison offers this pipeline. The message isn't "we're faster at crawling" — it's "we're the only tool where `pip install markcrawl` gets you from URL to searchable vector database in 3 commands." The pipeline benchmark quantifies that value with real numbers.
