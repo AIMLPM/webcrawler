@@ -65,7 +65,7 @@ COMMON FLAGS:
   --concurrency N     Pages to fetch in parallel (default: 1)
   --proxy URL         HTTP/HTTPS proxy URL
   --resume            Resume from saved state after interruption
-  --delay SECONDS     Delay between requests (default: 1.0)
+  --delay SECONDS     Minimum delay between requests (default: 0, adaptive throttle adjusts automatically)
   --timeout SECONDS   Per-request timeout (default: 15)
   --min-words N       Skip pages with fewer words (default: 20)
   --user-agent STRING Override default user agent

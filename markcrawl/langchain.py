@@ -89,7 +89,7 @@ def _crawl(
         max_pages=max_pages,
         include_subdomains=include_subdomains,
         render_js=render_js,
-        delay=1.0,
+        delay=0,
         timeout=15,
         show_progress=False,
         min_words=20,

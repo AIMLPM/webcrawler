@@ -153,7 +153,7 @@ Navigation, footer, cookie banners, and scripts are stripped. Only the main cont
 | `--resume` | Resume from saved state |
 | `--include-subdomains` | Include subdomains under the base domain |
 | `--max-pages` | Max pages to save; `0` = unlimited (default: `500`) |
-| `--delay` | Delay between requests in seconds (default: `1.0`) |
+| `--delay` | Minimum delay between requests in seconds (default: `0`, adaptive throttle adjusts automatically) |
 | `--timeout` | Per-request timeout in seconds (default: `15`) |
 | `--min-words` | Skip pages with fewer words (default: `20`) |
 | `--user-agent` | Override the default user agent |
@@ -443,7 +443,7 @@ source .env
 <summary>Shipped features</summary>
 
 - `pip install markcrawl` on PyPI
-- 82 automated tests + GitHub Actions CI (Python 3.10-3.13) + ruff linting
+- 102 automated tests + GitHub Actions CI (Python 3.10-3.13) + ruff linting
 - Markdown and plain text output with auto-citation
 - Sitemap-first crawling with robots.txt compliance
 - Text chunking with configurable overlap
