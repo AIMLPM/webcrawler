@@ -280,6 +280,16 @@ for query, expected_url in test_queries:
     hit = any(expected_url in chunk.url for _, chunk in top_3)
 ```
 
+### A note on fairness
+
+The retrieval quality check is the most important part of the pipeline benchmark — and it's designed to be critical of our own tool, not to give us an unfair advantage.
+
+The retrieval check validates the entire pipeline end-to-end: if the crawl missed content, the chunks split badly, or the embeddings are poor, the test catches it. It's the metric that actually matters for RAG, and it's self-contained (no Supabase required).
+
+We publish this test against MarkCrawl's own output because no other tool in the comparison offers the full crawl-to-retrieval pipeline. This isn't a competitive claim — it's a self-assessment. If our retrieval accuracy is 3/5 or worse, that's a signal our chunking or extraction needs work, and we'll say so. The purpose is to hold ourselves accountable to the end-to-end quality bar, not to declare victory in a category where we're the only entrant.
+
+If other tools add similar end-to-end pipelines in the future, we'd welcome running the same retrieval queries against their output for a direct comparison.
+
 ### Why this matters for positioning
 
 No other single tool in the comparison offers this pipeline. The message isn't "we're faster at crawling" — it's "we're the only tool where `pip install markcrawl` gets you from URL to searchable vector database in 3 commands." The pipeline benchmark quantifies that value with real numbers.
