@@ -170,15 +170,67 @@ def check_scrapy() -> bool:
         return False
 
 
-def check_firecrawl() -> bool:
+def _ensure_firecrawl_docker() -> Optional[str]:
+    """Start FireCrawl Docker container if not running. Returns API URL or None."""
+    container_name = "markcrawl_bench_firecrawl"
     api_url = os.environ.get("FIRECRAWL_API_URL")
-    if not api_url:
-        return False
+
+    if api_url:
+        return api_url  # User already set it
+
+    # Check if Docker is available
+    try:
+        result = subprocess.run(["docker", "info"], capture_output=True, timeout=10, check=False)
+        if result.returncode != 0:
+            return None
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return None
+
+    # Check if container is already running
+    result = subprocess.run(
+        ["docker", "ps", "--filter", f"name={container_name}", "--format", "{{.Names}}"],
+        capture_output=True, text=True, timeout=10, check=False,
+    )
+    if container_name in result.stdout:
+        return "http://localhost:3002"
+
+    # Check if image exists
+    result = subprocess.run(
+        ["docker", "images", "firecrawl/firecrawl", "--format", "{{.Repository}}"],
+        capture_output=True, text=True, timeout=10, check=False,
+    )
+    if "firecrawl" not in result.stdout:
+        return None  # Image not pulled, don't auto-pull (too slow)
+
+    # Start container
+    subprocess.run(
+        ["docker", "run", "-d", "--name", container_name, "-p", "3002:3002",
+         "--rm", "firecrawl/firecrawl:latest"],
+        capture_output=True, timeout=30, check=False,
+    )
+
+    # Wait for it to be ready
+    import urllib.request
+    for _ in range(20):
+        try:
+            urllib.request.urlopen("http://localhost:3002", timeout=2)
+            return "http://localhost:3002"
+        except Exception:
+            time.sleep(1)
+
+    return None
+
+
+def check_firecrawl() -> bool:
     try:
         import firecrawl  # noqa: F401
-        return True
     except ImportError:
         return False
+    api_url = _ensure_firecrawl_docker()
+    if api_url:
+        os.environ["FIRECRAWL_API_URL"] = api_url
+        return True
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -599,8 +651,14 @@ def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Opti
         with open(md_path, "w", encoding="utf-8") as f:
             f.write(markdown)
 
-        # Reconstruct URL from filename
-        page_url = html_file.stem.replace("_", "/", 1).replace("_", "/")
+        # Reconstruct URL from filename (http_example.com_path → http://example.com/path)
+        stem = html_file.stem
+        if stem.startswith("https_"):
+            page_url = "https://" + stem[6:].replace("_", "/")
+        elif stem.startswith("http_"):
+            page_url = "http://" + stem[5:].replace("_", "/")
+        else:
+            page_url = stem.replace("_", "/")
         with open(jsonl_path, "a", encoding="utf-8") as f:
             f.write(json.dumps({
                 "url": page_url,
