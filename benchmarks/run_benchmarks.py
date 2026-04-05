@@ -38,41 +38,59 @@ from markcrawl.core import crawl
 # ---------------------------------------------------------------------------
 
 BENCHMARK_SITES = {
+    # --- SMALL (1-5 pages) — quick validation ---
     "httpbin": {
         "url": "https://httpbin.org",
         "max_pages": 5,
-        "description": "Simple HTTP test service (minimal HTML)",
+        "description": "Simple HTTP test service (minimal HTML, 1-2 pages)",
         "expected_min_pages": 1,
-    },
-    "python-docs": {
-        "url": "https://docs.python.org/3/library/json.html",
-        "max_pages": 3,
-        "description": "Python standard library docs (well-structured HTML)",
-        "expected_min_pages": 1,
+        "tier": "small",
     },
     "scrapethissite": {
         "url": "https://www.scrapethissite.com",
         "max_pages": 5,
         "description": "Scraping practice site (structured data tables)",
         "expected_min_pages": 1,
+        "tier": "small",
+    },
+
+    # --- MEDIUM (15-30 pages) — real doc sites ---
+    "fastapi-docs": {
+        "url": "https://fastapi.tiangolo.com",
+        "max_pages": 25,
+        "description": "FastAPI framework docs (API docs with code examples, tutorials)",
+        "expected_min_pages": 10,
+        "tier": "medium",
+    },
+    "python-docs": {
+        "url": "https://docs.python.org/3/library/",
+        "max_pages": 20,
+        "description": "Python standard library index + module pages",
+        "expected_min_pages": 10,
+        "tier": "medium",
     },
     "quotes-toscrape": {
         "url": "http://quotes.toscrape.com",
-        "max_pages": 5,
-        "description": "Scraping practice site (paginated content)",
-        "expected_min_pages": 1,
+        "max_pages": 15,
+        "description": "Paginated quotes (tests link-following across 10+ pages)",
+        "expected_min_pages": 10,
+        "tier": "medium",
     },
+
+    # --- LARGE (50-100 pages) — scale test ---
     "books-toscrape": {
         "url": "http://books.toscrape.com",
-        "max_pages": 5,
-        "description": "E-commerce practice site (product listings)",
-        "expected_min_pages": 1,
+        "max_pages": 60,
+        "description": "E-commerce catalog (50+ product pages, pagination, categories)",
+        "expected_min_pages": 30,
+        "tier": "large",
     },
-    "fastapi-docs": {
-        "url": "https://fastapi.tiangolo.com",
-        "max_pages": 5,
-        "description": "FastAPI framework docs (API documentation with code examples)",
-        "expected_min_pages": 1,
+    "quotes-toscrape-large": {
+        "url": "http://quotes.toscrape.com",
+        "max_pages": 100,
+        "description": "Paginated quotes (100 page deep crawl, link-following stress test)",
+        "expected_min_pages": 50,
+        "tier": "large",
     },
 }
 
@@ -92,7 +110,7 @@ JUNK_PATTERNS = [
     r"cookie.?consent",
     r"accept.?cookies",
     r"privacy policy",
-    r"©\s*\d{4}",  # copyright notices
+    r"©\s*\d{4}.*all rights reserved",  # copyright + all rights reserved together
     r"all rights reserved",
     r"subscribe to our newsletter",
     r"follow us on",
@@ -106,6 +124,7 @@ class SiteResult:
     name: str
     url: str
     description: str
+    tier: str
     pages_saved: int
     expected_min_pages: int
     crawl_time_seconds: float
@@ -208,8 +227,9 @@ def run_site_benchmark(name: str, config: dict, output_base: str) -> SiteResult:
     max_pages = config["max_pages"]
     description = config["description"]
     expected_min = config["expected_min_pages"]
+    tier = config.get("tier", "small")
 
-    print(f"  Crawling {name} ({url})...", end=" ", flush=True)
+    print(f"  [{tier}] Crawling {name} ({url}, max={max_pages})...", end=" ", flush=True)
 
     errors = []
     start = time.time()
@@ -219,7 +239,7 @@ def run_site_benchmark(name: str, config: dict, output_base: str) -> SiteResult:
             out_dir=out_dir,
             fmt="markdown",
             max_pages=max_pages,
-            delay=0.5,
+            delay=0.3,
             timeout=15,
             show_progress=False,
             min_words=5,
@@ -254,6 +274,7 @@ def run_site_benchmark(name: str, config: dict, output_base: str) -> SiteResult:
         name=name,
         url=url,
         description=description,
+        tier=tier,
         pages_saved=pages_saved,
         expected_min_pages=expected_min,
         crawl_time_seconds=elapsed,
@@ -300,16 +321,34 @@ def generate_report(results: List[SiteResult], output_path: str) -> str:
         "",
         "## Performance",
         "",
-        "| Site | Pages | Time (s) | Pages/sec | Avg words/page |",
-        "|---|---|---|---|---|",
     ])
 
-    for r in results:
-        status = "" if not r.errors else " (errors)"
-        lines.append(
-            f"| {r.name}{status} | {r.pages_saved} | {r.crawl_time_seconds:.1f} | "
-            f"{r.pages_per_second:.2f} | {r.avg_content_words:.0f} |"
-        )
+    # Group by tier
+    tiers = ["small", "medium", "large"]
+    tier_labels = {"small": "Small (1-5 pages)", "medium": "Medium (15-30 pages)", "large": "Large (50-100 pages)"}
+
+    for tier in tiers:
+        tier_results = [r for r in results if r.tier == tier]
+        if not tier_results:
+            continue
+        tier_pages = sum(r.pages_saved for r in tier_results)
+        tier_time = sum(r.crawl_time_seconds for r in tier_results)
+        tier_pps = tier_pages / tier_time if tier_time > 0 else 0
+
+        lines.extend([
+            f"### {tier_labels.get(tier, tier)} — {tier_pages} pages in {tier_time:.1f}s ({tier_pps:.1f} p/s)",
+            "",
+            "| Site | Description | Pages | Time (s) | Pages/sec | Avg words |",
+            "|---|---|---|---|---|---|",
+        ])
+
+        for r in tier_results:
+            status = " *" if r.errors else ""
+            lines.append(
+                f"| {r.name}{status} | {r.description} | {r.pages_saved} | "
+                f"{r.crawl_time_seconds:.1f} | {r.pages_per_second:.2f} | {r.avg_content_words:.0f} |"
+            )
+        lines.append("")
 
     lines.extend([
         "",

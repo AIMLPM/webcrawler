@@ -1,45 +1,60 @@
 # MarkCrawl Benchmark Results
 
-Generated: 2026-04-05 01:46:06 UTC
+Generated: 2026-04-05 01:59:19 UTC
 
 ## Summary
 
-- **Sites tested:** 6
-- **Total pages crawled:** 25
-- **Total time:** 19.9s
-- **Overall pages/second:** 1.25
+- **Sites tested:** 7
+- **Total pages crawled:** 213
+- **Total time:** 110.4s
+- **Overall pages/second:** 1.93
 
 ## Performance
 
-| Site | Pages | Time (s) | Pages/sec | Avg words/page |
-|---|---|---|---|---|
-| httpbin | 2 | 1.6 | 1.24 | 37 |
-| python-docs | 3 | 1.8 | 1.65 | 190 |
-| scrapethissite | 5 | 3.9 | 1.30 | 570 |
-| quotes-toscrape | 5 | 3.4 | 1.45 | 174 |
-| books-toscrape | 5 | 4.3 | 1.17 | 405 |
-| fastapi-docs | 5 | 4.9 | 1.01 | 6835 |
+### Small (1-5 pages) — 7 pages in 4.1s (1.7 p/s)
+
+| Site | Description | Pages | Time (s) | Pages/sec | Avg words |
+|---|---|---|---|---|---|
+| httpbin | Simple HTTP test service (minimal HTML, 1-2 pages) | 2 | 1.2 | 1.71 | 37 |
+| scrapethissite | Scraping practice site (structured data tables) | 5 | 2.9 | 1.74 | 579 |
+
+### Medium (15-30 pages) — 46 pages in 22.9s (2.0 p/s)
+
+| Site | Description | Pages | Time (s) | Pages/sec | Avg words |
+|---|---|---|---|---|---|
+| fastapi-docs | FastAPI framework docs (API docs with code examples, tutorials) | 25 | 13.3 | 1.88 | 1573 |
+| python-docs | Python standard library index + module pages | 6 | 2.8 | 2.11 | 190 |
+| quotes-toscrape | Paginated quotes (tests link-following across 10+ pages) | 15 | 6.7 | 2.22 | 150 |
+
+### Large (50-100 pages) — 160 pages in 83.5s (1.9 p/s)
+
+| Site | Description | Pages | Time (s) | Pages/sec | Avg words |
+|---|---|---|---|---|---|
+| books-toscrape | E-commerce catalog (50+ product pages, pagination, categories) | 60 | 30.9 | 1.94 | 291 |
+| quotes-toscrape-large | Paginated quotes (100 page deep crawl, link-following stress test) | 100 | 52.5 | 1.90 | 176 |
+
 
 ## Extraction Quality
 
 | Site | Junk detected | Title rate | Citation rate | JSONL complete |
 |---|---|---|---|---|
 | httpbin | 0 | 50% | 100% | 50% |
-| python-docs | 0 | 100% | 100% | 100% |
 | scrapethissite | 0 | 100% | 100% | 100% |
+| fastapi-docs | 0 | 100% | 100% | 100% |
+| python-docs | 0 | 100% | 100% | 100% |
 | quotes-toscrape | 0 | 100% | 100% | 100% |
 | books-toscrape | 0 | 100% | 100% | 100% |
-| fastapi-docs | 0 | 100% | 100% | 100% |
+| quotes-toscrape-large | 0 | 100% | 100% | 100% |
 
 ## Quality Scores
 
 | Metric | Score | Target | Status |
 |---|---|---|---|
-| Title extraction rate | 92% | >90% | PASS |
+| Title extraction rate | 93% | >90% | PASS |
 | Citation completeness | 100% | 100% | PASS |
-| JSONL field completeness | 92% | 100% | NEEDS WORK |
+| JSONL field completeness | 93% | 100% | NEEDS WORK |
 | Junk in output | 0 matches | 0 | PASS |
-| Min pages crawled | all met | all sites | PASS |
+| Min pages crawled | some failed | all sites | NEEDS WORK |
 
 ## What these metrics mean
 
