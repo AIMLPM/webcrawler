@@ -60,9 +60,11 @@ Max pages: 20
 
 | Tool | Pages | Time (s) | Std dev | Pages/sec | Avg words | Output KB | Peak MB |
 |---|---|---|---|---|---|---|---|
-| markcrawl | 6 | 0.4 | ±0.0 | 13.5 | 213 | 12 | 163 |
+| markcrawl | 6* | 0.4 | ±0.0 | 13.5 | 213 | 12 | 163 |
 | crawl4ai | 20 | 8.5 | ±0.3 | 2.4 | 4900 | 940 | 171 |
 | scrapy+md | 19 | 2.3 | ±0.0 | 8.5 | 4302 | 665 | 30 |
+
+\* MarkCrawl found a sitemap with 7 version-root URLs instead of the `/3/library/` subpages. When a sitemap exists, MarkCrawl uses sitemap URLs exclusively and doesn't follow links. Using `--no-sitemap` would crawl via link-following instead. This is a known limitation — hybrid sitemap + link-following is on the roadmap.
 
 ## Overall summary
 

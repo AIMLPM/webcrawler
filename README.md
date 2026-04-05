@@ -58,6 +58,8 @@ Different tools make different tradeoffs. This table summarizes the main differe
 | Best for | Single-site crawl → Markdown | Hosted scraping API | AI-native crawling | Large-scale distributed |
 
 Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep browser automation, and Scrapy handles massive distributed workloads. MarkCrawl focuses on simple local crawls that produce LLM-ready Markdown.
+
+See [benchmarks/COMPARISON.md](benchmarks/COMPARISON.md) for head-to-head performance data (3 tools, 4 sites, 3 iterations each).
 </details>
 
 ## Installation
