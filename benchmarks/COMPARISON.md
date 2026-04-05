@@ -21,12 +21,12 @@ See [COMPARISON_PLAN.md](COMPARISON_PLAN.md) for full methodology.
 
 ## Tools tested
 
-| Tool | Available | Notes |
-|---|---|---|
-| markcrawl | Yes | requests + BeautifulSoup + markdownify |
-| crawl4ai | Yes | Playwright (headless Chromium) + built-in extraction |
-| scrapy+md | Yes | Scrapy async framework + markdownify pipeline |
-| firecrawl | Not installed | Self-hosted Docker (set FIRECRAWL_API_URL) |
+| Tool | Available | Stack | Source |
+|---|---|---|---|
+| markcrawl | Yes | requests + BeautifulSoup + markdownify | [AIMLPM/markcrawl](https://github.com/AIMLPM/markcrawl) |
+| crawl4ai | Yes | Playwright (headless Chromium) + built-in extraction | [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) |
+| scrapy+md | Yes | Scrapy async framework + markdownify pipeline | [scrapy/scrapy](https://github.com/scrapy/scrapy) + [matthewwithanm/python-markdownify](https://github.com/matthewwithanm/python-markdownify) |
+| firecrawl | Not installed | Self-hosted Docker (Node.js + headless Chrome) | [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) |
 
 ## Results by site
 
