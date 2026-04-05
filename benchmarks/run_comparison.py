@@ -488,6 +488,179 @@ def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
     return pages_saved
 
 
+def check_crawlee() -> bool:
+    try:
+        import crawlee  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def check_colly() -> bool:
+    colly_bin = os.path.join(os.path.dirname(__file__), "colly_crawler", "colly_crawler")
+    return os.path.isfile(colly_bin)
+
+
+def check_playwright_raw() -> bool:
+    try:
+        from playwright.sync_api import sync_playwright  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+    """Run Crawlee (Python) with Playwright and return pages saved."""
+    import asyncio
+
+    from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
+
+    os.makedirs(out_dir, exist_ok=True)
+    pages_saved = 0
+    jsonl_path = os.path.join(out_dir, "pages.jsonl")
+    urls_to_visit = url_list if url_list else [url]
+
+    async def _run():
+        nonlocal pages_saved
+        crawler = PlaywrightCrawler(max_requests_per_crawl=max_pages, headless=True)
+
+        @crawler.router.default_handler
+        async def handler(context: PlaywrightCrawlingContext) -> None:
+            nonlocal pages_saved
+            if pages_saved >= max_pages:
+                return
+
+            page_url = context.request.url
+            title = await context.page.title()
+            content = await context.page.content()
+
+            # Convert to markdown using markdownify
+            from markdownify import markdownify as md
+            markdown = md(content, heading_style="ATX", strip=["img", "script", "style", "nav", "footer"])
+
+            if len(markdown.split()) < 5:
+                return
+
+            safe_name = page_url.replace("://", "_").replace("/", "_")[:80]
+            md_path = os.path.join(out_dir, f"{safe_name}.md")
+            with open(md_path, "w", encoding="utf-8") as f:
+                f.write(markdown)
+
+            with open(jsonl_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "url": page_url,
+                    "title": title,
+                    "text": markdown,
+                }, ensure_ascii=False) + "\n")
+
+            pages_saved += 1
+
+            if not url_list:
+                await context.enqueue_links()
+
+        await crawler.run(urls_to_visit)
+
+    asyncio.run(_run())
+    return pages_saved
+
+
+def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+    """Run Colly (Go) for fetching + Python markdownify for conversion."""
+    os.makedirs(out_dir, exist_ok=True)
+
+    colly_bin = os.path.join(os.path.dirname(__file__), "colly_crawler", "colly_crawler")
+    html_dir = os.path.join(out_dir, "_html")
+    os.makedirs(html_dir, exist_ok=True)
+
+    cmd = [colly_bin, "-url", url, "-out", html_dir, "-max", str(max_pages)]
+
+    if url_list:
+        urls_file = os.path.join(out_dir, "_urls.txt")
+        with open(urls_file, "w") as f:
+            f.write("\n".join(url_list))
+        cmd.extend(["-urls", urls_file])
+
+    subprocess.run(cmd, capture_output=True, text=True, timeout=300, check=False)
+
+    # Convert HTML files to Markdown using markdownify
+    from markdownify import markdownify as md
+
+    pages_saved = 0
+    jsonl_path = os.path.join(out_dir, "pages.jsonl")
+
+    for html_file in sorted(Path(html_dir).glob("*.html")):
+        html_content = html_file.read_text(encoding="utf-8", errors="ignore")
+        markdown = md(html_content, heading_style="ATX", strip=["img", "script", "style", "nav", "footer"])
+
+        if len(markdown.split()) < 5:
+            continue
+
+        md_path = os.path.join(out_dir, html_file.stem + ".md")
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(markdown)
+
+        # Reconstruct URL from filename
+        page_url = html_file.stem.replace("_", "/", 1).replace("_", "/")
+        with open(jsonl_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps({
+                "url": page_url,
+                "title": "",
+                "text": markdown,
+            }, ensure_ascii=False) + "\n")
+
+        pages_saved += 1
+
+    return pages_saved
+
+
+def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+    """Raw Playwright baseline — browser fetch + markdownify, no framework overhead."""
+    from playwright.sync_api import sync_playwright
+
+    os.makedirs(out_dir, exist_ok=True)
+    urls_to_fetch = url_list if url_list else [url]
+    pages_saved = 0
+    jsonl_path = os.path.join(out_dir, "pages.jsonl")
+
+    from markdownify import markdownify as md
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+
+        for page_url in urls_to_fetch[:max_pages]:
+            try:
+                context = browser.new_context()
+                page = context.new_page()
+                page.goto(page_url, timeout=15000, wait_until="networkidle")
+                html = page.content()
+                title = page.title()
+                context.close()
+            except Exception:
+                continue
+
+            markdown = md(html, heading_style="ATX", strip=["img", "script", "style", "nav", "footer"])
+            if len(markdown.split()) < 5:
+                continue
+
+            safe_name = page_url.replace("://", "_").replace("/", "_")[:80]
+            md_path = os.path.join(out_dir, f"{safe_name}.md")
+            with open(md_path, "w", encoding="utf-8") as f:
+                f.write(markdown)
+
+            with open(jsonl_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "url": page_url,
+                    "title": title,
+                    "text": markdown,
+                }, ensure_ascii=False) + "\n")
+
+            pages_saved += 1
+
+        browser.close()
+
+    return pages_saved
+
+
 # ---------------------------------------------------------------------------
 # Benchmark runner
 # ---------------------------------------------------------------------------
@@ -496,6 +669,9 @@ TOOLS = {
     "markcrawl": {"check": check_markcrawl, "run": run_markcrawl},
     "crawl4ai": {"check": check_crawl4ai, "run": run_crawl4ai},
     "scrapy+md": {"check": check_scrapy, "run": run_scrapy_markdownify},
+    "crawlee": {"check": check_crawlee, "run": run_crawlee},
+    "colly+md": {"check": check_colly, "run": run_colly_markdownify},
+    "playwright": {"check": check_playwright_raw, "run": run_playwright_raw},
     "firecrawl": {"check": check_firecrawl, "run": run_firecrawl},
 }
 
@@ -639,14 +815,17 @@ def generate_comparison_report(
         "|---|---|---|",
     ]
 
-    all_tools = ["markcrawl", "crawl4ai", "scrapy+md", "firecrawl"]
+    all_tools = ["markcrawl", "crawl4ai", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
     for tool in all_tools:
         available = tool in available_tools
         notes = {
-            "markcrawl": "requests + BeautifulSoup + markdownify",
-            "crawl4ai": "Playwright (headless Chromium) + built-in extraction",
-            "scrapy+md": "Scrapy async framework + markdownify pipeline",
-            "firecrawl": "Self-hosted Docker (set FIRECRAWL_API_URL)",
+            "markcrawl": "requests + BeautifulSoup + markdownify — [AIMLPM/markcrawl](https://github.com/AIMLPM/markcrawl)",
+            "crawl4ai": "Playwright + built-in extraction — [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai)",
+            "scrapy+md": "Scrapy async + markdownify — [scrapy/scrapy](https://github.com/scrapy/scrapy)",
+            "crawlee": "Playwright + markdownify — [apify/crawlee-python](https://github.com/apify/crawlee-python)",
+            "colly+md": "Go fetch (Colly) + Python markdownify — [gocolly/colly](https://github.com/gocolly/colly)",
+            "playwright": "Raw Playwright baseline + markdownify (no framework)",
+            "firecrawl": "Self-hosted Docker — [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl)",
         }
         status = "Yes" if available else "Not installed"
         lines.append(f"| {tool} | {status} | {notes.get(tool, '')} |")
