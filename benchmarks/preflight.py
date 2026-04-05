@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pre-flight check for the 7-tool benchmark comparison.
 
-Run this before benchmarks/run_comparison.py to verify all tools are installed,
+Run this before benchmarks/benchmark_all_tools.py to verify all tools are installed,
 binaries are present, environment variables are set, and the network is reachable.
 
 Usage:
@@ -431,9 +431,9 @@ def print_ready_status(tool_results: dict[str, bool]) -> None:
         if available_count < 7:
             print(yellow(f"  {7 - available_count} tool(s) unavailable — benchmark will run with {available_count}/7."))
         print(green("  Ready. Run the benchmark with:"))
-        print(f"    {bold('python benchmarks/run_comparison.py')}\n")
+        print(f"    {bold('python benchmarks/benchmark_all_tools.py')}\n")
         print(dim("  Quick test (1 site, 1 iteration, skip warmup):"))
-        print(dim(f"    python benchmarks/run_comparison.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
+        print(dim(f"    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
     else:
         print(red("  Not ready — fix blocking issues above, then re-run:"))
         print(f"    {bold('python benchmarks/preflight.py --install')}\n")

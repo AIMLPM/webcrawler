@@ -180,7 +180,7 @@ After it completes, activate the venv and run:
 
 ```bash
 source .venv/bin/activate
-python benchmarks/run_comparison.py
+python benchmarks/benchmark_all_tools.py
 ```
 
 **FireCrawl (optional — skipped by default)**
@@ -242,7 +242,7 @@ The script checks for the binary at `benchmarks/colly_crawler/colly_crawler` and
 
 ```bash
 source .venv/bin/activate
-python benchmarks/run_comparison.py
+python benchmarks/benchmark_all_tools.py
 ```
 
 This script:

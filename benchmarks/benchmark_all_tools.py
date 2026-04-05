@@ -8,10 +8,10 @@ FireCrawl runs if FIRECRAWL_API_KEY or FIRECRAWL_API_URL is set. The script
 auto-loads .env from the project root, so no manual `source .env` is needed.
 
 Usage:
-    python benchmarks/run_comparison.py
-    python benchmarks/run_comparison.py --sites quotes-toscrape,fastapi-docs
-    python benchmarks/run_comparison.py --iterations 1 --skip-warmup  # quick test
-    python benchmarks/run_comparison.py --output benchmarks/SPEED_COMPARISON.md
+    python benchmarks/benchmark_all_tools.py
+    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape,fastapi-docs
+    python benchmarks/benchmark_all_tools.py --iterations 1 --skip-warmup  # quick test
+    python benchmarks/benchmark_all_tools.py --output benchmarks/SPEED_COMPARISON.md
 
 See benchmarks/METHODOLOGY.md for the methodology.
 """
@@ -917,14 +917,14 @@ def generate_comparison_report(
         "playwright install chromium  # for crawl4ai",
         "",
         "# Run comparison",
-        "python benchmarks/run_comparison.py",
+        "python benchmarks/benchmark_all_tools.py",
         "```",
         "",
         "For FireCrawl, also run:",
         "```bash",
         "docker run -p 3002:3002 firecrawl/firecrawl:latest",
         "export FIRECRAWL_API_URL=http://localhost:3002",
-        "python benchmarks/run_comparison.py",
+        "python benchmarks/benchmark_all_tools.py",
         "```",
     ])
 

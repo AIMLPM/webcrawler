@@ -161,12 +161,12 @@ pip install markcrawl crawl4ai scrapy markdownify
 playwright install chromium  # for crawl4ai
 
 # Run comparison
-python benchmarks/run_comparison.py
+python benchmarks/benchmark_all_tools.py
 ```
 
 For FireCrawl, also run:
 ```bash
 docker run -p 3002:3002 firecrawl/firecrawl:latest
 export FIRECRAWL_API_URL=http://localhost:3002
-python benchmarks/run_comparison.py
+python benchmarks/benchmark_all_tools.py
 ```
