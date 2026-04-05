@@ -2,162 +2,182 @@
 
 ## Goal
 
-Compare MarkCrawl against FireCrawl, Crawl4AI, and Scrapy on the same sites with equivalent settings, measuring what matters for the "crawl a documentation site for RAG" use case.
+Compare MarkCrawl against Crawl4AI, FireCrawl (self-hosted), and Scrapy on the same sites with equivalent settings, measuring what matters for the "crawl a documentation site for RAG" use case.
 
-## The fairness problem
+If another tool is faster, we say so. The comparison is factual, not promotional.
 
-These tools don't do the same things:
+## Decision: what happens when MarkCrawl loses
 
-| Feature | MarkCrawl | FireCrawl | Crawl4AI | Scrapy |
-|---|---|---|---|---|
-| Output format | Markdown + JSONL | Markdown + JSON | Markdown + JSON | Raw HTML (custom pipelines) |
-| JS rendering | Optional (Playwright) | Always (headless Chrome) | Always (Playwright) | Optional (plugin) |
-| LLM extraction | Built-in | Via API | Built-in | None |
-| Deployment | Local CLI | SaaS API or self-hosted | Local Python | Local Python |
-| Default delay | 0 (adaptive) | API rate limit | 0 | 0 |
+We expect MarkCrawl to lose on some metrics. Here's the pre-written narrative for each scenario:
 
-**What's comparable:** Fetch HTML → extract clean Markdown → write to disk. All four can do this.
-
-**What's NOT comparable:** FireCrawl's SaaS latency (network round-trip to their API), Crawl4AI's always-on browser (heavier but handles JS), Scrapy's raw HTML output (no Markdown conversion by default).
-
-## Proposed approach
-
-### What we measure
-
-| Metric | How | Why it matters |
+| Scenario | Likely? | Our response |
 |---|---|---|
-| **Pages/second** | Total pages / total wall-clock time | Raw throughput — the headline number |
-| **Time to first page** | Time from command start to first output file | Startup overhead matters for small crawls |
-| **Markdown quality** | Manual review of 5 pages per site | Does the output look right? Code blocks, headings, lists preserved? |
-| **Content accuracy** | Word count of extracted text vs known content | Are we getting the main content or missing sections? |
-| **Junk ratio** | Nav/footer/script text in output | How clean is the extraction? |
-| **Output size** | Total bytes of Markdown files | Efficient extraction = smaller, cleaner files |
-| **Memory usage** | Peak RSS during crawl | Relevant for large crawls |
+| Scrapy has 2-3x higher throughput | Very likely | Position on simplicity: "Scrapy is faster but requires building spiders, pipelines, and Markdown conversion. MarkCrawl trades peak throughput for one-command simplicity." |
+| Scrapy has 5x+ higher throughput | Possible | Investigate async (`httpx`/`aiohttp`) as a roadmap item. Document the gap honestly. |
+| Crawl4AI wins on JS-rendered sites | Almost certain | Expected — Crawl4AI is built around Playwright. Note that MarkCrawl's `--render-js` is optional, keeping the core lightweight. |
+| Crawl4AI has better extraction quality | Possible | If true, investigate their cleaning approach and consider adopting readability-based extraction. |
+| FireCrawl has better Markdown quality | Possible | Analyze their conversion pipeline. They may use a different HTML-to-Markdown library or post-processing. |
+| MarkCrawl has the most junk in output | Would be bad | Fix the extraction pipeline before publishing results. This is a quality bug, not a positioning question. |
 
-### What we do NOT measure
+## What we compare
 
-- LLM extraction speed (only MarkCrawl and Crawl4AI have this — not apples to apples)
-- Supabase upload (unique to MarkCrawl)
-- SaaS API response time for FireCrawl (depends on their server load, not the tool)
-- Anti-bot bypass capability (none of these tools are designed for this)
+**Measured:** Fetch HTML → extract clean Markdown → write to disk (the common denominator).
 
-### Test sites
+**NOT measured** (different scope, would need separate benchmarks):
+- LLM extraction speed (only MarkCrawl and Crawl4AI have this)
+- Supabase/vector upload (unique to MarkCrawl)
+- FireCrawl SaaS API latency (depends on their servers, not the tool)
+- Anti-bot bypass capability
 
-Same sites as our current benchmarks, plus one JS-rendered site for the `--render-js` comparison:
+## Tools and settings
 
-| Site | Pages | Why |
+**All tools run with equivalent settings:**
+
+| Setting | Value | Why |
 |---|---|---|
-| http://quotes.toscrape.com | 15 | Simple paginated site — baseline |
-| http://books.toscrape.com | 60 | Larger e-commerce catalog |
-| https://fastapi.tiangolo.com | 25 | Real API documentation with code blocks |
-| https://docs.python.org/3/library/ | 20 | Well-structured standard library docs |
-| http://quotes.toscrape.com/js/ | 15 | **JS-rendered version** — same content, requires browser |
+| Delay | 0 | Isolate processing speed, not politeness policy |
+| Primary concurrency | 5 | How these tools are designed to be used in practice |
+| Secondary concurrency | 1 | Single-threaded overhead comparison |
+| JS rendering | OFF for static sites, ON for JS site | Fair comparison per site type |
+| Timeout | 15s per request | Consistent across all |
+| Output format | Markdown | Common denominator |
+| Iterations | 3 per site, report median + std dev | Network variance is real |
+| Warm-up | 1 throwaway run per site before timing | Exclude DNS/TLS cold start |
 
-### Settings for each tool
-
-All tools run with equivalent settings to isolate processing speed:
-
-```
-Delay:        0 (no politeness throttle)
-Concurrency:  1 (sequential, to compare single-thread performance)
-JS rendering: OFF for static sites, ON for the JS site
-Timeout:      15s per request
-Max pages:    as listed per site
-Output:       Markdown (or closest equivalent)
-```
-
-We also run a **concurrency test** at concurrency=5 on the 60-page site to compare parallel performance.
-
-### How to run each tool
+### How each tool runs
 
 **MarkCrawl:**
 ```bash
-markcrawl --base URL --out ./results/markcrawl/SITE --delay 0 --max-pages N --format markdown
+markcrawl --base $URL --out ./results/markcrawl/$SITE --delay 0 --concurrency 5 --max-pages $N
 ```
 
 **Crawl4AI:**
-```bash
-# Python script using crawl4ai library
-from crawl4ai import AsyncWebCrawler
+```python
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+config = CrawlerRunConfig(markdown_generator=DefaultMarkdownGenerator())
 async with AsyncWebCrawler() as crawler:
-    result = await crawler.arun(url=URL)
+    result = await crawler.arun(url=URL, config=config)
     # Write result.markdown to file
 ```
 
-**FireCrawl (self-hosted):**
+**FireCrawl (self-hosted via Docker):**
 ```bash
-# Using firecrawl-py SDK against local instance
+docker run -p 3002:3002 firecrawl/firecrawl:latest
+```
+```python
 from firecrawl import FirecrawlApp
 app = FirecrawlApp(api_url="http://localhost:3002")
 result = app.crawl_url(URL, params={"limit": N, "scrapeOptions": {"formats": ["markdown"]}})
 ```
 
-**Scrapy:**
-```bash
-# Custom spider that saves response.text (raw HTML)
-# Then pipe through markdownify for fair comparison
-scrapy crawl docs_spider -a url=URL -a max_pages=N
+**Scrapy + markdownify** (fair comparison — Scrapy doesn't output Markdown natively):
+```python
+# Custom spider + markdownify pipeline item
+# Markdown conversion cost is included in the timing
 ```
 
-Note: Scrapy doesn't produce Markdown natively. For a fair comparison, we'll add a `markdownify` pipeline item so the Markdown conversion cost is included.
+## Test sites
 
-### Report format
+| Site | Pages | Type | Structural challenge |
+|---|---|---|---|
+| http://quotes.toscrape.com | 15 | Paginated content | Link-following, simple HTML |
+| http://books.toscrape.com | 60 | E-commerce catalog | Pagination, product cards, categories |
+| https://fastapi.tiangolo.com | 25 | API documentation | Code blocks, headings, tabs, admonitions |
+| https://docs.python.org/3/library/ | 20 | Standard library docs | Tables, nested lists, cross-references |
+| http://quotes.toscrape.com/js/ | 15 | JS-rendered version | Same content, requires browser rendering |
+
+## Metrics
+
+### Performance (automated)
+
+| Metric | How measured | Tool |
+|---|---|---|
+| Pages/second (concurrent) | Total pages / wall-clock time at concurrency=5 | Script timer |
+| Pages/second (sequential) | Same at concurrency=1 | Script timer |
+| Time to first page | Time from process start to first .md file written | Script timer |
+| Peak memory (RSS) | `psutil.Process().memory_info().rss` sampled every 0.5s during crawl | psutil |
+| Output size | Total bytes of all .md files | `os.path.getsize` |
+
+Note: Time to first page includes browser launch for Crawl4AI/FireCrawl. This is intentional — it's what the developer experiences.
+
+### Markdown quality rubric (manual, reproducible)
+
+For each test site, select 5 pages with known structural elements. Score each tool on a binary pass/fail per element:
+
+| Element | Pass criteria | Pages to test |
+|---|---|---|
+| **Heading preservation** | All `<h1>`-`<h6>` converted to `#`-`######` with correct nesting | FastAPI tutorial page, Python docs module page |
+| **Code block accuracy** | Fenced code blocks with language annotation preserved, no broken indentation | FastAPI endpoint examples, Python docs code samples |
+| **Table rendering** | HTML tables converted to Markdown tables (or readable text if no table support) | Python docs comparison tables |
+| **List structure** | Nested ordered/unordered lists maintain nesting and numbering | FastAPI query params docs |
+| **Link preservation** | Internal and external links converted to Markdown `[text](url)` format | Any page with navigation links stripped, content links preserved |
+| **Boilerplate removal** | No nav bar, footer, sidebar, cookie banner, or "Edit on GitHub" text in output | All pages — score as count of junk elements found |
+| **Code inside paragraphs** | Inline code (`backticks`) preserved within paragraph text | FastAPI type hints documentation |
+
+**Scoring per tool per site:** X/7 elements passing. Report as a percentage.
+
+**Blind review:** Rename output directories to tool-A/tool-B/tool-C/tool-D before manual review to avoid bias.
+
+### Junk detection (automated)
+
+Same junk patterns as our existing benchmarks, applied to all tools equally:
+- `<script>`, `<style>`, `<nav>`, `<footer>`, `<header>` tags in output
+- Cookie banner/consent text
+- "All rights reserved" boilerplate
+- "Subscribe to newsletter" / "Follow us on" text
+
+Count per tool across all pages. Lower is better.
+
+## Report format
+
+### Summary table
 
 ```markdown
-## Results: quotes.toscrape.com (15 pages)
-
-| Tool | Time (s) | Pages/sec | Avg words | Junk | Output KB |
-|---|---|---|---|---|---|
-| MarkCrawl | 2.3 | 6.5 | 176 | 0 | 76 |
-| Crawl4AI | X.X | X.X | XXX | X | XX |
-| FireCrawl | X.X | X.X | XXX | X | XX |
-| Scrapy+md | X.X | X.X | XXX | X | XX |
-
-### Sample output comparison
-
-[Side-by-side Markdown output from each tool for the same page]
+| Tool | Pages/sec (c=5) | Pages/sec (c=1) | Quality score | Junk count | Output KB | Peak RAM MB | Install time |
+|---|---|---|---|---|---|---|---|
+| MarkCrawl | X.X | X.X | X/7 | X | XX | XX | Xs |
+| Crawl4AI | X.X | X.X | X/7 | X | XX | XX | Xs |
+| FireCrawl | X.X | X.X | X/7 | X | XX | XX | Xs |
+| Scrapy+md | X.X | X.X | X/7 | X | XX | XX | Xs |
 ```
 
-## What we expect to find
+### Per-site breakdown
 
-Based on architecture:
+One table per site with all metrics.
 
-- **MarkCrawl should be fastest on static sites** — it uses `requests` (lightweight) while Crawl4AI and FireCrawl spin up headless browsers. Less overhead = faster for HTML-only pages.
-- **Crawl4AI should win on JS-rendered sites** — it's built around Playwright and optimized for browser-rendered content.
-- **Scrapy should have highest raw throughput** — it's async with minimal per-page overhead, but adding Markdown conversion will slow it down.
-- **FireCrawl self-hosted will be slowest** — it runs a full Node.js server + browser per page.
-- **Markdown quality should be similar** — all tools use similar HTML-to-Markdown libraries.
-- **Junk detection is where MarkCrawl should differentiate** — our `clean_dom_for_content` strips more boilerplate than raw markdownify.
+### Side-by-side output samples
 
-## What we're honest about
+For each site, show the same page's Markdown output from all 4 tools. Let the reader judge quality directly.
 
-If another tool is faster, we say so. The comparison should be factual, not promotional. MarkCrawl's value proposition isn't "fastest crawler" — it's "simplest end-to-end pipeline for the crawl-to-RAG use case."
+### Developer experience table (separate)
 
-## Dependencies to install
+| Tool | Install command | Install time | Dependencies | First crawl command |
+|---|---|---|---|---|
+| MarkCrawl | `pip install markcrawl` | Xs | 4 (bs4, markdownify, requests, certifi) | `markcrawl --base URL --out ./output` |
+| Crawl4AI | `pip install crawl4ai && playwright install` | Xs | Heavy (Playwright, Chromium) | Python script required |
+| FireCrawl | `docker run ...` | Xs | Docker + Node.js | API call or SDK |
+| Scrapy | `pip install scrapy markdownify` | Xs | Scrapy framework | Write spider class |
+
+## Reproducibility
+
+All benchmarks will be runnable via a single script:
 
 ```bash
-# MarkCrawl (already installed)
-pip install markcrawl
-
-# Crawl4AI
-pip install crawl4ai
-playwright install chromium
-
-# FireCrawl (self-hosted via Docker)
-docker run -p 3002:3002 firecrawl/firecrawl:latest
-
-# Scrapy + markdownify
-pip install scrapy markdownify
+python benchmarks/run_comparison.py
 ```
 
-## Open questions before running
+This script:
+1. Checks that all tools are installed (exits with clear error if not)
+2. Runs warm-up pass for each site
+3. Runs 3 iterations per tool per site
+4. Measures memory via psutil sampling
+5. Generates `benchmarks/COMPARISON.md` with all tables and statistics
+6. Saves raw Markdown output from each tool for manual quality review
 
-1. **Should we benchmark FireCrawl's SaaS API or self-hosted?** SaaS adds network latency that isn't the tool's fault. Self-hosted is fairer but requires Docker setup.
+Anyone can re-run it and verify our numbers. If our results are biased, the community can check.
 
-2. **Should we run multiple iterations?** Network variance can be significant. Running 3x and taking the median would be more rigorous but 3x the time.
+## Where results are published
 
-3. **Should we include a "time to install" metric?** MarkCrawl's `pip install markcrawl` vs Crawl4AI's `pip install + playwright install` vs FireCrawl's Docker setup. This matters for developer experience but isn't a performance metric.
-
-4. **What about Crawl4AI's built-in LLM features?** They have structured extraction too. Should we compare extraction quality, or just crawl+Markdown?
-
-5. **Should we publish results in the README or as a separate doc?** README could link to a `benchmarks/COMPARISON.md` with full results.
+- Full results: `benchmarks/COMPARISON.md` (separate doc, not in README)
+- README: one-line link — "See [benchmark comparison](benchmarks/COMPARISON.md) for performance data against other crawlers."
+- No benchmark tables in the README — keeps the README about the tool, not about competition.
