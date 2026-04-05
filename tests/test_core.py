@@ -343,3 +343,35 @@ class TestCrawlIntegration:
 
         # Page1 is saved, page2 is skipped as duplicate
         assert result.pages_saved == 1
+
+    @patch("markcrawl.core.build_session")
+    def test_crawl_with_custom_content_extractor(self, mock_build, tmp_path):
+        from markcrawl.core import crawl
+
+        html = "<html><body><p>Raw HTML content here for testing.</p></body></html>"
+
+        session = MagicMock()
+        mock_build.return_value = session
+
+        robots_resp = self._mock_response("robots", "")
+        page_resp = self._mock_response("https://example.com/", html)
+        session.get.side_effect = [robots_resp, page_resp]
+
+        def custom_extractor(raw_html: str):
+            return ("Custom Title", "Custom extracted content with enough words for the filter.")
+
+        result = crawl(
+            base_url="https://example.com/",
+            out_dir=str(tmp_path / "output"),
+            use_sitemap=True,
+            delay=0,
+            max_pages=10,
+            min_words=5,
+            content_extractor=custom_extractor,
+        )
+
+        assert result.pages_saved == 1
+        with open(result.index_file) as f:
+            row = json.loads(f.readline())
+        assert row["title"] == "Custom Title"
+        assert "Custom extracted content" in row["text"]

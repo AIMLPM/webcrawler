@@ -6,7 +6,7 @@ import logging
 import time
 from typing import Any, Dict, List
 
-from .chunker import chunk_text
+from .chunker import chunk_markdown, chunk_text
 from .exceptions import MarkcrawlConfigError, MarkcrawlDependencyError
 from .utils import load_pages
 
@@ -91,7 +91,12 @@ def upload(
     # Build all rows with chunked text
     rows: List[Dict[str, Any]] = []
     for page in pages:
-        chunks = chunk_text(page.get("text", ""), max_words=max_words, overlap_words=overlap_words)
+        # Use section-aware chunking for Markdown, word-count for plain text
+        page_text = page.get("text", "")
+        if page.get("path", "").endswith(".md") or page_text.startswith("#"):
+            chunks = chunk_markdown(page_text, max_words=max_words, overlap_words=overlap_words)
+        else:
+            chunks = chunk_text(page_text, max_words=max_words, overlap_words=overlap_words)
         for chunk in chunks:
             rows.append(
                 {

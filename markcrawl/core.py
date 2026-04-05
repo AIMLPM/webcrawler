@@ -459,11 +459,13 @@ class CrawlEngine:
         render_js: bool,
         proxy: Optional[str],
         show_progress: bool,
+        content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
         self.ext = "md" if fmt == "markdown" else "txt"
         self.min_words = min_words
+        self.content_extractor = content_extractor
         self.delay = delay
         self.timeout = timeout
         self.concurrency = concurrency
@@ -549,7 +551,9 @@ class CrawlEngine:
             self.progress(f"[skip] non-HTML content: {url}")
             return None
 
-        if self.fmt == "markdown":
+        if self.content_extractor:
+            title, content = self.content_extractor(response.text)
+        elif self.fmt == "markdown":
             title, content = html_to_markdown(response.text)
         else:
             title, content = html_to_text(response.text)
@@ -722,6 +726,7 @@ def crawl(
     concurrency: int = 1,
     proxy: Optional[str] = None,
     resume: bool = False,
+    content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
 
@@ -745,6 +750,9 @@ def crawl(
         concurrency: Number of parallel fetch workers (``1`` for sequential).
         proxy: Optional HTTP/HTTPS proxy URL.
         resume: Resume a previously interrupted crawl from saved state.
+        content_extractor: Optional custom function that takes raw HTML and
+            returns a ``(title, content)`` tuple. When provided, this replaces
+            the built-in extraction (html_to_markdown / html_to_text).
 
     Returns:
         A :class:`CrawlResult` with the count of saved pages, output
@@ -764,6 +772,7 @@ def crawl(
         render_js=render_js,
         proxy=proxy,
         show_progress=show_progress,
+        content_extractor=content_extractor,
     )
 
     base_url = norm_url(base_url)
