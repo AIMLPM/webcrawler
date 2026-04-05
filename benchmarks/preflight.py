@@ -5,8 +5,9 @@ Run this before benchmarks/benchmark_all_tools.py to verify all tools are instal
 binaries are present, environment variables are set, and the network is reachable.
 
 Usage:
-    python benchmarks/preflight.py              # check only
-    python benchmarks/preflight.py --install    # check, then install missing packages
+    python benchmarks/preflight.py                # check only
+    python benchmarks/preflight.py --install      # check + install missing packages
+    python benchmarks/preflight.py --smoke-test   # check + live-fire each tool (3 pages)
 """
 
 from __future__ import annotations
@@ -17,6 +18,8 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
+import time
 from pathlib import Path
 
 # Suppress noisy import warnings (e.g. requests version mismatch in fresh venvs)
@@ -639,6 +642,125 @@ def install_missing(tool_results: dict[str, bool]) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Smoke test — live-fire each tool against a small real site
+# ---------------------------------------------------------------------------
+
+SMOKE_URL       = "http://quotes.toscrape.com"
+SMOKE_MAX_PAGES = 3
+
+
+def _load_tools() -> dict:
+    """Load the TOOLS dict from benchmark_all_tools.py."""
+    # Ensure both the benchmarks dir and repo root are on sys.path
+    for p in [str(BENCH_DIR), str(REPO_ROOT)]:
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    import benchmark_all_tools  # noqa: PLC0415
+    return benchmark_all_tools.TOOLS
+
+
+def run_smoke_test(tool_results: dict[str, bool]) -> dict[str, bool]:
+    """Live-fire each available tool against a small site. Returns pass/fail per tool."""
+    print(bold("\n── Smoke test ──────────────────────────────────────────"))
+    print(dim(f"  Firing each tool against {SMOKE_URL} (max {SMOKE_MAX_PAGES} pages)"))
+    print(dim("  Browser-based tools may take 30-60s each — this is normal.\n"))
+
+    try:
+        tools = _load_tools()
+    except Exception as exc:
+        print(red(f"  ✗ Could not load benchmark_all_tools.py: {exc}"))
+        return {}
+
+    available = [t for t, ok in tool_results.items() if ok]
+    smoke: dict[str, bool] = {}
+
+    for tool_name in available:
+        tool = tools.get(tool_name)
+        if not tool:
+            continue
+
+        run_fn = tool["run"]
+        out_dir = tempfile.mkdtemp(prefix=f"smoke_{tool_name}_")
+        label = f"{tool_name:<14}"
+
+        print(f"  {dim('→')}  {label}", end=" ", flush=True)
+        start = time.time()
+        pages, error = 0, None
+        try:
+            pages = run_fn(SMOKE_URL, out_dir, SMOKE_MAX_PAGES, url_list=None)
+        except Exception as exc:
+            error = str(exc)
+        elapsed = time.time() - start
+
+        ok = pages > 0 and error is None
+        smoke[tool_name] = ok
+
+        if ok:
+            print(f"{green('✓')}  {pages} page(s) in {elapsed:.1f}s")
+        elif error:
+            short = error[:70] + ("…" if len(error) > 70 else "")
+            print(f"{red('✗')}  error: {dim(short)}")
+        else:
+            print(f"{red('✗')}  0 pages returned in {elapsed:.1f}s")
+
+        shutil.rmtree(out_dir, ignore_errors=True)
+
+    return smoke
+
+
+def print_smoke_status(
+    tool_results: dict[str, bool],
+    smoke: dict[str, bool],
+) -> None:
+    """Print final smoke test status board."""
+    print(bold("\n══ Smoke test results ══════════════════════════════════\n"))
+
+    passed  = sum(1 for ok in smoke.values() if ok)
+    total   = len(smoke)
+    skipped = [t for t, ok in tool_results.items() if not ok]
+
+    def row(label: str, ok: bool | None, note: str = "") -> None:
+        sym    = green("✓") if ok else (red("✗") if ok is False else dim("~"))
+        suffix = f"  {dim(note)}" if note else ""
+        print(f"  {sym}  {label}{suffix}")
+
+    print(dim(f"  Tools  ({passed}/{total} live-fired)\n"))
+
+    tool_labels = {
+        "markcrawl":  "markcrawl  (core crawler + URL discovery)",
+        "scrapy+md":  "scrapy + markdownify",
+        "crawl4ai":   "crawl4ai",
+        "crawlee":    "crawlee",
+        "playwright": "playwright  (raw)",
+        "colly+md":   "colly + markdownify  (Go binary)",
+        "firecrawl":  "firecrawl",
+    }
+
+    for key, label in tool_labels.items():
+        if key in smoke:
+            row(label, smoke[key])
+        elif key in skipped:
+            row(label, None, note="not installed — skipped")
+
+    print()
+    if skipped:
+        print(dim(f"  {len(skipped)} tool(s) not installed (skipped): {', '.join(skipped)}"))
+        print()
+
+    failed = [t for t, ok in smoke.items() if not ok]
+
+    if not failed:
+        print(green(f"  All {passed} tools passed — ready to run the full benchmark."))
+    else:
+        print(yellow(f"  {len(failed)} tool(s) failed smoke test: {', '.join(failed)}"))
+        print(dim("  These will be skipped automatically in the full benchmark."))
+
+    print(f"\n  {bold('python benchmarks/benchmark_all_tools.py')}\n")
+    print(dim("  Quick run (1 site, 1 iteration, skip warmup):"))
+    print(dim(f"    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -649,8 +771,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  python benchmarks/preflight.py              # check only\n"
-            "  python benchmarks/preflight.py --install    # check + install missing packages"
+            "  python benchmarks/preflight.py                # check only\n"
+            "  python benchmarks/preflight.py --install      # check + install missing packages\n"
+            "  python benchmarks/preflight.py --smoke-test   # check + live-fire each tool (3 pages)"
         ),
     )
     parser.add_argument(
@@ -658,10 +781,15 @@ def main():
         action="store_true",
         help="install any missing pip-installable packages (prompts for confirmation)",
     )
+    parser.add_argument(
+        "--smoke-test",
+        action="store_true",
+        help="live-fire each available tool against a small site to verify runtime behaviour",
+    )
     args = parser.parse_args()
 
-    if not args.install:
-        print(dim("  Tip: run with --install to automatically install anything missing.\n"))
+    if not args.install and not args.smoke_test:
+        print(dim("  Tip: run with --install to install missing packages, --smoke-test to verify each tool works.\n"))
 
     tool_results, _ = run_checks()
     failures = print_summary(tool_results)
@@ -669,11 +797,18 @@ def main():
     if args.install:
         installed = install_missing(tool_results)
         if installed:
-            # Re-run checks fresh if we installed anything (and didn't re-exec into venv)
             tool_results, _ = run_checks()
             failures = print_summary(tool_results)
 
-    # Always print the ready status board last
+    if args.smoke_test:
+        if failures:
+            print(red("  Blocking issues must be fixed before smoke test — run --install first.\n"))
+            sys.exit(1)
+        smoke = run_smoke_test(tool_results)
+        print_smoke_status(tool_results, smoke)
+        return  # smoke status board is the final output
+
+    # Static-check-only path: print ready status board
     print_ready_status(tool_results)
 
     if failures:
