@@ -31,7 +31,11 @@ from .core import crawl as run_crawl
 
 mcp = FastMCP("markcrawl")
 
-DEFAULT_OUTPUT_DIR = os.environ.get("WEBCRAWLER_OUTPUT_DIR", "./crawl_output")
+DEFAULT_OUTPUT_DIR = (
+    os.environ.get("MARKCRAWL_OUTPUT_DIR")
+    or os.environ.get("WEBCRAWLER_OUTPUT_DIR")  # deprecated — use MARKCRAWL_OUTPUT_DIR
+    or "./crawl_output"
+)
 
 
 # ---------------------------------------------------------------------------
@@ -121,7 +125,7 @@ def search_pages(
         query: Search query — one or more keywords separated by spaces. All words
             are searched independently (OR logic). Example: "authentication API key".
         jsonl_path: Full path to the pages.jsonl file from a previous crawl. If
-            empty, defaults to <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+            empty, defaults to <MARKCRAWL_OUTPUT_DIR>/pages.jsonl.
         max_results: Maximum number of results to return. Default: 10. Use lower
             values for focused searches, higher for comprehensive surveys.
     """
@@ -212,7 +216,7 @@ def read_page(
         url: The exact URL of the page to read. Must match a URL from a previous
             crawl. Case-insensitive. Example: "https://docs.example.com/auth".
         jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
-            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+            <MARKCRAWL_OUTPUT_DIR>/pages.jsonl.
     """
     if not jsonl_path:
         jsonl_path = os.path.join(DEFAULT_OUTPUT_DIR, "pages.jsonl")
@@ -255,7 +259,7 @@ def list_pages(
 
     Args:
         jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
-            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+            <MARKCRAWL_OUTPUT_DIR>/pages.jsonl.
     """
     if not jsonl_path:
         jsonl_path = os.path.join(DEFAULT_OUTPUT_DIR, "pages.jsonl")
@@ -312,7 +316,7 @@ def extract_data(
 
     Args:
         jsonl_path: Full path to the pages.jsonl file. If empty, defaults to
-            <WEBCRAWLER_OUTPUT_DIR>/pages.jsonl.
+            <MARKCRAWL_OUTPUT_DIR>/pages.jsonl.
         fields: Comma-separated field names to extract. Example:
             "company_name,pricing,features,api_endpoints". Leave empty to
             let the LLM auto-discover the most relevant fields.

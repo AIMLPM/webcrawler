@@ -23,6 +23,7 @@ import logging
 import os
 import re
 import signal
+import threading
 import time
 import urllib.parse as up
 import xml.etree.ElementTree as ET
@@ -478,8 +479,10 @@ class CrawlEngine:
         self.progress = default_progress(show_progress)
 
         # Playwright (optional)
+        # sync_playwright is not thread-safe — all calls go through a lock
         self.pw_instance = None
         self.pw_browser = None
+        self._pw_lock = threading.Lock()
         if render_js:
             self.pw_instance, self.pw_browser = _get_playwright_browser(proxy=proxy)
             self.progress("[info] Playwright browser launched for JS rendering")
@@ -525,22 +528,55 @@ class CrawlEngine:
     def setup_robots(self, base_url: str) -> None:
         self._rp, self._robots_text = parse_robots_txt(self.session, up.urljoin(base_url, "/robots.txt"))
 
-        # Respect Crawl-delay from robots.txt if present
-        crawl_delay = self._parse_crawl_delay(self._robots_text)
+        # Respect Crawl-delay from robots.txt if present (respects our UA block)
+        crawl_delay = self._parse_crawl_delay(self._robots_text, self.effective_ua)
         if crawl_delay is not None and crawl_delay > self._base_delay:
             self._base_delay = crawl_delay
             self._active_delay = crawl_delay
             self.progress(f"[info] robots.txt Crawl-delay: {crawl_delay}s")
 
     @staticmethod
-    def _parse_crawl_delay(robots_text: str) -> Optional[float]:
-        """Extract Crawl-delay value from robots.txt content."""
-        for line in robots_text.splitlines():
-            if line.lower().startswith("crawl-delay:"):
+    def _parse_crawl_delay(robots_text: str, user_agent: str = "*") -> Optional[float]:
+        """Extract Crawl-delay for a given user-agent from robots.txt.
+
+        Respects user-agent blocks: checks for an exact match on ``user_agent``
+        first, then falls back to the wildcard (*) block. Ignores Crawl-delay
+        directives that belong to other agents.
+
+        Directives that appear before any User-agent line are treated as
+        belonging to the wildcard agent.
+        """
+        ua = user_agent.lower()
+        current_agents: List[str] = []
+        delay_by_agent: Dict[str, float] = {}
+
+        for raw_line in robots_text.splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            lower = line.lower()
+            if lower.startswith("user-agent:"):
+                agent = line.split(":", 1)[1].strip().lower()
+                current_agents.append(agent)
+            elif lower.startswith("crawl-delay:"):
                 try:
-                    return float(line.split(":", 1)[1].strip())
+                    val = float(line.split(":", 1)[1].strip())
                 except (ValueError, IndexError):
-                    pass
+                    continue
+                # A bare Crawl-delay with no preceding User-agent is treated as wildcard
+                agents_to_assign = current_agents if current_agents else ["*"]
+                for agent in agents_to_assign:
+                    if agent not in delay_by_agent:
+                        delay_by_agent[agent] = val
+                current_agents = []
+            else:
+                # Any other directive closes the current agent group
+                current_agents = []
+
+        # Prefer exact UA match, fall back to wildcard
+        for candidate in [ua, "*"]:
+            if candidate in delay_by_agent:
+                return delay_by_agent[candidate]
         return None
 
     def _update_throttle(self, response) -> None:
@@ -558,7 +594,8 @@ class CrawlEngine:
         status = getattr(response, "status_code", getattr(response, "status", 0))
         if status == 429:
             self._backoff_count += 1
-            self._active_delay = max(self._base_delay, self._active_delay * 2)
+            # Use a hard floor of 1.0s so backoff works even when base delay is 0
+            self._active_delay = max(1.0, self._active_delay * 2)
             self.progress(f"[throttle] 429 received — delay increased to {self._active_delay:.1f}s")
             return
 
@@ -600,7 +637,9 @@ class CrawlEngine:
     def fetch_page(self, url: str):
         """Fetch a single page. Safe to call from a thread pool worker."""
         if self.pw_browser:
-            return fetch_with_playwright(self.pw_browser, url, self.timeout, self.effective_ua)
+            # sync_playwright is not thread-safe — serialize all browser calls
+            with self._pw_lock:
+                return fetch_with_playwright(self.pw_browser, url, self.timeout, self.effective_ua)
         return fetch(self.session, url, self.timeout)
 
     # -- Processing (main thread only) --------------------------------------

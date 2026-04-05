@@ -415,6 +415,25 @@ class TestAdaptiveThrottle:
         result = CrawlEngine._parse_crawl_delay("Crawl-delay: notanumber")
         assert result is None
 
+    def test_parse_crawl_delay_respects_ua_block(self):
+        from markcrawl.core import CrawlEngine
+        robots = (
+            "User-agent: Googlebot\nCrawl-delay: 5\n\n"
+            "User-agent: *\nCrawl-delay: 1\n"
+        )
+        # Wildcard UA gets its own block's delay
+        assert CrawlEngine._parse_crawl_delay(robots, "*") == 1.0
+        # A specific UA gets its block's delay
+        assert CrawlEngine._parse_crawl_delay(robots, "Googlebot") == 5.0
+        # Unknown UA falls back to wildcard
+        assert CrawlEngine._parse_crawl_delay(robots, "MyBot/1.0") == 1.0
+
+    def test_parse_crawl_delay_ignores_other_ua(self):
+        from markcrawl.core import CrawlEngine
+        robots = "User-agent: Googlebot\nCrawl-delay: 10\n"
+        # Our UA is not Googlebot — should not get Googlebot's delay
+        assert CrawlEngine._parse_crawl_delay(robots, "markcrawl") is None
+
     def test_update_throttle_429_increases_delay(self):
         engine = self._make_engine(delay=0)
         resp = MagicMock()
