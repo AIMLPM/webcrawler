@@ -30,3 +30,4 @@ output/
 *.log
 .crawl_state.json
 benchmarks/runs/
+storage/

@@ -23,18 +23,19 @@ Four automated quality metrics — no LLM or human review needed:
 
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 228 | 0 | 0% | 2 | 2.6 | 0.0 | 87% | 84% |
-| crawl4ai | 237 | 0 | 0% | 2 | 2.6 | 0.0 | 87% | 84% |
-| scrapy+md | 237 | 0 | 0% | 2 | 2.6 | 0.0 | 87% | 84% |
-| crawlee | 261 | 3 | 0% | 3 | 2.6 | 0.0 | 87% | 87% |
-| colly+md | 261 | 3 | 0% | 3 | 2.6 | 0.0 | 87% | 87% |
-| playwright | 261 | 3 | 0% | 3 | 2.6 | 0.0 | 87% | 87% |
+| markcrawl | 228 | 0 | 1% | 2 | 2.6 | 0.0 | 87% | 84% |
+| crawl4ai | 237 | 0 | 3% | 2 | 2.6 | 0.0 | 87% | 84% |
+| crawl4ai-raw | — | — | — | — | — | — | — | — |
+| scrapy+md | 237 | 0 | 3% | 2 | 2.6 | 0.0 | 87% | 84% |
+| crawlee | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 87% | 87% |
+| colly+md | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 87% | 87% |
+| playwright | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 87% | 87% |
 | firecrawl | — | — | — | — | — | — | — | — |
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/author/Andre-Gide</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/be-yourself/page/1</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -45,26 +46,53 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-### André Gide
+### Viewing tag: [be-yourself](/tag/be-yourself/page/1/)
 
-**Born:** November 22, 1869 in Paris, France
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-**Description:**
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR.
+## Top Ten tags
+
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### André Gide
-**Born:** November 22, 1869 in Paris, France
-**Description:**
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR. 
+### Viewing tag: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/)
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
+Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+## Top Ten tags
+[love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 Made with ❤ by [Zyte](https://www.zyte.com)
 ```
+
+**crawl4ai-raw** — no output for this URL
 
 **scrapy+md**
 ```
@@ -72,13 +100,37 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-### André Gide
+### Viewing tag: [be-yourself](/tag/be-yourself/page/1/)
 
-**Born:** November 22, 1869 in Paris, France
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-**Description:**
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR.
+## Top Ten tags
+
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 
@@ -95,17 +147,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### André Gide
+### Viewing tag: [be-yourself](/tag/be-yourself/page/1/)
 
-**Born:** November 22, 1869 in Paris, France
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-**Description:**
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR.
+## Top Ten tags
 
-Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
+[love](/tag/love/)
 
-Made with ❤ by [Zyte](https://www.zyte.com)
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **colly+md**
@@ -118,17 +190,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### André Gide
+### Viewing tag: [be-yourself](/tag/be-yourself/page/1/)
 
-**Born:** November 22, 1869 in Paris, France
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-**Description:**
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR.
+## Top Ten tags
 
-Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
+[love](/tag/love/)
 
-Made with ❤ by [Zyte](https://www.zyte.com)
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **playwright**
@@ -141,17 +233,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### André Gide
+### Viewing tag: [be-yourself](/tag/be-yourself/page/1/)
 
-**Born:** November 22, 1869 in Paris, France
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-**Description:**
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-André Paul Guillaume Gide was a French author and winner of the Nobel Prize in literature in 1947. Gide's career ranged from its beginnings in the symbolist movement, to the advent of anticolonialism between the two World Wars.Known for his fiction as well as his autobiographical works, Gide exposes to public view the conflict and eventual reconciliation between the two sides of his personality, split apart by a straight-laced education and a narrow social moralism. Gide's work can be seen as an investigation of freedom and empowerment in the face of moralistic and puritan constraints, and gravitates around his continuous effort to achieve intellectual honesty. His self-exploratory texts reflect his search of how to be fully oneself, even to the point of owning one's sexual nature, without at the same time betraying one's values. His political activity is informed by the same ethos, as suggested by his repudiation of communism after his 1936 voyage to the USSR.
+## Top Ten tags
 
-Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
+[love](/tag/love/)
 
-Made with ❤ by [Zyte](https://www.zyte.com)
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **firecrawl** — no output for this URL
@@ -161,23 +273,23 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 <details>
 <summary>Per-page word counts and preamble</summary>
 
-| URL | markcrawl words / preamble | crawl4ai words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
-|---|---|---|---|---|---|---|---|
-| quotes.toscrape.com | 271 / 0 | 282 / 0 | 282 / 0 | 285 / 3 | 285 / 3 | 285 / 3 | — |
-| quotes.toscrape.com/author/Andre-Gide | 173 / 0 | 181 / 0 | 181 / 0 | 184 / 3 | 184 / 3 | 184 / 3 | — |
-| quotes.toscrape.com/author/Jane-Austen | 333 / 0 | 341 / 0 | 341 / 0 | 344 / 3 | 344 / 3 | 344 / 3 | — |
-| quotes.toscrape.com/author/Steve-Martin | 139 / 0 | 147 / 0 | 147 / 0 | 150 / 3 | 150 / 3 | 150 / 3 | — |
-| quotes.toscrape.com/author/Thomas-A-Edison | 201 / 0 | 209 / 0 | 209 / 0 | 212 / 3 | 212 / 3 | 212 / 3 | — |
-| quotes.toscrape.com/page/2 | 600 / 0 | 614 / 0 | 614 / 0 | 725 / 3 | 725 / 3 | 725 / 3 | — |
-| quotes.toscrape.com/tag/be-yourself/page/1 | 46 / 0 | 54 / 0 | 54 / 0 | 57 / 3 | 57 / 3 | 57 / 3 | — |
-| quotes.toscrape.com/tag/friendship | 158 / 0 | 166 / 0 | 166 / 0 | 169 / 3 | 169 / 3 | 169 / 3 | — |
-| quotes.toscrape.com/tag/inspirational/page/1 | 484 / 0 | 495 / 0 | 495 / 0 | 606 / 3 | 606 / 3 | 606 / 3 | — |
-| quotes.toscrape.com/tag/life/page/1 | 498 / 0 | 509 / 0 | 509 / 0 | 620 / 3 | 620 / 3 | 620 / 3 | — |
-| quotes.toscrape.com/tag/live/page/1 | 59 / 0 | 67 / 0 | 67 / 0 | 70 / 3 | 70 / 3 | 70 / 3 | — |
-| quotes.toscrape.com/tag/paraphrased/page/1 | 69 / 0 | 77 / 0 | 77 / 0 | 80 / 3 | 80 / 3 | 80 / 3 | — |
-| quotes.toscrape.com/tag/reading | 247 / 0 | 255 / 0 | 255 / 0 | 258 / 3 | 258 / 3 | 258 / 3 | — |
-| quotes.toscrape.com/tag/thinking/page/1 | 85 / 0 | 93 / 0 | 93 / 0 | 96 / 3 | 96 / 3 | 96 / 3 | — |
-| quotes.toscrape.com/tag/world/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | — |
+| URL | markcrawl words / preamble | crawl4ai words / preamble | crawl4ai-raw words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
+|---|---|---|---|---|---|---|---|---|
+| quotes.toscrape.com | 271 / 0 | 282 / 0 | — | 282 / 0 | 285 / 3 | 285 / 3 | 285 / 3 | — |
+| quotes.toscrape.com/author/Andre-Gide | 173 / 0 | 181 / 0 | — | 181 / 0 | 184 / 3 | 184 / 3 | 184 / 3 | — |
+| quotes.toscrape.com/author/Jane-Austen | 333 / 0 | 341 / 0 | — | 341 / 0 | 344 / 3 | 344 / 3 | 344 / 3 | — |
+| quotes.toscrape.com/author/Steve-Martin | 139 / 0 | 147 / 0 | — | 147 / 0 | 150 / 3 | 150 / 3 | 150 / 3 | — |
+| quotes.toscrape.com/author/Thomas-A-Edison | 201 / 0 | 209 / 0 | — | 209 / 0 | 212 / 3 | 212 / 3 | 212 / 3 | — |
+| quotes.toscrape.com/page/2 | 600 / 0 | 614 / 0 | — | 614 / 0 | 725 / 3 | 725 / 3 | 725 / 3 | — |
+| quotes.toscrape.com/tag/be-yourself/page/1 | 46 / 0 | 54 / 0 | — | 54 / 0 | 57 / 3 | 57 / 3 | 57 / 3 | — |
+| quotes.toscrape.com/tag/friendship | 158 / 0 | 166 / 0 | — | 166 / 0 | 169 / 3 | 169 / 3 | 169 / 3 | — |
+| quotes.toscrape.com/tag/inspirational/page/1 | 484 / 0 | 495 / 0 | — | 495 / 0 | 606 / 3 | 606 / 3 | 606 / 3 | — |
+| quotes.toscrape.com/tag/life/page/1 | 498 / 0 | 509 / 0 | — | 509 / 0 | 620 / 3 | 620 / 3 | 620 / 3 | — |
+| quotes.toscrape.com/tag/live/page/1 | 59 / 0 | 67 / 0 | — | 67 / 0 | 70 / 3 | 70 / 3 | 70 / 3 | — |
+| quotes.toscrape.com/tag/paraphrased/page/1 | 69 / 0 | 77 / 0 | — | 77 / 0 | 80 / 3 | 80 / 3 | 80 / 3 | — |
+| quotes.toscrape.com/tag/reading | 247 / 0 | 255 / 0 | — | 255 / 0 | 258 / 3 | 258 / 3 | 258 / 3 | — |
+| quotes.toscrape.com/tag/thinking/page/1 | 85 / 0 | 93 / 0 | — | 93 / 0 | 96 / 3 | 96 / 3 | 96 / 3 | — |
+| quotes.toscrape.com/tag/world/page/1 | 53 / 0 | 61 / 0 | — | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | — |
 
 </details>
 
@@ -186,17 +298,18 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
 | markcrawl | 291 | 8 | 0% | 0 | 1.9 | 0.0 | 95% | 85% |
-| crawl4ai | 491 | 170 ⚠ | 0% | 0 | 10.5 | 0.0 | 81% | 91% |
-| scrapy+md | 389 | 98 ⚠ | 0% | 0 | 1.9 | 0.0 | 100% | 90% |
-| crawlee | 418 | 107 ⚠ | 0% | 11 | 1.9 | 0.0 | 100% | 100% |
-| colly+md | 418 | 107 ⚠ | 0% | 11 | 1.9 | 0.0 | 100% | 100% |
-| playwright | 418 | 107 ⚠ | 0% | 11 | 1.9 | 0.0 | 100% | 100% |
+| crawl4ai | 491 | 170 ⚠ | 2% | 0 | 10.5 | 0.0 | 81% | 91% |
+| crawl4ai-raw | — | — | — | — | — | — | — | — |
+| scrapy+md | 389 | 98 ⚠ | 1% | 0 | 1.9 | 0.0 | 100% | 90% |
+| crawlee | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
+| colly+md | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
+| playwright | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
 | firecrawl | — | — | — | — | — | — | — | — |
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/short-stories_45/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/self-help_41/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -205,21 +318,43 @@ Nav boilerplate appears here before the real content starts.
 ```
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Short Stories
+* Self Help
 
-# Short Stories
+# Self Help
 
-**1** result.
+**5** results.
 
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 
-1. ### [The Grownup](../../../the-grownup_546/index.html "The Grownup")
+1. ### [Online Marketing for Busy ...](../../../online-marketing-for-busy-authors-a-step-by-step-guide_913/index.html "Online Marketing for Busy Authors: A Step-By-Step Guide")
 
-   Â£35.88
+   Â£46.35
 
    In stock
 
    Add to basket
+2. ### [How to Be Miserable: ...](../../../how-to-be-miserable-40-strategies-you-already-use_897/index.html "How to Be Miserable: 40 Strategies You Already Use")
+
+   Â£46.03
+
+   In stock
+
+   Add to basket
+3. ### [Overload: How to Unplug, ...](../../../overload-how-to-unplug-unwind-and-unleash-yourself-from-the-pressure-of-stress_725/index.html "Overload: How to Unplug, Unwind, and Unleash Yourself from the Pressure of Stress")
+
+   Â£52.15
+
+   In stock
+
+   Add to basket
+4. ### [You Are a Badass: ...](../../../you-are-a-badass-how-to-stop-doubting-your-greatness-and-start-living-an-awesome-life_508/index.html "You Are a Badass: How to Stop Doubting Your Greatness and Start Living an Awesome Life")
+
+   Â£12.08
+
+   In stock
+
+   Add to basket
+5. ### [How to Stop Worrying ...](../../../how-to-stop-worrying-and-start-living_431/index.html "How to Stop Worrying and Start Living")
 ```
 
 **crawl4ai**
@@ -227,7 +362,7 @@ Nav boilerplate appears here before the real content starts.
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * Short Stories
+  * Self Help
 
 
   * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
@@ -266,13 +401,15 @@ Nav boilerplate appears here before the real content starts.
     * [ Christian Fiction ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
+**crawl4ai-raw** — no output for this URL
+
 **scrapy+md**
 ```
 [Books to Scrape](../../../../index.html) We love being scraped!
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Short Stories
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -312,7 +449,7 @@ Nav boilerplate appears here before the real content starts.
 
 **crawlee**
 ```
-Short Stories |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -322,7 +459,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Short Stories
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -359,7 +496,7 @@ Books to Scrape - Sandbox
   
 
 
-Short Stories |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -369,7 +506,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Short Stories
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -400,7 +537,7 @@ Books to Scrape - Sandbox
 
 **playwright**
 ```
-Short Stories |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -410,7 +547,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Short Stories
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -449,68 +586,68 @@ Books to Scrape - Sandbox
 <details>
 <summary>Per-page word counts and preamble</summary>
 
-| URL | markcrawl words / preamble | crawl4ai words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
-|---|---|---|---|---|---|---|---|
-| books.toscrape.com | 397 / 5 | 702 / 232 | 531 / 130 | 539 / 138 | 539 / 138 | 539 / 138 | — |
-| books.toscrape.com/catalogue/a-light-in-the-attic_1000/ | 269 / 12 | 276 / 24 | 284 / 19 | 295 / 30 | 295 / 30 | 295 / 30 | — |
-| books.toscrape.com/catalogue/category/books/academic_40 | 51 / 6 | 282 / 233 | 185 / 131 | 192 / 138 | 192 / 138 | 192 / 138 | — |
-| books.toscrape.com/catalogue/category/books/add-a-comme | 424 / 8 | 745 / 235 | 558 / 133 | 567 / 142 | 567 / 142 | 567 / 142 | — |
-| books.toscrape.com/catalogue/category/books/adult-ficti | 53 / 7 | 284 / 234 | 187 / 132 | 195 / 140 | 195 / 140 | 195 / 140 | — |
-| books.toscrape.com/catalogue/category/books/art_25/inde | 169 / 6 | 422 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
-| books.toscrape.com/catalogue/category/books/autobiograp | 169 / 6 | 412 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
-| books.toscrape.com/catalogue/category/books/biography_3 | 145 / 6 | 410 / 233 | 279 / 131 | 286 / 138 | 286 / 138 | 286 / 138 | — |
-| books.toscrape.com/catalogue/category/books/business_35 | 296 / 6 | 612 / 233 | 430 / 131 | 437 / 138 | 437 / 138 | 437 / 138 | — |
-| books.toscrape.com/catalogue/category/books/christian-f | 140 / 7 | 388 / 234 | 274 / 132 | 390 / 140 | 390 / 140 | 390 / 140 | — |
-| books.toscrape.com/catalogue/category/books/christian_4 | 96 / 6 | 342 / 233 | 230 / 131 | 345 / 138 | 345 / 138 | 345 / 138 | — |
-| books.toscrape.com/catalogue/category/books/contemporar | 84 / 6 | 320 / 233 | 218 / 131 | 333 / 138 | 333 / 138 | 333 / 138 | — |
-| books.toscrape.com/catalogue/category/books/crime_51/in | 58 / 6 | 296 / 233 | 192 / 131 | 307 / 138 | 307 / 138 | 307 / 138 | — |
-| books.toscrape.com/catalogue/category/books/cultural_49 | 46 / 6 | 274 / 233 | 180 / 131 | 187 / 138 | 187 / 138 | 187 / 138 | — |
-| books.toscrape.com/catalogue/category/books/erotica_50/ | 44 / 6 | 271 / 233 | 178 / 131 | 185 / 138 | 185 / 138 | 185 / 138 | — |
-| books.toscrape.com/catalogue/category/books/fiction_10/ | 365 / 6 | — | 499 / 131 | 614 / 138 | 614 / 138 | 614 / 138 | — |
-| books.toscrape.com/catalogue/category/books/food-and-dr | 548 / 8 | 978 / 235 | 682 / 133 | 691 / 142 | 691 / 142 | 691 / 142 | — |
-| books.toscrape.com/catalogue/category/books/historical- | 391 / 7 | 681 / 234 | 525 / 132 | 533 / 140 | 533 / 140 | 533 / 140 | — |
-| books.toscrape.com/catalogue/category/books/historical_ | 75 / 6 | 315 / 233 | 209 / 131 | 216 / 138 | 216 / 138 | 216 / 138 | — |
-| books.toscrape.com/catalogue/category/books/history_32/ | 447 / 6 | 822 / 233 | 581 / 131 | 696 / 138 | 696 / 138 | 696 / 138 | — |
-| books.toscrape.com/catalogue/category/books/horror_31/i | 275 / 6 | 524 / 233 | 409 / 131 | 416 / 138 | 416 / 138 | 416 / 138 | — |
-| books.toscrape.com/catalogue/category/books/humor_30/in | 239 / 6 | 529 / 233 | 373 / 131 | 488 / 138 | 488 / 138 | 488 / 138 | — |
-| books.toscrape.com/catalogue/category/books/music_14/in | 304 / 6 | 616 / 233 | 438 / 131 | 445 / 138 | 445 / 138 | 445 / 138 | — |
-| books.toscrape.com/catalogue/category/books/mystery_3/i | 407 / 6 | 710 / 233 | 541 / 131 | 548 / 138 | 548 / 138 | 548 / 138 | — |
-| books.toscrape.com/catalogue/category/books/paranormal_ | 52 / 6 | 284 / 233 | 186 / 131 | 193 / 138 | 193 / 138 | 193 / 138 | — |
-| books.toscrape.com/catalogue/category/books/parenting_2 | 53 / 6 | 286 / 233 | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | — |
-| books.toscrape.com/catalogue/category/books/poetry_23/i | 355 / 6 | 642 / 233 | 489 / 131 | 496 / 138 | 496 / 138 | 496 / 138 | — |
-| books.toscrape.com/catalogue/category/books/politics_48 | 94 / 6 | 340 / 233 | 228 / 131 | 235 / 138 | 235 / 138 | 235 / 138 | — |
-| books.toscrape.com/catalogue/category/books/psychology_ | 184 / 6 | 460 / 233 | 318 / 131 | 325 / 138 | 325 / 138 | 325 / 138 | — |
-| books.toscrape.com/catalogue/category/books/religion_12 | 180 / 6 | 453 / 233 | 314 / 131 | 321 / 138 | 321 / 138 | 321 / 138 | — |
-| books.toscrape.com/catalogue/category/books/romance_8/i | 412 / 6 | 716 / 233 | 546 / 131 | 553 / 138 | 553 / 138 | 553 / 138 | — |
-| books.toscrape.com/catalogue/category/books/science-fic | 322 / 7 | 615 / 234 | 456 / 132 | 464 / 140 | 464 / 140 | 464 / 140 | — |
-| books.toscrape.com/catalogue/category/books/science_22/ | 350 / 6 | 690 / 233 | 484 / 131 | 491 / 138 | 491 / 138 | 491 / 138 | — |
-| books.toscrape.com/catalogue/category/books/self-help_4 | 152 / 7 | 422 / 234 | 286 / 132 | 294 / 140 | 294 / 140 | 294 / 140 | — |
-| books.toscrape.com/catalogue/category/books/sequential- | 441 / 7 | 774 / 234 | 575 / 132 | 583 / 140 | 583 / 140 | 583 / 140 | — |
-| books.toscrape.com/catalogue/category/books/short-stori | 46 / 7 | 273 / 234 | 180 / 132 | 188 / 140 | 188 / 140 | 188 / 140 | — |
-| books.toscrape.com/catalogue/category/books/spiritualit | 171 / 6 | 447 / 233 | 305 / 131 | 312 / 138 | 312 / 138 | 312 / 138 | — |
-| books.toscrape.com/catalogue/category/books/sports-and- | 137 / 8 | 391 / 235 | 271 / 133 | 280 / 142 | 280 / 142 | 280 / 142 | — |
-| books.toscrape.com/catalogue/category/books/thriller_37 | 211 / 6 | 465 / 233 | 345 / 131 | 352 / 138 | 352 / 138 | 352 / 138 | — |
-| books.toscrape.com/catalogue/category/books/travel_2/in | 258 / 6 | 550 / 233 | 392 / 131 | 399 / 138 | 399 / 138 | 399 / 138 | — |
-| books.toscrape.com/catalogue/category/books/womens-fict | 330 / 7 | 614 / 234 | 464 / 132 | 472 / 140 | 472 / 140 | 472 / 140 | — |
-| books.toscrape.com/catalogue/category/books_1/index.htm | 395 / 4 | 700 / 231 | 529 / 129 | 644 / 136 | 644 / 136 | 644 / 136 | — |
-| books.toscrape.com/catalogue/its-only-the-himalayas_981 | 448 / 11 | 480 / 22 | 463 / 18 | 473 / 28 | 473 / 28 | 473 / 28 | — |
-| books.toscrape.com/catalogue/libertarianism-for-beginne | 411 / 10 | 442 / 20 | 426 / 17 | 435 / 26 | 435 / 26 | 435 / 26 | — |
-| books.toscrape.com/catalogue/mesaerion-the-best-science | 500 / 15 | 530 / 29 | 515 / 22 | 528 / 35 | 528 / 35 | 528 / 35 | — |
-| books.toscrape.com/catalogue/olio_984/index.html | 462 / 8 | 491 / 16 | 477 / 15 | 484 / 22 | 484 / 22 | 484 / 22 | — |
-| books.toscrape.com/catalogue/our-band-could-be-your-lif | 388 / 20 | 419 / 40 | 403 / 27 | 422 / 46 | 422 / 46 | 422 / 46 | — |
-| books.toscrape.com/catalogue/page-2.html | 413 / 5 | 726 / 232 | 547 / 130 | 555 / 138 | 555 / 138 | 555 / 138 | — |
-| books.toscrape.com/catalogue/rip-it-up-and-start-again_ | 371 / 13 | 407 / 26 | 386 / 20 | 398 / 32 | 398 / 32 | 398 / 32 | — |
-| books.toscrape.com/catalogue/sapiens-a-brief-history-of | 470 / 13 | 481 / 26 | 485 / 20 | 605 / 32 | 605 / 32 | 605 / 32 | — |
-| books.toscrape.com/catalogue/scott-pilgrims-precious-li | 383 / 16 | 428 / 31 | 398 / 23 | 412 / 37 | 412 / 37 | 412 / 37 | — |
-| books.toscrape.com/catalogue/set-me-free_988/index.html | 365 / 11 | 411 / 21 | 380 / 18 | 389 / 27 | 389 / 27 | 389 / 27 | — |
-| books.toscrape.com/catalogue/shakespeares-sonnets_989/i | 375 / 9 | 421 / 18 | 390 / 16 | 398 / 24 | 398 / 24 | 398 / 24 | — |
-| books.toscrape.com/catalogue/soumission_998/index.html | 297 / 8 | 304 / 16 | 312 / 15 | 319 / 22 | 319 / 22 | 319 / 22 | — |
-| books.toscrape.com/catalogue/starving-hearts-triangular | 436 / 13 | 486 / 26 | 451 / 20 | 463 / 32 | 463 / 32 | 463 / 32 | — |
-| books.toscrape.com/catalogue/the-boys-in-the-boat-nine- | 576 / 25 | 620 / 50 | 591 / 32 | 615 / 56 | 615 / 56 | 615 / 56 | — |
-| books.toscrape.com/catalogue/the-coming-woman-a-novel-b | 789 / 22 | 818 / 44 | 804 / 29 | 825 / 50 | 825 / 50 | 825 / 50 | — |
-| books.toscrape.com/catalogue/the-dirty-little-secrets-o | 489 / 16 | 508 / 32 | 504 / 23 | 627 / 38 | 627 / 38 | 627 / 38 | — |
-| books.toscrape.com/catalogue/the-requiem-red_995/index. | 350 / 11 | 362 / 21 | 365 / 18 | 374 / 27 | 374 / 27 | 374 / 27 | — |
-| books.toscrape.com/catalogue/tipping-the-velvet_999/ind | 290 / 11 | 298 / 21 | 305 / 18 | 422 / 27 | 422 / 27 | 422 / 27 | — |
+| URL | markcrawl words / preamble | crawl4ai words / preamble | crawl4ai-raw words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
+|---|---|---|---|---|---|---|---|---|
+| books.toscrape.com | 397 / 5 | 702 / 232 | — | 531 / 130 | 539 / 138 | 539 / 138 | 539 / 138 | — |
+| books.toscrape.com/catalogue/a-light-in-the-attic_1000/ | 269 / 12 | 276 / 24 | — | 284 / 19 | 295 / 30 | 295 / 30 | 295 / 30 | — |
+| books.toscrape.com/catalogue/category/books/academic_40 | 51 / 6 | 282 / 233 | — | 185 / 131 | 192 / 138 | 192 / 138 | 192 / 138 | — |
+| books.toscrape.com/catalogue/category/books/add-a-comme | 424 / 8 | 745 / 235 | — | 558 / 133 | 567 / 142 | 567 / 142 | 567 / 142 | — |
+| books.toscrape.com/catalogue/category/books/adult-ficti | 53 / 7 | 284 / 234 | — | 187 / 132 | 195 / 140 | 195 / 140 | 195 / 140 | — |
+| books.toscrape.com/catalogue/category/books/art_25/inde | 169 / 6 | 422 / 233 | — | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
+| books.toscrape.com/catalogue/category/books/autobiograp | 169 / 6 | 412 / 233 | — | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
+| books.toscrape.com/catalogue/category/books/biography_3 | 145 / 6 | 410 / 233 | — | 279 / 131 | 286 / 138 | 286 / 138 | 286 / 138 | — |
+| books.toscrape.com/catalogue/category/books/business_35 | 296 / 6 | 612 / 233 | — | 430 / 131 | 437 / 138 | 437 / 138 | 437 / 138 | — |
+| books.toscrape.com/catalogue/category/books/christian-f | 140 / 7 | 388 / 234 | — | 274 / 132 | 390 / 140 | 390 / 140 | 390 / 140 | — |
+| books.toscrape.com/catalogue/category/books/christian_4 | 96 / 6 | 342 / 233 | — | 230 / 131 | 345 / 138 | 345 / 138 | 345 / 138 | — |
+| books.toscrape.com/catalogue/category/books/contemporar | 84 / 6 | 320 / 233 | — | 218 / 131 | 333 / 138 | 333 / 138 | 333 / 138 | — |
+| books.toscrape.com/catalogue/category/books/crime_51/in | 58 / 6 | 296 / 233 | — | 192 / 131 | 307 / 138 | 307 / 138 | 307 / 138 | — |
+| books.toscrape.com/catalogue/category/books/cultural_49 | 46 / 6 | 274 / 233 | — | 180 / 131 | 187 / 138 | 187 / 138 | 187 / 138 | — |
+| books.toscrape.com/catalogue/category/books/erotica_50/ | 44 / 6 | 271 / 233 | — | 178 / 131 | 185 / 138 | 185 / 138 | 185 / 138 | — |
+| books.toscrape.com/catalogue/category/books/fiction_10/ | 365 / 6 | — | — | 499 / 131 | 614 / 138 | 614 / 138 | 614 / 138 | — |
+| books.toscrape.com/catalogue/category/books/food-and-dr | 548 / 8 | 978 / 235 | — | 682 / 133 | 691 / 142 | 691 / 142 | 691 / 142 | — |
+| books.toscrape.com/catalogue/category/books/historical- | 391 / 7 | 681 / 234 | — | 525 / 132 | 533 / 140 | 533 / 140 | 533 / 140 | — |
+| books.toscrape.com/catalogue/category/books/historical_ | 75 / 6 | 315 / 233 | — | 209 / 131 | 216 / 138 | 216 / 138 | 216 / 138 | — |
+| books.toscrape.com/catalogue/category/books/history_32/ | 447 / 6 | 822 / 233 | — | 581 / 131 | 696 / 138 | 696 / 138 | 696 / 138 | — |
+| books.toscrape.com/catalogue/category/books/horror_31/i | 275 / 6 | 524 / 233 | — | 409 / 131 | 416 / 138 | 416 / 138 | 416 / 138 | — |
+| books.toscrape.com/catalogue/category/books/humor_30/in | 239 / 6 | 529 / 233 | — | 373 / 131 | 488 / 138 | 488 / 138 | 488 / 138 | — |
+| books.toscrape.com/catalogue/category/books/music_14/in | 304 / 6 | 616 / 233 | — | 438 / 131 | 445 / 138 | 445 / 138 | 445 / 138 | — |
+| books.toscrape.com/catalogue/category/books/mystery_3/i | 407 / 6 | 710 / 233 | — | 541 / 131 | 548 / 138 | 548 / 138 | 548 / 138 | — |
+| books.toscrape.com/catalogue/category/books/paranormal_ | 52 / 6 | 284 / 233 | — | 186 / 131 | 193 / 138 | 193 / 138 | 193 / 138 | — |
+| books.toscrape.com/catalogue/category/books/parenting_2 | 53 / 6 | 286 / 233 | — | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | — |
+| books.toscrape.com/catalogue/category/books/poetry_23/i | 355 / 6 | 642 / 233 | — | 489 / 131 | 496 / 138 | 496 / 138 | 496 / 138 | — |
+| books.toscrape.com/catalogue/category/books/politics_48 | 94 / 6 | 340 / 233 | — | 228 / 131 | 235 / 138 | 235 / 138 | 235 / 138 | — |
+| books.toscrape.com/catalogue/category/books/psychology_ | 184 / 6 | 460 / 233 | — | 318 / 131 | 325 / 138 | 325 / 138 | 325 / 138 | — |
+| books.toscrape.com/catalogue/category/books/religion_12 | 180 / 6 | 453 / 233 | — | 314 / 131 | 321 / 138 | 321 / 138 | 321 / 138 | — |
+| books.toscrape.com/catalogue/category/books/romance_8/i | 412 / 6 | 716 / 233 | — | 546 / 131 | 553 / 138 | 553 / 138 | 553 / 138 | — |
+| books.toscrape.com/catalogue/category/books/science-fic | 322 / 7 | 615 / 234 | — | 456 / 132 | 464 / 140 | 464 / 140 | 464 / 140 | — |
+| books.toscrape.com/catalogue/category/books/science_22/ | 350 / 6 | 690 / 233 | — | 484 / 131 | 491 / 138 | 491 / 138 | 491 / 138 | — |
+| books.toscrape.com/catalogue/category/books/self-help_4 | 152 / 7 | 422 / 234 | — | 286 / 132 | 294 / 140 | 294 / 140 | 294 / 140 | — |
+| books.toscrape.com/catalogue/category/books/sequential- | 441 / 7 | 774 / 234 | — | 575 / 132 | 583 / 140 | 583 / 140 | 583 / 140 | — |
+| books.toscrape.com/catalogue/category/books/short-stori | 46 / 7 | 273 / 234 | — | 180 / 132 | 188 / 140 | 188 / 140 | 188 / 140 | — |
+| books.toscrape.com/catalogue/category/books/spiritualit | 171 / 6 | 447 / 233 | — | 305 / 131 | 312 / 138 | 312 / 138 | 312 / 138 | — |
+| books.toscrape.com/catalogue/category/books/sports-and- | 137 / 8 | 391 / 235 | — | 271 / 133 | 280 / 142 | 280 / 142 | 280 / 142 | — |
+| books.toscrape.com/catalogue/category/books/thriller_37 | 211 / 6 | 465 / 233 | — | 345 / 131 | 352 / 138 | 352 / 138 | 352 / 138 | — |
+| books.toscrape.com/catalogue/category/books/travel_2/in | 258 / 6 | 550 / 233 | — | 392 / 131 | 399 / 138 | 399 / 138 | 399 / 138 | — |
+| books.toscrape.com/catalogue/category/books/womens-fict | 330 / 7 | 614 / 234 | — | 464 / 132 | 472 / 140 | 472 / 140 | 472 / 140 | — |
+| books.toscrape.com/catalogue/category/books_1/index.htm | 395 / 4 | 700 / 231 | — | 529 / 129 | 644 / 136 | 644 / 136 | 644 / 136 | — |
+| books.toscrape.com/catalogue/its-only-the-himalayas_981 | 448 / 11 | 480 / 22 | — | 463 / 18 | 473 / 28 | 473 / 28 | 473 / 28 | — |
+| books.toscrape.com/catalogue/libertarianism-for-beginne | 411 / 10 | 442 / 20 | — | 426 / 17 | 435 / 26 | 435 / 26 | 435 / 26 | — |
+| books.toscrape.com/catalogue/mesaerion-the-best-science | 500 / 15 | 530 / 29 | — | 515 / 22 | 528 / 35 | 528 / 35 | 528 / 35 | — |
+| books.toscrape.com/catalogue/olio_984/index.html | 462 / 8 | 491 / 16 | — | 477 / 15 | 484 / 22 | 484 / 22 | 484 / 22 | — |
+| books.toscrape.com/catalogue/our-band-could-be-your-lif | 388 / 20 | 419 / 40 | — | 403 / 27 | 422 / 46 | 422 / 46 | 422 / 46 | — |
+| books.toscrape.com/catalogue/page-2.html | 413 / 5 | 726 / 232 | — | 547 / 130 | 555 / 138 | 555 / 138 | 555 / 138 | — |
+| books.toscrape.com/catalogue/rip-it-up-and-start-again_ | 371 / 13 | 407 / 26 | — | 386 / 20 | 398 / 32 | 398 / 32 | 398 / 32 | — |
+| books.toscrape.com/catalogue/sapiens-a-brief-history-of | 470 / 13 | 481 / 26 | — | 485 / 20 | 605 / 32 | 605 / 32 | 605 / 32 | — |
+| books.toscrape.com/catalogue/scott-pilgrims-precious-li | 383 / 16 | 428 / 31 | — | 398 / 23 | 412 / 37 | 412 / 37 | 412 / 37 | — |
+| books.toscrape.com/catalogue/set-me-free_988/index.html | 365 / 11 | 411 / 21 | — | 380 / 18 | 389 / 27 | 389 / 27 | 389 / 27 | — |
+| books.toscrape.com/catalogue/shakespeares-sonnets_989/i | 375 / 9 | 421 / 18 | — | 390 / 16 | 398 / 24 | 398 / 24 | 398 / 24 | — |
+| books.toscrape.com/catalogue/soumission_998/index.html | 297 / 8 | 304 / 16 | — | 312 / 15 | 319 / 22 | 319 / 22 | 319 / 22 | — |
+| books.toscrape.com/catalogue/starving-hearts-triangular | 436 / 13 | 486 / 26 | — | 451 / 20 | 463 / 32 | 463 / 32 | 463 / 32 | — |
+| books.toscrape.com/catalogue/the-boys-in-the-boat-nine- | 576 / 25 | 620 / 50 | — | 591 / 32 | 615 / 56 | 615 / 56 | 615 / 56 | — |
+| books.toscrape.com/catalogue/the-coming-woman-a-novel-b | 789 / 22 | 818 / 44 | — | 804 / 29 | 825 / 50 | 825 / 50 | 825 / 50 | — |
+| books.toscrape.com/catalogue/the-dirty-little-secrets-o | 489 / 16 | 508 / 32 | — | 504 / 23 | 627 / 38 | 627 / 38 | 627 / 38 | — |
+| books.toscrape.com/catalogue/the-requiem-red_995/index. | 350 / 11 | 362 / 21 | — | 365 / 18 | 374 / 27 | 374 / 27 | 374 / 27 | — |
+| books.toscrape.com/catalogue/tipping-the-velvet_999/ind | 290 / 11 | 298 / 21 | — | 305 / 18 | 422 / 27 | 422 / 27 | 422 / 27 | — |
 
 </details>
 
@@ -518,69 +655,69 @@ Books to Scrape - Sandbox
 
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 3835 | 0 | 0% | 29 | 33.1 | 28.7 | 100% | 80% |
-| crawl4ai | 5424 | 1502 ⚠ | 0% | 29 | 32.8 | 28.7 | 81% | 88% |
-| scrapy+md | 4676 | 824 ⚠ | 0% | 50 | 33.1 | 28.7 | 100% | 80% |
-| crawlee | 4965 | 1064 ⚠ | 0% | 99 | 32.8 | 28.4 | 100% | 95% |
-| colly+md | 5000 | 1046 ⚠ | 0% | 99 | 33.1 | 28.7 | 100% | 96% |
-| playwright | 4975 | 1046 ⚠ | 0% | 99 | 32.8 | 28.7 | 100% | 96% |
+| markcrawl | 3835 | 0 | 0% | 29 | 33.1 | 28.7 | 100% | 71% |
+| crawl4ai | 5424 | 1502 ⚠ | 4% | 29 | 32.8 | 28.7 | 86% | 92% |
+| crawl4ai-raw | — | — | — | — | — | — | — | — |
+| scrapy+md | 4676 | 824 ⚠ | 2% | 50 | 33.1 | 28.7 | 100% | 71% |
+| crawlee | 4965 | 1064 ⚠ | 3% | 99 | 32.8 | 28.4 | 100% | 96% |
+| colly+md | 5000 | 1046 ⚠ | 3% | 99 | 33.1 | 28.7 | 100% | 97% |
+| playwright | 4975 | 1046 ⚠ | 3% | 99 | 32.8 | 28.7 | 100% | 97% |
 | firecrawl | — | — | — | — | — | — | — | — |
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/deployment/docker</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/advanced/testing-events</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# FastAPI in Containers - Docker[¶](#fastapi-in-containers-docker "Permanent link")
+# Testing Events: lifespan and startup - shutdown[¶](#testing-events-lifespan-and-startup-shutdown "Permanent link")
 
-When deploying FastAPI applications a common approach is to build a **Linux container image**. It's normally done using [**Docker**](https://www.docker.com/). You can then deploy that container image in one of a few possible ways.
+When you need `lifespan` to run in your tests, you can use the `TestClient` with a `with` statement:
 
-Using Linux containers has several advantages including **security**, **replicability**, **simplicity**, and others.
-
-Tip
-
-In a hurry and already know this stuff? Jump to the [`Dockerfile` below 👇](#build-a-docker-image-for-fastapi).
-
-Dockerfile Preview 👀
+Python 3.10+
 
 ```False
-FROM python:3.14
+from contextlib import asynccontextmanager
 
-WORKDIR /code
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
-COPY ./requirements.txt /code/requirements.txt
+items = {}
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./app /code/app
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    items["foo"] = {"name": "Fighters"}
+    items["bar"] = {"name": "Tenders"}
+    yield
+    # clean up items
+    items.clear()
 
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
 
-# If running behind a proxy like Nginx or Traefik add --proxy-headers
-# CMD ["fastapi", "run", "app/main.py", "--port", "80", "--proxy-headers"]
-```
+app = FastAPI(lifespan=lifespan)
 
-## What is a Container[¶](#what-is-a-container "Permanent link")
 
-Containers (mainly Linux containers) are a very **lightweight** way to package applications including all their dependencies and necessary files while keeping them isolated from other containers (other applications or components) in the same system.
+@app.get("/items/{item_id}")
+async def read_items(item_id: str):
+    return items[item_id]
 
-Linux containers run using the same Linux kernel of the host (machine, virtual machine, cloud server, etc). This just means that they are very lightweight (compared to full virtual machines emulating an entire operating system).
 
-This way, containers consume **little resources**, an amount comparable to running the processes directly (a virtual machine would consume much more).
+def test_read_items():
+    # Before the lifespan starts, "items" is still empty
+    assert items == {}
 
-Containers also have their own **isolated** running processes (commonly just one process), file system, and network, simplifying deployment, security, development, etc.
-
-## What is a Container Image[¶](#what-is-a-container-image "Permanent link")
+    with TestClient(app) as client:
+        # Inside the "with TestClient" block, the lifespan starts and items added
+        assert items == {"foo": {"name": "Fighters"}, "bar": {"name": "Tenders"}}
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[ Skip to content ](https://fastapi.tiangolo.com/advanced/testing-events/#testing-events-lifespan-and-startup-shutdown)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -598,7 +735,7 @@ Containers also have their own **isolated** running processes (commonly just one
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-FastAPI in Containers - Docker 
+Testing Events: lifespan and startup - shutdown 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -613,13 +750,15 @@ FastAPI in Containers - Docker
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/deployment/docker/?q= "Share")
+[ ](https://fastapi.tiangolo.com/advanced/testing-events/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
   * 96.9k
   * 9k
 ```
+
+**crawl4ai-raw** — no output for this URL
 
 **scrapy+md**
 ```
@@ -667,7 +806,7 @@ FastAPI
 
 **crawlee**
 ```
-FastAPI in Containers - Docker - FastAPI
+Testing Events: lifespan and startup - shutdown - FastAPI
 
 
 
@@ -698,7 +837,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[Skip to content](https://fastapi.tiangolo.com/advanced/testing-events/#testing-events-lifespan-and-startup-shutdown)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -711,7 +850,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-FastAPI in Containers - Docker - FastAPI
+Testing Events: lifespan and startup - shutdown - FastAPI
 
 
 
@@ -727,7 +866,7 @@ FastAPI in Containers - Docker - FastAPI
 
 
 
-[Skip to content](#fastapi-in-containers-docker)
+[Skip to content](#testing-events-lifespan-and-startup-shutdown)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -754,7 +893,7 @@ FastAPI in Containers - Docker - FastAPI
 
 **playwright**
 ```
-FastAPI in Containers - Docker - FastAPI
+Testing Events: lifespan and startup - shutdown - FastAPI
 
 
 
@@ -770,7 +909,7 @@ FastAPI in Containers - Docker - FastAPI
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[Skip to content](https://fastapi.tiangolo.com/advanced/testing-events/#testing-events-lifespan-and-startup-shutdown)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -802,33 +941,33 @@ FastAPI in Containers - Docker - FastAPI
 <details>
 <summary>Per-page word counts and preamble</summary>
 
-| URL | markcrawl words / preamble | crawl4ai words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
-|---|---|---|---|---|---|---|---|
-| fastapi.tiangolo.com | 2230 / 0 | 3979 / 1526 | 3092 / 839 | 3374 / 1071 | 3404 / 1054 | 3357 / 1054 | — |
-| fastapi.tiangolo.com/advanced/advanced-dependencies | 2200 / 0 | 3660 / 1434 | 3012 / 796 | 3330 / 1034 | 3335 / 1015 | 3311 / 1015 | — |
-| fastapi.tiangolo.com/advanced/custom-response | 1987 / 0 | 3457 / 1448 | 2782 / 779 | 3095 / 1025 | 3116 / 1008 | 3078 / 1008 | — |
-| fastapi.tiangolo.com/advanced/stream-data | 2723 / 0 | 4109 / 1354 | 3465 / 726 | 3785 / 962 | 3788 / 945 | 3768 / 945 | — |
-| fastapi.tiangolo.com/advanced/testing-events | 263 / 0 | 1562 / 1253 | 929 / 650 | 1276 / 896 | 1261 / 879 | 1259 / 879 | — |
-| fastapi.tiangolo.com/advanced/testing-websockets | 117 / 0 | 1414 / 1248 | 783 / 650 | 1123 / 886 | 1108 / 869 | 1106 / 869 | — |
-| fastapi.tiangolo.com/async | 3651 / 0 | 5198 / 1484 | 4478 / 811 | 4780 / 1053 | 4805 / 1036 | 4763 / 1036 | — |
-| fastapi.tiangolo.com/deployment/docker | 4157 / 0 | 5537 / 1722 | 5156 / 983 | 5068 / 1225 | 5488 / 1208 | 5405 / 1208 | — |
-| fastapi.tiangolo.com/fastapi-people | 1434 / 0 | 3347 / 1430 | 2230 / 780 | 2536 / 1018 | 2551 / 999 | 2517 / 999 | — |
-| fastapi.tiangolo.com/help-fastapi | 1955 / 0 | 3519 / 1564 | 2842 / 875 | 3139 / 1117 | 3172 / 1100 | 3122 / 1100 | — |
-| fastapi.tiangolo.com/how-to | 97 / 0 | 1400 / 1251 | 764 / 651 | 1110 / 891 | 1095 / 874 | 1093 / 874 | — |
-| fastapi.tiangolo.com/ja | 1164 / 0 | 2734 / 1334 | 1818 / 631 | 2073 / 858 | 2103 / 841 | 2056 / 841 | — |
-| fastapi.tiangolo.com/reference/apirouter | 24889 / 0 | 26603 / 1404 | 25651 / 746 | 25971 / 984 | 25976 / 965 | 25952 / 965 | — |
-| fastapi.tiangolo.com/reference/openapi/models | 3708 / 0 | 7394 / 3186 | 5672 / 1948 | 6009 / 2186 | 5992 / 2167 | 5990 / 2167 | — |
-| fastapi.tiangolo.com/reference/parameters | 12456 / 0 | 13849 / 1286 | 13154 / 682 | 13491 / 920 | 13474 / 901 | 13472 / 901 | — |
-| fastapi.tiangolo.com/reference/request | 680 / 0 | 2122 / 1388 | 1446 / 750 | 1782 / 986 | 1767 / 969 | 1765 / 969 | — |
-| fastapi.tiangolo.com/tutorial/cookie-params | 365 / 0 | 1686 / 1281 | 1058 / 677 | 1388 / 913 | 1379 / 896 | 1371 / 896 | — |
-| fastapi.tiangolo.com/tutorial/dependencies/dependencies | 2580 / 0 | 4064 / 1465 | 3414 / 818 | 3479 / 1058 | 3735 / 1039 | 3707 / 1039 | — |
-| fastapi.tiangolo.com/tutorial/query-params-str-validati | 4071 / 0 | 5682 / 1591 | 4987 / 900 | 5285 / 1144 | 5316 / 1125 | 5266 / 1125 | — |
-| fastapi.tiangolo.com/tutorial/request-forms-and-files | 388 / 0 | 1721 / 1293 | 1091 / 687 | 1424 / 927 | 1415 / 910 | 1407 / 910 | — |
-| fastapi.tiangolo.com/tutorial/response-model | 3150 / 0 | 4716 / 1553 | 4040 / 874 | 4342 / 1118 | 4367 / 1099 | 4327 / 1103 | — |
-| fastapi.tiangolo.com/tutorial/security/oauth2-jwt | 4418 / 0 | 5893 / 1431 | 5212 / 778 | 5550 / 1028 | 5549 / 1011 | 5533 / 1011 | — |
-| fastapi.tiangolo.com/tutorial/security/simple-oauth2 | 3596 / 0 | 5078 / 1455 | 4405 / 793 | 4726 / 1039 | 4741 / 1020 | 4707 / 1020 | — |
-| fastapi.tiangolo.com/tutorial/sql-databases | 10591 / 0 | 12262 / 1635 | 11545 / 938 | 11842 / 1176 | 11872 / 1159 | 11825 / 1159 | — |
-| fastapi.tiangolo.com/virtual-environments | 3009 / 0 | 4623 / 1522 | 3869 / 844 | 4149 / 1082 | 4191 / 1063 | 4220 / 1063 | — |
+| URL | markcrawl words / preamble | crawl4ai words / preamble | crawl4ai-raw words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
+|---|---|---|---|---|---|---|---|---|
+| fastapi.tiangolo.com | 2230 / 0 | 3979 / 1526 | — | 3092 / 839 | 3374 / 1071 | 3404 / 1054 | 3357 / 1054 | — |
+| fastapi.tiangolo.com/advanced/advanced-dependencies | 2200 / 0 | 3660 / 1434 | — | 3012 / 796 | 3330 / 1034 | 3335 / 1015 | 3311 / 1015 | — |
+| fastapi.tiangolo.com/advanced/custom-response | 1987 / 0 | 3457 / 1448 | — | 2782 / 779 | 3095 / 1025 | 3116 / 1008 | 3078 / 1008 | — |
+| fastapi.tiangolo.com/advanced/stream-data | 2723 / 0 | 4109 / 1354 | — | 3465 / 726 | 3785 / 962 | 3788 / 945 | 3768 / 945 | — |
+| fastapi.tiangolo.com/advanced/testing-events | 263 / 0 | 1562 / 1253 | — | 929 / 650 | 1276 / 896 | 1261 / 879 | 1259 / 879 | — |
+| fastapi.tiangolo.com/advanced/testing-websockets | 117 / 0 | 1414 / 1248 | — | 783 / 650 | 1123 / 886 | 1108 / 869 | 1106 / 869 | — |
+| fastapi.tiangolo.com/async | 3651 / 0 | 5198 / 1484 | — | 4478 / 811 | 4780 / 1053 | 4805 / 1036 | 4763 / 1036 | — |
+| fastapi.tiangolo.com/deployment/docker | 4157 / 0 | 5537 / 1722 | — | 5156 / 983 | 5068 / 1225 | 5488 / 1208 | 5405 / 1208 | — |
+| fastapi.tiangolo.com/fastapi-people | 1434 / 0 | 3347 / 1430 | — | 2230 / 780 | 2536 / 1018 | 2551 / 999 | 2517 / 999 | — |
+| fastapi.tiangolo.com/help-fastapi | 1955 / 0 | 3519 / 1564 | — | 2842 / 875 | 3139 / 1117 | 3172 / 1100 | 3122 / 1100 | — |
+| fastapi.tiangolo.com/how-to | 97 / 0 | 1400 / 1251 | — | 764 / 651 | 1110 / 891 | 1095 / 874 | 1093 / 874 | — |
+| fastapi.tiangolo.com/ja | 1164 / 0 | 2734 / 1334 | — | 1818 / 631 | 2073 / 858 | 2103 / 841 | 2056 / 841 | — |
+| fastapi.tiangolo.com/reference/apirouter | 24889 / 0 | 26603 / 1404 | — | 25651 / 746 | 25971 / 984 | 25976 / 965 | 25952 / 965 | — |
+| fastapi.tiangolo.com/reference/openapi/models | 3708 / 0 | 7394 / 3186 | — | 5672 / 1948 | 6009 / 2186 | 5992 / 2167 | 5990 / 2167 | — |
+| fastapi.tiangolo.com/reference/parameters | 12456 / 0 | 13849 / 1286 | — | 13154 / 682 | 13491 / 920 | 13474 / 901 | 13472 / 901 | — |
+| fastapi.tiangolo.com/reference/request | 680 / 0 | 2122 / 1388 | — | 1446 / 750 | 1782 / 986 | 1767 / 969 | 1765 / 969 | — |
+| fastapi.tiangolo.com/tutorial/cookie-params | 365 / 0 | 1686 / 1281 | — | 1058 / 677 | 1388 / 913 | 1379 / 896 | 1371 / 896 | — |
+| fastapi.tiangolo.com/tutorial/dependencies/dependencies | 2580 / 0 | 4064 / 1465 | — | 3414 / 818 | 3479 / 1058 | 3735 / 1039 | 3707 / 1039 | — |
+| fastapi.tiangolo.com/tutorial/query-params-str-validati | 4071 / 0 | 5682 / 1591 | — | 4987 / 900 | 5285 / 1144 | 5316 / 1125 | 5266 / 1125 | — |
+| fastapi.tiangolo.com/tutorial/request-forms-and-files | 388 / 0 | 1721 / 1293 | — | 1091 / 687 | 1424 / 927 | 1415 / 910 | 1407 / 910 | — |
+| fastapi.tiangolo.com/tutorial/response-model | 3150 / 0 | 4716 / 1553 | — | 4040 / 874 | 4342 / 1118 | 4367 / 1099 | 4327 / 1103 | — |
+| fastapi.tiangolo.com/tutorial/security/oauth2-jwt | 4418 / 0 | 5893 / 1431 | — | 5212 / 778 | 5550 / 1028 | 5549 / 1011 | 5533 / 1011 | — |
+| fastapi.tiangolo.com/tutorial/security/simple-oauth2 | 3596 / 0 | 5078 / 1455 | — | 4405 / 793 | 4726 / 1039 | 4741 / 1020 | 4707 / 1020 | — |
+| fastapi.tiangolo.com/tutorial/sql-databases | 10591 / 0 | 12262 / 1635 | — | 11545 / 938 | 11842 / 1176 | 11872 / 1159 | 11825 / 1159 | — |
+| fastapi.tiangolo.com/virtual-environments | 3009 / 0 | 4623 / 1522 | — | 3869 / 844 | 4149 / 1082 | 4191 / 1063 | 4220 / 1063 | — |
 
 </details>
 
@@ -836,63 +975,64 @@ FastAPI in Containers - Docker - FastAPI
 
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 2817 | 1 | 0% | 14 | 9.1 | 4.6 | 93% | 63% |
-| crawl4ai | 3268 | 64 ⚠ | 0% | 98 | 16.6 | 4.6 | 31% | 28% |
-| scrapy+md | 3418 | 4 | 0% | 91 | 17.7 | 5.1 | 100% | 85% |
-| crawlee | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 97% |
-| colly+md | 3125 | 21 | 0% | 98 | 16.6 | 4.6 | 100% | 86% |
-| playwright | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 97% |
+| markcrawl | 2817 | 1 | 0% | 14 | 9.1 | 4.6 | 90% | 67% |
+| crawl4ai | 3268 | 64 ⚠ | 0% | 98 | 16.6 | 4.6 | 50% | 53% |
+| crawl4ai-raw | — | — | — | — | — | — | — | — |
+| scrapy+md | 3418 | 4 | 0% | 91 | 17.7 | 5.1 | 100% | 92% |
+| crawlee | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 98% |
+| colly+md | 3125 | 21 | 0% | 98 | 16.6 | 4.6 | 100% | 92% |
+| playwright | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 98% |
 | firecrawl | — | — | — | — | — | — | — | — |
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/bugs.html</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/download.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Dealing with Bugs[Â¶](#dealing-with-bugs "Permalink to this headline")
+# Download Python 3.10.20 Documentation
 
-Python is a mature programming language which has established a reputation for
-stability. In order to maintain this reputation, the developers would like to
-know of any deficiencies you find in Python.
+**Last updated on: Mar 11, 2026.**
 
-It can be sometimes faster to fix bugs yourself and contribute patches to
-Python as it streamlines the process and involves less people. Learn how to
-[contribute](#contributing-to-python).
+To download an archive containing all the documents for this version of
+Python in one of various formats, follow one of links in this table.
 
-## Documentation bugs[Â¶](#documentation-bugs "Permalink to this headline")
+| Format | Packed as .zip | Packed as .tar.bz2 |
+| --- | --- | --- |
+| HTML | [Download](archives/python-3.10.20-docs-html.zip) (ca. 9 MiB) | [Download](archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB) |
+| Plain Text | [Download](archives/python-3.10.20-docs-text.zip) (ca. 3 MiB) | [Download](archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB) |
+| EPUB | [Download](archives/python-3.10.20-docs.epub) (ca. 5 MiB) |  |
 
-If you find a bug in this documentation or would like to propose an improvement,
-please submit a bug report on the [tracker](#using-the-tracker). If you
-have a suggestion on how to fix it, include that as well.
+These archives contain all the content in the documentation.
 
-You can also open a discussion item on our
-[Documentation Discourse forum](https://discuss.python.org/c/documentation/26).
+HTML Help (`.chm`) files are made available in the "Windows" section
+on the [Python
+download page](https://www.python.org/downloads/release/python-31020/).
 
-If youâre short on time, you can also email documentation bug reports to
-[docs@python.org](mailto:docs%40python.org) (behavioral bugs can be sent to [python-list@python.org](mailto:python-list%40python.org)).
-âdocs@â is a mailing list run by volunteers; your request will be noticed,
-though it may take a while to be processed.
+We no longer provide updates to the pre-built PDFs of the documentation.
+The previously-built archives are still available and may be of use:
+[A4 PDF (.zip archive)](archives/python-3.10.20-docs-pdf-a4.zip);
+[A4 PDF (.tar.bz2 archive)](archives/python-3.10.20-docs-pdf-a4.tar.bz2);
+[US Letter PDF (.zip archive)](archives/python-3.10.20-docs-pdf-letter.zip);
+[US Letter PDF (.tar.bz2 archive)](archives/python-3.10.20-docs-pdf-letter.tar.bz2).
+To build a PDF archive, follow the instructions in the
+[Developer's Guide](https://devguide.python.org/documentation/start-documenting/#building-the-documentation)
+and run `make dist-pdf` in the `Doc/` directory of a copy of the CPython repository.
 
-See also
+## Unpacking
 
-[Documentation bugs](https://github.com/python/cpython/issues?q=is%3Aissue+is%3Aopen+label%3Adocs)
-:   A list of documentation bugs that have been submitted to the Python issue tracker.
+Unix users should download the .tar.bz2 archives; these are bzipped tar
+archives and can be handled in the usual way using tar and the bzip2
+program. The [InfoZIP](http://www.info-zip.org) unzip program can be
+used to handle the ZIP archives if desired. The .tar.bz2 archives provide the
+best compression and fastest download times.
 
-[Issue Tracking](https://devguide.python.org/tracker/)
-:   Overview of the process involved in reporting an improvement on the tracker.
-
-[Helping with Documentation](https://devguide.python.org/docquality/#helping-with-documentation)
-:   Comprehensive guide for individuals that are interested in contributing to Python documentation.
-
-[Documentation Translations](https://devguide.python.org/documenting/#translating)
-:   A list of GitHub pages for documentation translation and their primary contacts.
-
-## Using the Python issue tracker[Â¶](#using-the-python-issue-tracker "Permalink to this headline")
+Windows users can use the ZIP archives since those are customary on that
+platform. These are created on Unix using the InfoZIP zip program.
 ```
 
 **crawl4ai**
@@ -900,44 +1040,46 @@ See also
 [ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-### [Table of Contents](https://docs.python.org/3.10/contents.html)
-  * [Dealing with Bugs](https://docs.python.org/3.10/bugs.html)
-    * [Documentation bugs](https://docs.python.org/3.10/bugs.html#documentation-bugs)
-    * [Using the Python issue tracker](https://docs.python.org/3.10/bugs.html#using-the-python-issue-tracker)
-    * [Getting started contributing to Python yourself](https://docs.python.org/3.10/bugs.html#getting-started-contributing-to-python-yourself)
-
-
-#### Previous topic
-[About these documents](https://docs.python.org/3.10/about.html "previous chapter")
-#### Next topic
-[Copyright](https://docs.python.org/3.10/copyright.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/bugs.rst)
-
-
 ### Navigation
   * [index](https://docs.python.org/3.10/genindex.html "General Index")
   * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/copyright.html "Copyright") |
-  * [previous](https://docs.python.org/3.10/about.html "About these documents") |
   * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
   * [Python](https://www.python.org/) »
   * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
   * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [Dealing with Bugs](https://docs.python.org/3.10/bugs.html)
+  * [Download](https://docs.python.org/3.10/download.html)
   * | 
   * Theme  Auto Light Dark |
 
 
-# Dealing with Bugs[¶](https://docs.python.org/3.10/bugs.html#dealing-with-bugs "Permalink to this headline")
-Python is a mature programming language which has established a reputation for stability. In order to maintain this reputation, the developers would like to know of any deficiencies you find in Python.
-It can be sometimes faster to fix bugs yourself and contribute patches to Python as it streamlines the process and involves less people. Learn how to [contribute](https://docs.python.org/3.10/bugs.html#contributing-to-python).
-## Documentation bugs[¶](https://docs.python.org/3.10/bugs.html#documentation-bugs "Permalink to this headline")
-If you find a bug in this documentation or would like to propose an improvement, please submit a bug report on the [tracker](https://docs.python.org/3.10/bugs.html#using-the-tracker). If you have a suggestion on how to fix it, include that as well.
-You can also open a discussion item on our [Documentation Discourse forum](https://discuss.python.org/c/documentation/26).
+# Download Python 3.10.20 Documentation
+**Last updated on: Mar 11, 2026.**
+To download an archive containing all the documents for this version of Python in one of various formats, follow one of links in this table.  
+| Format  | Packed as .zip  | Packed as .tar.bz2  |  
+| --- | --- | --- |  
+| HTML  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.zip) (ca. 9 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB)  |  
+| Plain Text  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.zip) (ca. 3 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB)  |  
+| EPUB  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs.epub) (ca. 5 MiB)  |   |  
+These archives contain all the content in the documentation.
+HTML Help (`.chm`) files are made available in the "Windows" section on the [Python download page](https://www.python.org/downloads/release/python-31020/).
+We no longer provide updates to the pre-built PDFs of the documentation. The previously-built archives are still available and may be of use: [A4 PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.zip); [A4 PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.tar.bz2); [US Letter PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.zip); [US Letter PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.tar.bz2). To build a PDF archive, follow the instructions in the [Developer's Guide](https://devguide.python.org/documentation/start-documenting/#building-the-documentation) and run `make dist-pdf` in the `Doc/` directory of a copy of the CPython repository. 
+## Unpacking
+Unix users should download the .tar.bz2 archives; these are bzipped tar archives and can be handled in the usual way using tar and the bzip2 program. The [InfoZIP](http://www.info-zip.org) unzip program can be used to handle the ZIP archives if desired. The .tar.bz2 archives provide the best compression and fastest download times.
+Windows users can use the ZIP archives since those are customary on that platform. These are created on Unix using the InfoZIP zip program.
+## Problems
+If you have comments or suggestions for the Python documentation, please send email to docs@python.org.
+«
+### Navigation
+  * [index](https://docs.python.org/3.10/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [Python](https://www.python.org/) »
+  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
+dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 ```
+
+**crawl4ai-raw** — no output for this URL
 
 **scrapy+md**
 ```
@@ -946,48 +1088,46 @@ Auto
 Light
 Dark
 
-### [Table of Contents](contents.html)
-
-* [Dealing with Bugs](#)
-  + [Documentation bugs](#documentation-bugs)
-  + [Using the Python issue tracker](#using-the-python-issue-tracker)
-  + [Getting started contributing to Python yourself](#getting-started-contributing-to-python-yourself)
-
-#### Previous topic
-
-[About these documents](about.html "previous chapter")
-
-#### Next topic
-
-[Copyright](copyright.html "next chapter")
-
-### This Page
-
-* [Report a Bug](#)
-* [Show Source](https://github.com/python/cpython/blob/3.10/Doc/bugs.rst)
-
 ### Navigation
 
 * [index](genindex.html "General Index")
 * [modules](py-modindex.html "Python Module Index") |
-* [next](copyright.html "Copyright") |
-* [previous](about.html "About these documents") |
 * [Python](https://www.python.org/) »
 
 * [3.10.20 Documentation](index.html) »
-* Dealing with Bugs
+* Download
 * |
 * Theme
   Auto
   Light
   Dark
+   |
+
+# Download Python 3.10.20 Documentation
+
+**Last updated on: Mar 11, 2026.**
+
+To download an archive containing all the documents for this version of
+Python in one of various formats, follow one of links in this table.
+
+| Format | Packed as .zip | Packed as .tar.bz2 |
+| --- | --- | --- |
+| HTML | [Download](archives/python-3.10.20-docs-html.zip) (ca. 9 MiB) | [Download](archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB) |
+| Plain Text | [Download](archives/python-3.10.20-docs-text.zip) (ca. 3 MiB) | [Download](archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB) |
+| EPUB | [Download](archives/python-3.10.20-docs.epub) (ca. 5 MiB) |  |
+
+These archives contain all the content in the documentation.
+
+HTML Help (`.chm`) files are made available in the "Windows" section
+on the [Python
+download page](https://www.python.org/downloads/release/python-31020/).
+
+We no longer provide updates to the pre-built PDFs of the documentation.
 ```
 
 **crawlee**
 ```
-Dealing with Bugs — Python 3.10.20 documentation
-
-
+Download — Python 3.10.20 documentation
 
 
 
@@ -1020,18 +1160,17 @@ Auto
 Light
 Dark
 
-### [Table of Contents](contents.html)
+### Navigation
 
-* [Dealing with Bugs](#)
-  + [Documentation bugs](#documentation-bugs)
-  + [Using the Python issue tracker](#using-the-python-issue-tracker)
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
+* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 ```
 
 **colly+md**
 ```
-Dealing with Bugs — Python 3.10.20 documentation
-
-
+Download — Python 3.10.20 documentation
 
 
 
@@ -1060,21 +1199,22 @@ Auto
 Light
 Dark
 
-### [Table of Contents](contents.html)
+### Navigation
 
-* [Dealing with Bugs](#)
-  + [Documentation bugs](#documentation-bugs)
-  + [Using the Python issue tracker](#using-the-python-issue-tracker)
-  + [Getting started contributing to Python yourself](#getting-started-contributing-to-python-yourself)
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
 
-#### Previous topic
+* [3.10.20 Documentation](index.html) »
+* Download
+* |
+* Theme
+  Auto
 ```
 
 **playwright**
 ```
-Dealing with Bugs — Python 3.10.20 documentation
-
-
+Download — Python 3.10.20 documentation
 
 
 
@@ -1107,11 +1247,12 @@ Auto
 Light
 Dark
 
-### [Table of Contents](contents.html)
+### Navigation
 
-* [Dealing with Bugs](#)
-  + [Documentation bugs](#documentation-bugs)
-  + [Using the Python issue tracker](#using-the-python-issue-tracker)
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
+* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 ```
 
 **firecrawl** — no output for this URL
@@ -1121,30 +1262,30 @@ Dark
 <details>
 <summary>Per-page word counts and preamble</summary>
 
-| URL | markcrawl words / preamble | crawl4ai words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
-|---|---|---|---|---|---|---|---|
-| docs.python.org/3.10 | 190 / 0 | 711 / 68 | 521 / 4 | 629 / 47 | 533 / 16 | 629 / 47 | — |
-| docs.python.org/3.10/about.html | 180 / 0 | 604 / 68 | 407 / 4 | 520 / 52 | 424 / 21 | 520 / 52 | — |
-| docs.python.org/3.10/bugs.html | 666 / 0 | 1104 / 68 | 913 / 4 | 1026 / 52 | 930 / 21 | 1026 / 52 | — |
-| docs.python.org/3.10/contents.html | 19401 / 0 | 19782 / 68 | 19584 / 4 | 19697 / 52 | 19601 / 21 | 19697 / 52 | — |
-| docs.python.org/3.10/distributing/index.html | 984 / 0 | 1481 / 68 | 1285 / 4 | 1402 / 52 | 1306 / 21 | 1402 / 52 | — |
-| docs.python.org/3.10/download.html | 277 / 0 | 599 / 68 | 404 / 4 | 515 / 50 | 419 / 19 | 515 / 50 | — |
-| docs.python.org/3.10/glossary.html | 7963 / 0 | 8264 / 68 | 8186 / 4 | 8302 / 50 | 8201 / 19 | 8302 / 50 | — |
-| docs.python.org/3.10/library/index.html | 2282 / 0 | 2684 / 68 | 2487 / 4 | 2601 / 53 | 2505 / 22 | 2601 / 53 | — |
-| docs.python.org/3.10/reference/index.html | 438 / 0 | 844 / 68 | 647 / 4 | 761 / 53 | 665 / 22 | 761 / 53 | — |
-| docs.python.org/3.10/tutorial/index.html | 982 / 0 | 1382 / 68 | 1185 / 4 | 1298 / 52 | 1202 / 21 | 1298 / 52 | — |
-| docs.python.org/3.10/whatsnew/3.10.html | 12688 / 0 | 13749 / 68 | 13627 / 4 | 13773 / 54 | 13646 / 23 | 13773 / 54 | — |
-| docs.python.org/3.11 | 188 / 0 | 711 / 68 | 522 / 4 | 629 / 47 | 534 / 16 | 629 / 47 | — |
-| docs.python.org/3.12 | 191 / 0 | 712 / 68 | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
-| docs.python.org/3.13 | 191 / 0 | 712 / 68 | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
-| docs.python.org/3.14 | 191 / 0 | 712 / 68 | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
-| docs.python.org/3.15 | 191 / 0 | 709 / 67 | 525 / 4 | 629 / 46 | 537 / 16 | 629 / 46 | — |
-| docs.python.org/3.4 | 339 / 27 | 336 / 28 | — | 361 / 47 | 360 / 47 | 361 / 47 | — |
-| docs.python.org/3.5 | 186 / 0 | 371 / 28 | — | 353 / 29 | 324 / 29 | 353 / 29 | — |
-| docs.python.org/3/bugs.html | — | — | 980 / 4 | — | 997 / 21 | — | — |
-| docs.python.org/3/license.html | — | — | 8679 / 4 | — | 8696 / 21 | — | — |
-| docs.python.org/bugs.html | 650 / 0 | 1096 / 68 | — | 1092 / 52 | — | 1092 / 52 | — |
-| docs.python.org/license.html | 8155 / 0 | 8801 / 68 | — | 8791 / 52 | — | 8791 / 52 | — |
+| URL | markcrawl words / preamble | crawl4ai words / preamble | crawl4ai-raw words / preamble | scrapy+md words / preamble | crawlee words / preamble | colly+md words / preamble | playwright words / preamble | firecrawl words / preamble |
+|---|---|---|---|---|---|---|---|---|
+| docs.python.org/3.10 | 190 / 0 | 711 / 68 | — | 521 / 4 | 629 / 47 | 533 / 16 | 629 / 47 | — |
+| docs.python.org/3.10/about.html | 180 / 0 | 604 / 68 | — | 407 / 4 | 520 / 52 | 424 / 21 | 520 / 52 | — |
+| docs.python.org/3.10/bugs.html | 666 / 0 | 1104 / 68 | — | 913 / 4 | 1026 / 52 | 930 / 21 | 1026 / 52 | — |
+| docs.python.org/3.10/contents.html | 19401 / 0 | 19782 / 68 | — | 19584 / 4 | 19697 / 52 | 19601 / 21 | 19697 / 52 | — |
+| docs.python.org/3.10/distributing/index.html | 984 / 0 | 1481 / 68 | — | 1285 / 4 | 1402 / 52 | 1306 / 21 | 1402 / 52 | — |
+| docs.python.org/3.10/download.html | 277 / 0 | 599 / 68 | — | 404 / 4 | 515 / 50 | 419 / 19 | 515 / 50 | — |
+| docs.python.org/3.10/glossary.html | 7963 / 0 | 8264 / 68 | — | 8186 / 4 | 8302 / 50 | 8201 / 19 | 8302 / 50 | — |
+| docs.python.org/3.10/library/index.html | 2282 / 0 | 2684 / 68 | — | 2487 / 4 | 2601 / 53 | 2505 / 22 | 2601 / 53 | — |
+| docs.python.org/3.10/reference/index.html | 438 / 0 | 844 / 68 | — | 647 / 4 | 761 / 53 | 665 / 22 | 761 / 53 | — |
+| docs.python.org/3.10/tutorial/index.html | 982 / 0 | 1382 / 68 | — | 1185 / 4 | 1298 / 52 | 1202 / 21 | 1298 / 52 | — |
+| docs.python.org/3.10/whatsnew/3.10.html | 12688 / 0 | 13749 / 68 | — | 13627 / 4 | 13773 / 54 | 13646 / 23 | 13773 / 54 | — |
+| docs.python.org/3.11 | 188 / 0 | 711 / 68 | — | 522 / 4 | 629 / 47 | 534 / 16 | 629 / 47 | — |
+| docs.python.org/3.12 | 191 / 0 | 712 / 68 | — | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
+| docs.python.org/3.13 | 191 / 0 | 712 / 68 | — | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
+| docs.python.org/3.14 | 191 / 0 | 712 / 68 | — | 525 / 4 | 632 / 47 | 537 / 16 | 632 / 47 | — |
+| docs.python.org/3.15 | 191 / 0 | 709 / 67 | — | 525 / 4 | 629 / 46 | 537 / 16 | 629 / 46 | — |
+| docs.python.org/3.4 | 339 / 27 | 336 / 28 | — | — | 361 / 47 | 360 / 47 | 361 / 47 | — |
+| docs.python.org/3.5 | 186 / 0 | 371 / 28 | — | — | 353 / 29 | 324 / 29 | 353 / 29 | — |
+| docs.python.org/3/bugs.html | — | — | — | 980 / 4 | — | 997 / 21 | — | — |
+| docs.python.org/3/license.html | — | — | — | 8679 / 4 | — | 8696 / 21 | — | — |
+| docs.python.org/bugs.html | 650 / 0 | 1096 / 68 | — | — | 1092 / 52 | — | 1092 / 52 | — |
+| docs.python.org/license.html | 8155 / 0 | 8801 / 68 | — | — | 8791 / 52 | — | 8791 / 52 | — |
 
 </details>
 

@@ -46,35 +46,92 @@ We expect MarkCrawl to lose on some metrics. Here's the pre-written narrative fo
 
 ### How each tool runs
 
+> **Important:** No tool in this benchmark runs purely "out of the box." Every tool requires
+> custom glue code for URL dispatch, output serialization, and integration with the benchmark
+> harness. The table below documents exactly what custom code each tool uses so readers can
+> judge how representative the results are.
+
+| Tool | Custom code written | What crawl4ai/scrapy/etc. provides natively |
+|---|---|---|
+| **markcrawl** | Direct `CrawlEngine` API calls with per-URL fetch + process loop | CLI is out-of-box, but benchmark uses the Python API for URL-list mode |
+| **crawl4ai** | `arun_many()` batch dispatch, custom file I/O (`.md` + `.jsonl`) | `AsyncWebCrawler`, `BrowserConfig`, `CrawlerRunConfig`, built-in markdown conversion. Also has `BFSDeepCrawlStrategy` for link discovery (unused) |
+| **crawl4ai-raw** | Sequential `arun()` calls, same file I/O glue | Same as crawl4ai but without `arun_many()` batching — the simplest possible usage |
+| **scrapy+md** | Full custom `Spider` class with `markdownify` in `parse()`, subprocess isolation | Scrapy provides the crawler framework; markdown conversion is custom |
+| **crawlee** | Separate `crawlee_worker.py` subprocess with custom `PlaywrightCrawler` handler | Crawlee provides the crawler/queue; markdown conversion + file I/O is custom |
+| **colly+md** | Go binary for HTML fetch + Python `markdownify` post-processing | Colly provides HTTP fetching; everything else is custom |
+| **playwright** | Raw `page.goto()` + `page.content()` + `markdownify` | Playwright provides the browser; markdown conversion is entirely custom |
+| **firecrawl** | API client with retry-with-backoff for rate limits, rate-limit wait subtracted from timing | FireCrawl API handles crawling + markdown conversion natively |
+
+#### crawl4ai vs crawl4ai-raw
+
+We run Crawl4AI in two configurations to show the impact of custom optimization:
+
+- **crawl4ai** uses `arun_many()` which dispatches all URLs in a single batch call,
+  letting crawl4ai manage browser tab concurrency internally. This is a performance
+  optimization that requires knowing the URL list upfront.
+- **crawl4ai-raw** uses sequential `arun()` calls with default `CrawlerRunConfig()` —
+  the simplest possible crawl4ai usage. This represents what a developer gets with
+  minimal effort.
+
+Both use `result.markdown` directly (crawl4ai's built-in HTML-to-markdown conversion).
+Neither uses crawl4ai's advanced features like `BFSDeepCrawlStrategy`, `FilterChain`,
+content scoring, or LLM-based extraction.
+
+#### Code samples
+
 **MarkCrawl:**
 ```bash
 markcrawl --base $URL --out ./results/markcrawl/$SITE --delay 0 --concurrency 5 --max-pages $N
 ```
 
-**Crawl4AI:**
+**Crawl4AI (optimized):**
 ```python
-from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
-config = CrawlerRunConfig(markdown_generator=DefaultMarkdownGenerator())
-async with AsyncWebCrawler() as crawler:
-    result = await crawler.arun(url=URL, config=config)
-    # Write result.markdown to file
+from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
+async with AsyncWebCrawler(config=BrowserConfig(headless=True)) as crawler:
+    results = await crawler.arun_many(urls=url_list, config=CrawlerRunConfig())
+    for result in results:
+        # Write result.markdown to .md file + pages.jsonl
 ```
 
-**FireCrawl (self-hosted via Docker):**
-```bash
-docker run -p 3002:3002 firecrawl/firecrawl:latest
-```
+**Crawl4AI (raw baseline):**
 ```python
-from firecrawl import FirecrawlApp
-app = FirecrawlApp(api_url="http://localhost:3002")
-result = app.crawl_url(URL, params={"limit": N, "scrapeOptions": {"formats": ["markdown"]}})
+from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
+async with AsyncWebCrawler(config=BrowserConfig(headless=True)) as crawler:
+    for url in url_list:
+        result = await crawler.arun(url=url, config=CrawlerRunConfig())
+        # Write result.markdown to .md file + pages.jsonl
 ```
 
-**Scrapy + markdownify** (fair comparison — Scrapy doesn't output Markdown natively):
+**Scrapy + markdownify:**
 ```python
-# Custom spider + markdownify pipeline item
+# Custom Spider subclass with markdownify in parse()
 # Markdown conversion cost is included in the timing
 ```
+
+**FireCrawl:**
+```python
+from firecrawl import FirecrawlApp
+app = FirecrawlApp(api_key=KEY)
+result = app.crawl(url, limit=N, scrape_formats=["markdown"])
+```
+
+### Concurrency model comparison
+
+Each tool handles concurrency differently. This affects how throughput scales and what limits apply.
+
+| | MarkCrawl | Crawl4AI | Scrapy+md | Crawlee | FireCrawl |
+|---|---|---|---|---|---|
+| **Concurrency model** | Local threads (`--concurrency N`) | Async browser tabs (`arun_many`) | Async Twisted reactor (`CONCURRENT_REQUESTS`) | Async browser tabs (Playwright pool) | Remote browsers (server-side, tied to account tier) |
+| **Default** | 1 (sequential) | 1 tab per `arun()`, batch via `arun_many()` | 16 | Automatic | 2 (free) to 100 (growth) |
+| **Max practical** | Limited by target server's tolerance | Limited by local machine RAM/CPU | Limited by target server's tolerance | Limited by local machine RAM/CPU | Limited by your account tier |
+| **Cost** | Free (your machine) | Free (your machine) | Free (your machine) | Free (your machine) | Pay for more browsers |
+| **JS rendering** | Optional (`--render-js`, single Playwright) | Always (Playwright built-in) | No (HTTP only) | Always (Playwright built-in) | Always (remote Chromium) |
+| **Scaling 1,000+ pages** | Increase `--concurrency`, add delay for politeness | Use `arun_many()` with dispatcher config | Increase `CONCURRENT_REQUESTS` | Configure crawler pool size | Upgrade account tier |
+
+> **Note on FireCrawl tiers:** FireCrawl's crawl speed is directly tied to your account tier.
+> Free accounts get 2 concurrent browsers, Hobby gets 5, Standard gets 50, and Growth gets 100.
+> Per-page processing speed is the same across tiers — the difference is how many pages are
+> processed simultaneously. A 100-page crawl that takes ~150s on free could finish in ~6s on Standard.
 
 ## Test sites
 

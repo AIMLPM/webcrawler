@@ -37,7 +37,7 @@ from quality_scorer import (
     score_signals,
 )
 
-TOOLS = ["markcrawl", "crawl4ai", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
+TOOLS = ["markcrawl", "crawl4ai", "crawl4ai-raw", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
 SITES = ["quotes-toscrape", "books-toscrape", "fastapi-docs", "python-docs"]
 
 SAMPLE_LINES = 40   # lines of raw output to include in the sample section

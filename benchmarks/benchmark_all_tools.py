@@ -9,9 +9,10 @@ auto-loads .env from the project root, so no manual `source .env` is needed.
 
 Usage:
     python benchmarks/benchmark_all_tools.py
+    python benchmarks/benchmark_all_tools.py --parallel                    # cross-site parallelism
+    python benchmarks/benchmark_all_tools.py --parallel --site-parallelism 2  # 2 tools per site
     python benchmarks/benchmark_all_tools.py --sites quotes-toscrape,fastapi-docs
     python benchmarks/benchmark_all_tools.py --iterations 1 --skip-warmup  # quick test
-    python benchmarks/benchmark_all_tools.py --output benchmarks/SPEED_COMPARISON.md
 
 See benchmarks/METHODOLOGY.md for the methodology.
 """
@@ -28,6 +29,7 @@ import sys
 import tempfile
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, List, Optional
@@ -234,7 +236,7 @@ def discover_urls(url: str, max_pages: int) -> List[str]:
 # Tool runners — fixed URL list mode (identical pages for all tools)
 # ---------------------------------------------------------------------------
 
-def run_markcrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_markcrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, concurrency: int = 1) -> int:
     """Run MarkCrawl and return pages saved."""
     from markcrawl.core import crawl
 
@@ -247,7 +249,7 @@ def run_markcrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
         os.makedirs(out_dir, exist_ok=True)
         engine = CrawlEngine(
             out_dir=out_dir, fmt="markdown", min_words=5, delay=0,
-            timeout=15, concurrency=1, include_subdomains=False,
+            timeout=15, concurrency=concurrency, include_subdomains=False,
             user_agent=None, render_js=False, proxy=None, show_progress=False,
         )
         jsonl_path = os.path.join(out_dir, "pages.jsonl")
@@ -273,7 +275,7 @@ def run_markcrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
         return result.pages_saved
 
 
-def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Run Crawl4AI and return pages saved."""
     import asyncio
 
@@ -283,7 +285,6 @@ def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List
     pages_saved = 0
     jsonl_path = os.path.join(out_dir, "pages.jsonl")
 
-    # If url_list provided, fetch those specific URLs (no discovery)
     urls_to_fetch = url_list if url_list else None
 
     async def _crawl():
@@ -293,18 +294,21 @@ def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List
 
         async with AsyncWebCrawler(config=browser_config) as crawler:
             if urls_to_fetch:
-                # Fixed URL list mode — fetch exact URLs
-                for page_url in urls_to_fetch:
+                # Batch mode — crawl4ai handles concurrency internally
+                results = await crawler.arun_many(
+                    urls=urls_to_fetch[:max_pages],
+                    config=run_config,
+                )
+                for result in results:
                     try:
-                        result = await crawler.arun(url=page_url, config=run_config)
                         if not result.success or not result.markdown:
                             continue
-                        _write_output(out_dir, jsonl_path, page_url, result)
+                        _write_output(out_dir, jsonl_path, result.url, result)
                         pages_saved += 1
                     except Exception:
                         continue
             else:
-                # Discovery mode — follow links
+                # Discovery mode — follow links (sequential, can't batch)
                 visited = set()
                 to_visit = [url]
                 while to_visit and pages_saved < max_pages:
@@ -343,7 +347,54 @@ def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List
     return pages_saved
 
 
-def run_scrapy_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_crawl4ai_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
+    """Run Crawl4AI with minimal/out-of-box settings — sequential arun(), default config.
+
+    This is the 'raw' baseline: no arun_many() batching, no custom concurrency,
+    just the simplest possible crawl4ai usage.  Compare against run_crawl4ai
+    (which uses arun_many for batch parallelism).
+    """
+    import asyncio
+
+    from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
+
+    os.makedirs(out_dir, exist_ok=True)
+    pages_saved = 0
+    jsonl_path = os.path.join(out_dir, "pages.jsonl")
+
+    urls_to_fetch = url_list[:max_pages] if url_list else [url]
+
+    async def _crawl():
+        nonlocal pages_saved
+        browser_config = BrowserConfig(headless=True)
+        run_config = CrawlerRunConfig()
+
+        async with AsyncWebCrawler(config=browser_config) as crawler:
+            for page_url in urls_to_fetch:
+                try:
+                    result = await crawler.arun(url=page_url, config=run_config)
+                    if not result.success or not result.markdown:
+                        continue
+                    # Write output in same format as all other tools
+                    safe_name = page_url.replace("://", "_").replace("/", "_")[:80]
+                    md_path = os.path.join(out_dir, f"{safe_name}.md")
+                    with open(md_path, "w", encoding="utf-8") as f:
+                        f.write(result.markdown)
+                    with open(jsonl_path, "a", encoding="utf-8") as f:
+                        f.write(json.dumps({
+                            "url": page_url,
+                            "title": result.metadata.get("title", "") if result.metadata else "",
+                            "text": result.markdown,
+                        }, ensure_ascii=False) + "\n")
+                    pages_saved += 1
+                except Exception:
+                    continue
+
+    asyncio.run(_crawl())
+    return pages_saved
+
+
+def run_scrapy_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Run Scrapy with markdownify pipeline via subprocess."""
     os.makedirs(out_dir, exist_ok=True)
 
@@ -461,7 +512,7 @@ process.start()
     return 0
 
 
-def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Run FireCrawl and return pages saved.
 
     Uses SaaS API (FIRECRAWL_API_KEY) or self-hosted (FIRECRAWL_API_URL).
@@ -469,28 +520,62 @@ def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
 
     Requires firecrawl-py >= 4.x (v2 API): crawl() replaces crawl_url(),
     response is a CrawlJob object with .data list of Document objects.
+
+    Free tier has a 3 req/min rate limit, so we retry with backoff when
+    rate-limited rather than failing the entire site.  The wait time is
+    tracked via ``_firecrawl_rate_limit_wait`` so ``run_single`` can
+    subtract it from the elapsed time — we measure crawl speed, not how
+    long we sat waiting for the rate-limit window to reset.
     """
+    import re as _re
+
     from firecrawl import FirecrawlApp
     from firecrawl.v2.types import ScrapeOptions
 
     api_key = os.environ.get("FIRECRAWL_API_KEY")
     api_url = os.environ.get("FIRECRAWL_API_URL")
 
-    kwargs = {}
+    fc_kwargs = {}
     if api_key:
-        kwargs["api_key"] = api_key
+        fc_kwargs["api_key"] = api_key
     if api_url:
-        kwargs["api_url"] = api_url
-    app = FirecrawlApp(**kwargs)
+        fc_kwargs["api_url"] = api_url
+    app = FirecrawlApp(**fc_kwargs)
 
     os.makedirs(out_dir, exist_ok=True)
     jsonl_path = os.path.join(out_dir, "pages.jsonl")
 
-    result = app.crawl(
-        url,
-        limit=max_pages,
-        scrape_options=ScrapeOptions(formats=["markdown"]),
-    )
+    # Retry with backoff on rate-limit errors (free tier: 3 req/min).
+    # Track total wait so run_single can subtract it from elapsed time.
+    max_retries = 5
+    result = None
+    rate_limit_wait = 0.0
+    for attempt in range(max_retries):
+        try:
+            result = app.crawl(
+                url,
+                limit=max_pages,
+                scrape_options=ScrapeOptions(formats=["markdown"]),
+            )
+            break
+        except Exception as exc:
+            msg = str(exc)
+            if "Rate Limit" not in msg:
+                raise
+            match = _re.search(r"retry after (\d+)s", msg)
+            wait = int(match.group(1)) + 2 if match else 15
+            if attempt < max_retries - 1:
+                print(f"    [firecrawl] rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
+                rate_limit_wait += wait
+                time.sleep(wait)
+            else:
+                raise
+
+    # Stash wait time where run_single can find it
+    run_firecrawl._rate_limit_wait = rate_limit_wait
+
+    if result is None:
+        return 0
 
     pages_saved = 0
     data = getattr(result, "data", []) or []
@@ -540,71 +625,16 @@ def check_playwright_raw() -> bool:
         return False
 
 
-_CRAWLEE_WORKER = Path(__file__).parent / "_crawlee_worker.py"
+_CRAWLEE_WORKER = Path(__file__).parent / "crawlee_worker.py"
 
 
-def _write_crawlee_worker():
-    """Write the crawlee worker script once, reused for every subprocess call."""
-    if _CRAWLEE_WORKER.exists():
-        return
-    _CRAWLEE_WORKER.write_text(
-        '#!/usr/bin/env python3\n'
-        '"""Crawlee worker — runs in a subprocess so each invocation gets a fresh event loop.\n'
-        'Args: url out_dir max_pages [url1 url2 ...]\n'
-        '"""\n'
-        'import asyncio, json, os, sys\n'
-        'from pathlib import Path\n'
-        '\n'
-        'url = sys.argv[1]\n'
-        'out_dir = sys.argv[2]\n'
-        'max_pages = int(sys.argv[3])\n'
-        'url_list = sys.argv[4:] if len(sys.argv) > 4 else [url]\n'
-        '\n'
-        'os.makedirs(out_dir, exist_ok=True)\n'
-        'pages_saved = 0\n'
-        'jsonl_path = os.path.join(out_dir, "pages.jsonl")\n'
-        '\n'
-        'async def _run():\n'
-        '    global pages_saved\n'
-        '    from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext\n'
-        '    from markdownify import markdownify as md\n'
-        '    crawler = PlaywrightCrawler(max_requests_per_crawl=max_pages, headless=True)\n'
-        '\n'
-        '    @crawler.router.default_handler\n'
-        '    async def handler(context: PlaywrightCrawlingContext) -> None:\n'
-        '        global pages_saved\n'
-        '        if pages_saved >= max_pages:\n'
-        '            return\n'
-        '        page_url = context.request.url\n'
-        '        title = await context.page.title()\n'
-        '        content = await context.page.content()\n'
-        '        markdown = md(content, heading_style="ATX", strip=["img","script","style","nav","footer"])\n'
-        '        if len(markdown.split()) < 5:\n'
-        '            return\n'
-        '        safe_name = page_url.replace("://","_").replace("/","_")[:80]\n'
-        '        with open(os.path.join(out_dir, f"{safe_name}.md"), "w", encoding="utf-8") as f:\n'
-        '            f.write(markdown)\n'
-        '        with open(jsonl_path, "a", encoding="utf-8") as f:\n'
-        '            f.write(json.dumps({"url": page_url, "title": title, "text": markdown}, ensure_ascii=False) + "\\n")\n'
-        '        pages_saved += 1\n'
-        '        if len(url_list) == 1 and url_list[0] == url:\n'
-        '            await context.enqueue_links()\n'
-        '\n'
-        '    await crawler.run(url_list[:max_pages])\n'
-        '\n'
-        'asyncio.run(_run())\n'
-        'print(pages_saved)\n'
-    )
-
-
-def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Run Crawlee (Python) with Playwright in a subprocess.
 
     Each call gets a fresh event loop, avoiding the asyncio.Lock/event-loop
     mismatch that occurs when crawlee is invoked multiple times in the same
     process (Python 3.13 regression in crawlee's storage client).
     """
-    _write_crawlee_worker()
     os.makedirs(out_dir, exist_ok=True)
     cmd = [sys.executable, str(_CRAWLEE_WORKER), url, out_dir, str(max_pages)]
     if url_list:
@@ -617,7 +647,7 @@ def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[
         return 0
 
 
-def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Run Colly (Go) for fetching + Python markdownify for conversion."""
     os.makedirs(out_dir, exist_ok=True)
 
@@ -690,7 +720,7 @@ def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Opti
     return pages_saved
 
 
-def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None) -> int:
+def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Raw Playwright baseline — browser fetch + markdownify, no framework overhead."""
     from playwright.sync_api import sync_playwright
 
@@ -745,6 +775,7 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
 TOOLS = {
     "markcrawl": {"check": check_markcrawl, "run": run_markcrawl},
     "crawl4ai": {"check": check_crawl4ai, "run": run_crawl4ai},
+    "crawl4ai-raw": {"check": check_crawl4ai, "run": run_crawl4ai_raw},
     "scrapy+md": {"check": check_scrapy, "run": run_scrapy_markdownify},
     "crawlee": {"check": check_crawlee, "run": run_crawlee},
     "colly+md": {"check": check_colly, "run": run_colly_markdownify},
@@ -778,6 +809,7 @@ def run_single(
     site_config: dict,
     base_dir: str,
     url_list: Optional[List[str]] = None,
+    concurrency: int = 1,
 ) -> RunResult:
     """Run a single tool on a single site and return results."""
     out_dir = os.path.join(base_dir, tool_name, site_name)
@@ -793,13 +825,20 @@ def run_single(
     start = time.time()
 
     try:
-        pages = run_fn(url, out_dir, max_pages, url_list=url_list)
+        pages = run_fn(url, out_dir, max_pages, url_list=url_list, concurrency=concurrency)
         error = None
     except Exception as exc:
         pages = 0
         error = str(exc)
 
     elapsed = time.time() - start
+
+    # Subtract any rate-limit wait time (firecrawl free tier)
+    rate_limit_wait = getattr(run_fn, "_rate_limit_wait", 0.0)
+    if rate_limit_wait > 0:
+        elapsed = max(0.1, elapsed - rate_limit_wait)
+        run_fn._rate_limit_wait = 0.0  # reset for next call
+
     peak_mem = mem.stop()
 
     analysis = analyze_output(out_dir)
@@ -862,6 +901,7 @@ def generate_comparison_report(
     results: dict[str, dict[str, ToolSiteResult]],
     available_tools: list[str],
     output_path: str,
+    concurrency: int = 1,
 ):
     """Generate SPEED_COMPARISON.md report."""
     lines = [
@@ -878,7 +918,7 @@ def generate_comparison_report(
         "",
         "Settings:",
         "- **Delay:** 0 (no politeness throttle)",
-        "- **Concurrency:** 1 (sequential, single-thread comparison)",
+        f"- **Concurrency:** {concurrency}",
         "- **Iterations:** 3 per tool per site (reporting median + std dev)",
         "- **Warm-up:** 1 throwaway run per site before timing",
         "- **Output:** Markdown files + JSONL index",
@@ -892,12 +932,13 @@ def generate_comparison_report(
         "|---|---|---|",
     ]
 
-    all_tools = ["markcrawl", "crawl4ai", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
+    all_tools = ["markcrawl", "crawl4ai", "crawl4ai-raw", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
     for tool in all_tools:
         available = tool in available_tools
         notes = {
             "markcrawl": "requests + BeautifulSoup + markdownify — [AIMLPM/markcrawl](https://github.com/AIMLPM/markcrawl)",
-            "crawl4ai": "Playwright + built-in extraction — [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai)",
+            "crawl4ai": "Playwright + arun_many() batch concurrency — [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai)",
+            "crawl4ai-raw": "Playwright + sequential arun(), default config (out-of-box baseline)",
             "scrapy+md": "Scrapy async + markdownify — [scrapy/scrapy](https://github.com/scrapy/scrapy)",
             "crawlee": "Playwright + markdownify — [apify/crawlee-python](https://github.com/apify/crawlee-python)",
             "colly+md": "Go fetch (Colly) + Python markdownify — [gocolly/colly](https://github.com/gocolly/colly)",
@@ -935,19 +976,29 @@ def generate_comparison_report(
         lines.append("")
 
     # Overall summary
-    lines.extend(["## Overall summary", "", "| Tool | Total pages | Total time (s) | Avg pages/sec |", "|---|---|---|---|"])
+    lines.extend(["## Overall summary", "", "| Tool | Total pages | Total time (s) | Avg pages/sec | Notes |", "|---|---|---|---|---|"])
 
+    total_sites = len(COMPARISON_SITES)
     for tool in available_tools:
-        total_pages = sum(
-            r.pages_median for r in results.get(tool, {}).values() if not r.error
-        )
-        total_time = sum(
-            r.time_median for r in results.get(tool, {}).values() if not r.error
-        )
+        tool_results = results.get(tool, {})
+        successful = {k: v for k, v in tool_results.items() if not v.error}
+        total_pages = sum(r.pages_median for r in successful.values())
+        total_time = sum(r.time_median for r in successful.values())
         avg_pps = total_pages / total_time if total_time > 0 else 0
-        lines.append(f"| {tool} | {total_pages:.0f} | {total_time:.1f} | {avg_pps:.1f} |")
+        note = ""
+        if len(successful) < total_sites and len(successful) > 0:
+            note = f" *({len(successful)}/{total_sites} sites)*"
+        elif len(successful) == 0:
+            lines.append(f"| {tool} | — | — | — | *all sites errored* |")
+            continue
+        lines.append(f"| {tool} | {total_pages:.0f} | {total_time:.1f} | {avg_pps:.1f} |{note}")
 
     lines.extend([
+        "",
+        "> **Note on variance:** These benchmarks fetch pages from live public websites.",
+        "> Network conditions, server load, and CDN caching can cause significant",
+        "> run-to-run variance (std dev shown per site). For the most reliable comparison,",
+        "> run multiple iterations and compare medians.",
         "",
         "## Reproducing these results",
         "",
@@ -1005,8 +1056,20 @@ def main():
     parser.add_argument("--sites", default=None, help="Comma-separated sites to test")
     parser.add_argument("--iterations", type=int, default=3, help="Iterations per tool per site (default: 3)")
     parser.add_argument("--skip-warmup", action="store_true", help="Skip warm-up run")
+    parser.add_argument("--concurrency", type=int, default=1, help="Concurrency level for tools that support it (default: 1)")
+    parser.add_argument("--parallel", action="store_true",
+                        help="Run tools on different sites in parallel (reduces wall time)")
+    parser.add_argument("--site-parallelism", type=int, default=1,
+                        help="Max tools hitting the same site simultaneously (default: 1, polite)")
+    parser.add_argument("--firecrawl-tier", choices=["free", "paid"], default=None,
+                        help="FireCrawl account tier. 'free' skips warmup to save credits, "
+                             "'paid' enables warmup. Auto-detected from FIRECRAWL_TIER env var, "
+                             "defaults to 'free'.")
     parser.add_argument("--output", default="benchmarks/SPEED_COMPARISON.md", help="Output report path")
     args = parser.parse_args()
+
+    # Determine firecrawl tier: CLI flag > env var > default "free"
+    firecrawl_tier = args.firecrawl_tier or os.environ.get("FIRECRAWL_TIER", "free").lower()
 
     run_start = time.time()
     run_start_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(run_start))
@@ -1024,8 +1087,11 @@ def main():
     print("Checking tools...")
     for name, tool in TOOLS.items():
         ok = tool["check"]()
+        extra = ""
+        if name == "firecrawl" and ok:
+            extra = f" [{firecrawl_tier} tier]"
         status = "available" if ok else "NOT INSTALLED"
-        print(f"  {name}: {status}")
+        print(f"  {name}: {status}{extra}")
         if ok:
             available.append(name)
         else:
@@ -1035,9 +1101,12 @@ def main():
         print("\nNo tools available. Install at least: pip install markcrawl")
         sys.exit(1)
 
-    print(f"\nRunning comparison: {len(available)} tool(s) × {len(sites)} site(s) × {args.iterations} iteration(s)")
+    mode = "parallel" if args.parallel else "sequential"
+    print(f"\nRunning comparison: {len(available)} tool(s) × {len(sites)} site(s) × {args.iterations} iteration(s) [{mode}]")
     if not args.skip_warmup:
         print("(+ 1 warm-up run per site)")
+    if args.parallel:
+        print(f"(max {args.site_parallelism} tool(s) per site simultaneously)")
     print("=" * 60)
 
     # Phase 1: Discover URLs for each site (all tools get identical pages)
@@ -1053,61 +1122,92 @@ def main():
 
     # Phase 2: Benchmark all tools on identical URL lists
     phase2_start = time.time()
-    print("\n--- Phase 2: Benchmarking (identical URLs per site) ---")
     base_dir = tempfile.mkdtemp(prefix="markcrawl_comparison_")
     results: dict[str, dict[str, ToolSiteResult]] = {}
-
-    # Per-tool per-site timing for metadata
     tool_site_timing: dict[str, dict[str, dict]] = {}
 
     for tool_name in available:
         results[tool_name] = {}
         tool_site_timing[tool_name] = {}
+
+    def _bench_tool_site(tool_name: str, site_name: str) -> None:
+        """Run warmup + iterations for one tool on one site."""
         run_fn = TOOLS[tool_name]["run"]
+        site_config = sites[site_name]
+        urls = site_urls[site_name]
+        tool_site_start = time.time()
 
-        for site_name, site_config in sites.items():
-            urls = site_urls[site_name]
-            print(f"\n  {tool_name} → {site_name} ({len(urls)} URLs):")
+        print(f"\n  {tool_name} → {site_name} ({len(urls)} URLs):")
 
-            tool_site_start = time.time()
+        # Warm-up — skip for firecrawl on free tier (wastes API credits)
+        skip_warmup = args.skip_warmup or (tool_name == "firecrawl" and firecrawl_tier == "free")
+        if not skip_warmup:
+            print(f"    [{tool_name}/{site_name}] warm-up...", flush=True)
+            try:
+                run_single(tool_name, run_fn, site_name, site_config, base_dir,
+                           url_list=urls, concurrency=args.concurrency)
+            except Exception as exc:
+                print(f"    [{tool_name}/{site_name}] warm-up failed: {exc}")
 
-            # Warm-up
-            if not args.skip_warmup:
-                print("    warm-up...", end=" ", flush=True)
-                try:
-                    run_single(tool_name, run_fn, site_name, site_config, base_dir, url_list=urls)
-                    print("done")
-                except Exception as exc:
-                    print(f"failed: {exc}")
+        # Iterations
+        runs = []
+        for i in range(args.iterations):
+            result = run_single(tool_name, run_fn, site_name, site_config, base_dir,
+                                url_list=urls, concurrency=args.concurrency)
+            if result.error:
+                print(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: error: {result.error[:60]}")
+            else:
+                print(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: "
+                      f"{result.pages} pages in {result.time_seconds:.1f}s ({result.pages_per_second:.1f} p/s)")
+            runs.append(result)
 
-            # Iterations
-            runs = []
-            for i in range(args.iterations):
-                print(f"    run {i + 1}/{args.iterations}...", end=" ", flush=True)
-                result = run_single(tool_name, run_fn, site_name, site_config, base_dir, url_list=urls)
-                if result.error:
-                    print(f"error: {result.error[:60]}")
-                else:
-                    print(f"{result.pages} pages in {result.time_seconds:.1f}s ({result.pages_per_second:.1f} p/s)")
-                runs.append(result)
+        agg = aggregate_runs(runs, site_config)
+        results[tool_name][site_name] = agg
+        tool_site_timing[tool_name][site_name] = {
+            "wall_start_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(tool_site_start)),
+            "wall_end_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "pages_median": agg.pages_median,
+            "time_median_s": round(agg.time_median, 3),
+            "pps_median": round(agg.pps_median, 3),
+            "error": agg.error,
+        }
 
-            agg = aggregate_runs(runs, site_config)
-            results[tool_name][site_name] = agg
+    if args.parallel:
+        # Parallel mode: tools on different sites run concurrently.
+        # Per-site semaphores limit how many tools hit the same host at once.
+        print(f"\n--- Phase 2: Benchmarking (parallel, max {args.site_parallelism} tool(s) per site) ---")
+        site_semaphores: dict[str, threading.Semaphore] = {
+            site: threading.Semaphore(args.site_parallelism) for site in sites
+        }
 
-            tool_site_timing[tool_name][site_name] = {
-                "wall_start_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(tool_site_start)),
-                "wall_end_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "pages_median": agg.pages_median,
-                "time_median_s": round(agg.time_median, 3),
-                "pps_median": round(agg.pps_median, 3),
-                "error": agg.error,
-            }
+        # Build work items: (tool, site) pairs
+        work_items = [(tool, site) for tool in available for site in sites]
+
+        def _guarded_bench(tool_name: str, site_name: str) -> None:
+            with site_semaphores[site_name]:
+                _bench_tool_site(tool_name, site_name)
+
+        # Max workers = number of sites (each site can run site_parallelism tools,
+        # but we also want cross-site parallelism).  Cap at total work items.
+        max_workers = min(len(work_items), len(sites) * args.site_parallelism)
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = [pool.submit(_guarded_bench, tool, site) for tool, site in work_items]
+            for future in as_completed(futures):
+                exc = future.exception()
+                if exc:
+                    print(f"  Warning: benchmark task failed: {exc}")
+    else:
+        # Sequential mode (original behavior)
+        print("\n--- Phase 2: Benchmarking (identical URLs per site) ---")
+        for tool_name in available:
+            for site_name in sites:
+                _bench_tool_site(tool_name, site_name)
 
     phase2_end = time.time()
     run_end = time.time()
 
     print("\n" + "=" * 60)
-    generate_comparison_report(results, available, args.output)
+    generate_comparison_report(results, available, args.output, concurrency=args.concurrency)
     print(f"Report saved to: {args.output}")
     print(f"\nRun data saved to: {base_dir}")
     print(f"\nTo score extraction quality (preamble, repeat rate, precision/recall):")
@@ -1148,11 +1248,8 @@ def main():
                 "wall_seconds": round(phase2_end - phase2_start, 1),
                 "results": tool_site_timing,
             },
-            "quality_scoring": {
-                "start_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(phase3_start)),
-                "end_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(phase3_end)),
-                "wall_seconds": round(phase3_end - phase3_start, 1),
-            },
+            "parallel_mode": args.parallel,
+            "site_parallelism": args.site_parallelism,
         },
         "output_report": args.output,
         "note": "Markdown output files in each tool/site subfolder are usable for a "

@@ -21,46 +21,44 @@ import hashlib
 import json
 import logging
 import os
-import re
 import signal
 import threading
 import time
 import urllib.parse as up
-import xml.etree.ElementTree as ET
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Callable, Deque, Dict, List, Optional, Set, Tuple
-from urllib import robotparser
 
-import requests
-from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
-from .exceptions import MarkcrawlDependencyError
-
-try:
-    import certifi
-    CERT_PATH: str | bool = certifi.where()
-except Exception:
-    CERT_PATH = True
-
-try:
-    from markdownify import markdownify as md_convert
-except Exception:
-    md_convert = None
-
-DEFAULT_UA = (
-    "Mozilla/5.0 (compatible; MarkCrawl/0.1; +https://github.com/AIMLPM/markcrawl) "
-    "Python-requests"
+# Submodule imports — all public names are re-exported for backward compatibility
+from .extract_content import (
+    EXCLUDE_TAGS,
+    STRUCTURE_TAGS,
+    clean_dom_for_content,
+    compact_blank_lines,
+    default_progress,
+    html_to_markdown,
+    html_to_text,
 )
-
-EXCLUDE_TAGS = {"script", "style", "noscript", "template", "svg", "canvas"}
-STRUCTURE_TAGS = {"nav", "header", "footer", "aside"}
+from .fetch import (
+    DEFAULT_UA,
+    PlaywrightResponse,
+    _get_playwright_browser,
+    build_session,
+    fetch,
+    fetch_with_playwright,
+)
+from .robots import discover_sitemaps, parse_robots_txt, parse_sitemap_xml
+from .state import STATE_FILENAME, load_state, save_state
+from .throttle import AdaptiveThrottle
+from .urls import extract_links, norm_url, safe_filename, same_scope
 
 logger = logging.getLogger(__name__)
+
+# Backward-compat aliases for internal state functions
+_save_state = save_state
+_load_state = load_state
 
 
 @dataclass
@@ -68,370 +66,6 @@ class CrawlResult:
     pages_saved: int
     output_dir: str
     index_file: str
-
-
-# ---------------------------------------------------------------------------
-# Session / fetch helpers
-# ---------------------------------------------------------------------------
-
-def build_session(
-    user_agent: str = DEFAULT_UA,
-    proxy: Optional[str] = None,
-) -> requests.Session:
-    """Create a ``requests.Session`` pre-configured for crawling.
-
-    Args:
-        user_agent: User-Agent header string sent with every request.
-        proxy: Optional HTTP/HTTPS proxy URL (e.g. ``"http://proxy:8080"``).
-
-    Returns:
-        A configured ``requests.Session`` ready for use with :func:`fetch`.
-    """
-    session = requests.Session()
-    session.verify = CERT_PATH
-    session.headers.update(
-        {
-            "User-Agent": user_agent,
-            "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
-        }
-    )
-    if proxy:
-        session.proxies = {"http": proxy, "https": proxy}
-
-    retry = Retry(
-        total=3,
-        connect=3,
-        read=3,
-        backoff_factor=0.5,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET", "HEAD"],
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount("http://", adapter)
-    session.mount("https://", adapter)
-    return session
-
-
-def fetch(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
-    """Perform an HTTP GET request, returning the response or ``None`` on failure.
-
-    Args:
-        session: A ``requests.Session`` (typically from :func:`build_session`).
-        url: The fully-qualified URL to fetch.
-        timeout: Request timeout in seconds.
-
-    Returns:
-        A ``requests.Response`` on success, or ``None`` if the request raised
-        an exception.
-    """
-    try:
-        return session.get(url, timeout=timeout, allow_redirects=True)
-    except requests.RequestException as exc:
-        logger.warning("Fetch error for %s: %s", url, exc)
-        return None
-
-
-# ---------------------------------------------------------------------------
-# Playwright (optional) — JS rendering
-# ---------------------------------------------------------------------------
-
-def _get_playwright_browser(proxy: Optional[str] = None):
-    """Launch a Playwright Chromium browser."""
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        raise MarkcrawlDependencyError(
-            "Playwright is required for --render-js.\n"
-            "Install it with:  pip install playwright && playwright install chromium"
-        )
-    pw = sync_playwright().start()
-    launch_args: Dict = {}
-    if proxy:
-        launch_args["proxy"] = {"server": proxy}
-    browser = pw.chromium.launch(headless=True, **launch_args)
-    return pw, browser
-
-
-@dataclass
-class PlaywrightResponse:
-    """Minimal response object matching what the crawl loop needs."""
-    ok: bool
-    status_code: int
-    text: str
-    headers: Dict[str, str]
-
-
-def fetch_with_playwright(browser, url: str, timeout: int, user_agent: str) -> Optional[PlaywrightResponse]:
-    """Fetch a URL using Playwright, returning rendered HTML."""
-    context = None
-    try:
-        context = browser.new_context(user_agent=user_agent)
-        page = context.new_page()
-        response = page.goto(url, timeout=timeout * 1000, wait_until="networkidle")
-        if response is None:
-            return None
-        html = page.content()
-        headers = {k.lower(): v for k, v in response.headers.items()}
-        return PlaywrightResponse(
-            ok=response.ok,
-            status_code=response.status,
-            text=html,
-            headers=headers,
-        )
-    except Exception as exc:
-        logger.warning("Playwright fetch error for %s: %s", url, exc)
-        return None
-    finally:
-        if context:
-            context.close()
-
-
-# ---------------------------------------------------------------------------
-# URL helpers
-# ---------------------------------------------------------------------------
-
-def norm_url(url: str) -> str:
-    """Normalise a URL for deduplication.
-
-    Lowercases the scheme and netloc, ensures the path is at least ``"/"``,
-    strips the fragment, and collapses consecutive slashes.
-    """
-    p = up.urlsplit(url)
-    # Negative lookbehind preserves :// in scheme
-    normalized = up.urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", p.query, ""))
-    normalized = re.sub(r"(?<!:)/{2,}", "/", normalized)
-    return normalized
-
-
-def same_scope(url: str, base_netloc: str, include_subdomains: bool) -> bool:
-    """Check whether *url* falls within the allowed crawl scope."""
-    target = up.urlsplit(url).netloc.lower()
-    base = base_netloc.lower()
-    if target == base:
-        return True
-    return include_subdomains and target.endswith("." + base)
-
-
-def safe_filename(url: str, ext: str) -> str:
-    """Derive a filesystem-safe filename from a URL with a hash suffix for collision avoidance."""
-    p = up.urlsplit(url)
-    path = p.path.strip("/")
-    if not path:
-        stub = "index"
-    else:
-        stub = re.sub(r"[^a-zA-Z0-9._-]+", "-", path)[:120].strip("-") or "page"
-    if p.query:
-        qpart = re.sub(r"[^a-zA-Z0-9._-]+", "-", p.query)[:40].strip("-")
-        if qpart:
-            stub += f"__{qpart}"
-    h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:10]
-    return f"{stub}__{h}.{ext}"
-
-
-# ---------------------------------------------------------------------------
-# Robots / sitemap
-# ---------------------------------------------------------------------------
-
-def parse_robots_txt(session: requests.Session, robots_url: str) -> Tuple[robotparser.RobotFileParser, str]:
-    """Fetch and parse robots.txt, returning both the parser and raw text."""
-    rp = robotparser.RobotFileParser()
-    try:
-        response = session.get(robots_url, timeout=10)
-        content = response.text if response.ok else ""
-    except requests.RequestException:
-        content = ""
-    rp.parse(content.splitlines())
-    return rp, content
-
-
-def discover_sitemaps(session: requests.Session, base: str, robots_text: Optional[str] = None) -> List[str]:
-    """Find sitemap URLs declared in the site's ``robots.txt``.
-
-    If *robots_text* is provided, it is parsed directly instead of
-    re-fetching ``/robots.txt`` (avoids a duplicate HTTP request when
-    ``parse_robots_txt`` has already fetched it).
-    """
-    if robots_text is None:
-        robots_url = up.urljoin(base, "/robots.txt")
-        try:
-            response = session.get(robots_url, timeout=10)
-            if not response.ok:
-                return []
-            robots_text = response.text
-        except requests.RequestException:
-            return []
-
-    sitemaps: List[str] = []
-    for line in robots_text.splitlines():
-        if line.lower().startswith("sitemap:"):
-            sitemap_url = line.split(":", 1)[1].strip()
-            if sitemap_url:
-                sitemaps.append(sitemap_url)
-    return sitemaps
-
-
-def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List[str]:
-    """Recursively parse a sitemap XML and return all page URLs."""
-    try:
-        response = session.get(url, timeout=timeout)
-        if not response.ok:
-            return []
-        content_type = response.headers.get("content-type", "").lower()
-        if not (content_type.startswith("application/xml") or response.text.strip().startswith("<")):
-            return []
-        root = ET.fromstring(response.content)
-    except Exception:
-        return []
-
-    ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
-    urls: List[str] = []
-
-    for loc in root.findall(".//sm:sitemap/sm:loc", ns):
-        child_url = (loc.text or "").strip()
-        if child_url:
-            urls.extend(parse_sitemap_xml(session, child_url, timeout))
-
-    for loc in root.findall(".//sm:url/sm:loc", ns):
-        page_url = (loc.text or "").strip()
-        if page_url:
-            urls.append(page_url)
-
-    if not urls:
-        for loc in root.findall(".//loc"):
-            page_url = (loc.text or "").strip()
-            if page_url:
-                urls.append(page_url)
-
-    return list(dict.fromkeys(urls))
-
-
-# ---------------------------------------------------------------------------
-# Content extraction
-# ---------------------------------------------------------------------------
-
-def extract_links(html: str, base_url: str) -> Set[str]:
-    """Extract and normalise all ``<a href>`` links from an HTML document."""
-    soup = BeautifulSoup(html, "html.parser")
-    links: Set[str] = set()
-    for anchor in soup.find_all("a", href=True):
-        href = anchor["href"].strip()
-        absolute_url = up.urljoin(base_url, href)
-        links.add(norm_url(absolute_url))
-    return links
-
-
-def clean_dom_for_content(soup: BeautifulSoup) -> None:
-    for tag in soup.find_all(EXCLUDE_TAGS):
-        tag.decompose()
-    for tag in soup.find_all(STRUCTURE_TAGS):
-        tag.decompose()
-    for el in soup.select(
-        '[role="navigation"], [aria-hidden="true"], .sr-only, .visually-hidden, .cookie, .Cookie, .cookie-banner, .consent'
-    ):
-        try:
-            el.decompose()
-        except Exception:
-            pass
-
-
-def compact_blank_lines(text: str, max_blank_streak: int = 2) -> str:
-    lines = [line.rstrip() for line in text.splitlines()]
-    output: List[str] = []
-    blank_streak = 0
-    for line in lines:
-        if line.strip():
-            blank_streak = 0
-            output.append(line)
-        else:
-            blank_streak += 1
-            if blank_streak <= max_blank_streak:
-                output.append("")
-    return "\n".join(output).strip()
-
-
-def html_to_markdown(html: str) -> Tuple[str, str]:
-    """Convert raw HTML to cleaned Markdown text."""
-    soup = BeautifulSoup(html, "html.parser")
-    clean_dom_for_content(soup)
-    title = (soup.title.string or "").strip() if soup.title else ""
-    main = soup.find("main") or soup.find(attrs={"role": "main"}) or soup.body or soup
-    html_fragment = str(main)
-
-    if md_convert:
-        markdown = md_convert(
-            html_fragment,
-            heading_style="ATX",
-            strip=["img"],
-            wrap=False,
-            bullets="*",
-            escape_asterisks=False,
-            escape_underscores=False,
-            code_language=False,
-        )
-    else:
-        markdown = BeautifulSoup(html_fragment, "html.parser").get_text("\n")
-
-    return title, compact_blank_lines(markdown)
-
-
-def html_to_text(html: str) -> Tuple[str, str]:
-    """Convert raw HTML to cleaned plain text."""
-    soup = BeautifulSoup(html, "html.parser")
-    clean_dom_for_content(soup)
-    title = (soup.title.string or "").strip() if soup.title else ""
-    text = soup.get_text(separator="\n")
-    lines = [re.sub(r"\s+", " ", line).strip() for line in text.splitlines()]
-    lines = [line for line in lines if line]
-
-    deduped: List[str] = []
-    previous: Optional[str] = None
-    for line in lines:
-        if line != previous:
-            deduped.append(line)
-        previous = line
-    return title, "\n".join(deduped).strip()
-
-
-def default_progress(enabled: bool) -> Callable[[str], None]:
-    def emit(message: str) -> None:
-        if enabled:
-            print(message)
-    return emit
-
-
-# ---------------------------------------------------------------------------
-# Crawl state persistence (resume support)
-# ---------------------------------------------------------------------------
-
-STATE_FILENAME = ".crawl_state.json"
-
-
-def _save_state(
-    state_path: str,
-    seen_urls: Set[str],
-    seen_content: Set[str],
-    to_visit: Deque[str],
-    saved_count: int,
-    seeds: List[str],
-) -> None:
-    state = {
-        "seen_urls": list(seen_urls),
-        "seen_content": list(seen_content),
-        "to_visit": list(to_visit),
-        "saved_count": saved_count,
-        "seeds": seeds,
-    }
-    tmp = state_path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(state, f)
-    os.replace(tmp, state_path)
-
-
-def _load_state(state_path: str) -> Optional[Dict]:
-    if not os.path.isfile(state_path):
-        return None
-    with open(state_path, "r", encoding="utf-8") as f:
-        return json.load(f)
 
 
 # ---------------------------------------------------------------------------
@@ -479,7 +113,6 @@ class CrawlEngine:
         self.progress = default_progress(show_progress)
 
         # Playwright (optional)
-        # sync_playwright is not thread-safe — all calls go through a lock
         self.pw_instance = None
         self.pw_browser = None
         self._pw_lock = threading.Lock()
@@ -492,13 +125,8 @@ class CrawlEngine:
         self.crawl_timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         self.crawl_date_display = now.strftime("%B %d, %Y")
 
-        # Adaptive throttle state
-        self._base_delay = delay  # user-configured delay (floor)
-        self._active_delay = delay  # current effective delay (adapts dynamically)
-        self._response_times: List[float] = []  # rolling window of response times
-        self._response_time_window = 10  # number of recent responses to average
-        self._slow_threshold = 0.5  # server response > this → add proportional delay
-        self._backoff_count = 0  # consecutive 429s
+        # Adaptive throttle
+        self._throttle = AdaptiveThrottle(delay, self.progress)
 
         # Crawl state
         self.to_visit: Deque[str] = deque()
@@ -514,6 +142,39 @@ class CrawlEngine:
         self.jsonl_path = os.path.join(out_dir, "pages.jsonl")
         self.state_path = os.path.join(out_dir, STATE_FILENAME)
 
+    # Backward-compat properties for throttle state (used by tests)
+    @property
+    def _base_delay(self):
+        return self._throttle.base_delay
+
+    @_base_delay.setter
+    def _base_delay(self, value):
+        self._throttle.base_delay = value
+
+    @property
+    def _active_delay(self):
+        return self._throttle.active_delay
+
+    @_active_delay.setter
+    def _active_delay(self, value):
+        self._throttle._active_delay = value
+
+    @property
+    def _backoff_count(self):
+        return self._throttle._backoff_count
+
+    @_backoff_count.setter
+    def _backoff_count(self, value):
+        self._throttle._backoff_count = value
+
+    @property
+    def _response_times(self):
+        return self._throttle._response_times
+
+    @_response_times.setter
+    def _response_times(self, value):
+        self._throttle._response_times = value
+
     # -- Lifecycle ----------------------------------------------------------
 
     def close(self) -> None:
@@ -528,100 +189,18 @@ class CrawlEngine:
     def setup_robots(self, base_url: str) -> None:
         self._rp, self._robots_text = parse_robots_txt(self.session, up.urljoin(base_url, "/robots.txt"))
 
-        # Respect Crawl-delay from robots.txt if present (respects our UA block)
-        crawl_delay = self._parse_crawl_delay(self._robots_text, self.effective_ua)
-        if crawl_delay is not None and crawl_delay > self._base_delay:
-            self._base_delay = crawl_delay
-            self._active_delay = crawl_delay
+        crawl_delay = AdaptiveThrottle.parse_crawl_delay(self._robots_text, self.effective_ua)
+        if crawl_delay is not None and crawl_delay > self._throttle.base_delay:
+            self._throttle.base_delay = crawl_delay
             self.progress(f"[info] robots.txt Crawl-delay: {crawl_delay}s")
 
+    # Keep static method for backward compatibility
     @staticmethod
     def _parse_crawl_delay(robots_text: str, user_agent: str = "*") -> Optional[float]:
-        """Extract Crawl-delay for a given user-agent from robots.txt.
-
-        Respects user-agent blocks: checks for an exact match on ``user_agent``
-        first, then falls back to the wildcard (*) block. Ignores Crawl-delay
-        directives that belong to other agents.
-
-        Directives that appear before any User-agent line are treated as
-        belonging to the wildcard agent.
-        """
-        ua = user_agent.lower()
-        current_agents: List[str] = []
-        delay_by_agent: Dict[str, float] = {}
-
-        for raw_line in robots_text.splitlines():
-            line = raw_line.strip()
-            if not line or line.startswith("#"):
-                continue
-            lower = line.lower()
-            if lower.startswith("user-agent:"):
-                agent = line.split(":", 1)[1].strip().lower()
-                current_agents.append(agent)
-            elif lower.startswith("crawl-delay:"):
-                try:
-                    val = float(line.split(":", 1)[1].strip())
-                except (ValueError, IndexError):
-                    continue
-                # A bare Crawl-delay with no preceding User-agent is treated as wildcard
-                agents_to_assign = current_agents if current_agents else ["*"]
-                for agent in agents_to_assign:
-                    if agent not in delay_by_agent:
-                        delay_by_agent[agent] = val
-                current_agents = []
-            else:
-                # Any other directive closes the current agent group
-                current_agents = []
-
-        # Prefer exact UA match, fall back to wildcard
-        for candidate in [ua, "*"]:
-            if candidate in delay_by_agent:
-                return delay_by_agent[candidate]
-        return None
+        return AdaptiveThrottle.parse_crawl_delay(robots_text, user_agent)
 
     def _update_throttle(self, response) -> None:
-        """Adapt delay based on server response time and status codes.
-
-        Three-layer adaptive throttle:
-        1. Crawl-delay from robots.txt (floor, set in setup_robots)
-        2. Response-time proportional — slow servers get more delay
-        3. 429 backoff — double delay on rate-limit, decay on success
-        """
-        if response is None:
-            return
-
-        # Track 429 backoff
-        status = getattr(response, "status_code", getattr(response, "status", 0))
-        if status == 429:
-            self._backoff_count += 1
-            # Use a hard floor of 1.0s so backoff works even when base delay is 0
-            self._active_delay = max(1.0, self._active_delay * 2)
-            self.progress(f"[throttle] 429 received — delay increased to {self._active_delay:.1f}s")
-            return
-
-        # Decay backoff on success
-        if self._backoff_count > 0:
-            self._backoff_count = max(0, self._backoff_count - 1)
-            if self._backoff_count == 0:
-                self._active_delay = self._base_delay
-
-        # Response-time adaptive
-        response_time = 0.0
-        try:
-            elapsed = getattr(response, "elapsed", None)
-            if elapsed is not None:
-                response_time = float(elapsed.total_seconds())
-        except (TypeError, AttributeError):
-            pass
-
-        self._response_times.append(response_time)
-        if len(self._response_times) > self._response_time_window:
-            self._response_times = self._response_times[-self._response_time_window:]
-
-        avg_response = sum(self._response_times) / len(self._response_times) if self._response_times else 0
-        if avg_response > self._slow_threshold and self._backoff_count == 0:
-            # Server is slow — add proportional delay
-            self._active_delay = max(self._base_delay, avg_response * 0.5)
+        self._throttle.update(response)
 
     def allowed(self, url: str) -> bool:
         try:
@@ -637,7 +216,6 @@ class CrawlEngine:
     def fetch_page(self, url: str):
         """Fetch a single page. Safe to call from a thread pool worker."""
         if self.pw_browser:
-            # sync_playwright is not thread-safe — serialize all browser calls
             with self._pw_lock:
                 return fetch_with_playwright(self.pw_browser, url, self.timeout, self.effective_ua)
         return fetch(self.session, url, self.timeout)
@@ -653,7 +231,6 @@ class CrawlEngine:
         if not (response and response.ok):
             return None
 
-        # requests normalizes headers to case-insensitive access
         content_type = response.headers.get("content-type", "").lower()
         if "text/html" not in content_type:
             self.progress(f"[skip] non-HTML content: {url}")
@@ -763,11 +340,7 @@ class CrawlEngine:
         return batch
 
     def _fetch_batch(self, batch: List[str]) -> Dict[str, Optional]:
-        """Fetch a batch of URLs. Sequential if concurrency=1, parallel otherwise.
-
-        Uses adaptive delay between requests based on server response time
-        and rate-limit signals.
-        """
+        """Fetch a batch of URLs. Sequential if concurrency=1, parallel otherwise."""
         results: Dict[str, Optional] = {}
 
         if self.concurrency <= 1:
@@ -776,8 +349,8 @@ class CrawlEngine:
                 resp = self.fetch_page(url)
                 results[url] = resp
                 self._update_throttle(resp)
-                if self._active_delay > 0:
-                    time.sleep(self._active_delay)
+                if self._throttle.active_delay > 0:
+                    time.sleep(self._throttle.active_delay)
         else:
             for url in batch:
                 self.progress(f"[get ] {url}")
@@ -792,8 +365,8 @@ class CrawlEngine:
                     except Exception as exc:
                         logger.warning("Fetch error for %s: %s", url, exc)
                         results[url] = None
-            if self._active_delay > 0:
-                time.sleep(self._active_delay)
+            if self._throttle.active_delay > 0:
+                time.sleep(self._throttle.active_delay)
 
         return results
 
@@ -811,7 +384,6 @@ class CrawlEngine:
 
             responses = self._fetch_batch(batch)
 
-            # Process responses sequentially (main thread only — safe for seen_content mutation)
             for url in batch:
                 page_data = self.process_response(url, responses.get(url))
                 if page_data is None:
@@ -820,8 +392,8 @@ class CrawlEngine:
                 self.discover_links(url, page_data["html"], base_netloc)
 
             if self.saved_count % state_save_interval == 0:
-                _save_state(self.state_path, self.seen_urls, self.seen_content,
-                            self.to_visit, self.saved_count, self.seeds)
+                save_state(self.state_path, self.seen_urls, self.seen_content,
+                           self.to_visit, self.saved_count, self.seeds)
 
 
 # ---------------------------------------------------------------------------
@@ -901,7 +473,7 @@ def crawl(
     # --- Resume from saved state ---
     resumed = False
     if resume:
-        saved_state = _load_state(engine.state_path)
+        saved_state = load_state(engine.state_path)
         if saved_state:
             engine.seen_urls = set(saved_state["seen_urls"])
             engine.seen_content = set(saved_state["seen_content"])
@@ -950,8 +522,8 @@ def crawl(
 
     # Save or clean up state
     if engine.interrupted or (engine.to_visit and max_pages > 0 and engine.saved_count >= max_pages):
-        _save_state(engine.state_path, engine.seen_urls, engine.seen_content,
-                     engine.to_visit, engine.saved_count, engine.seeds)
+        save_state(engine.state_path, engine.seen_urls, engine.seen_content,
+                   engine.to_visit, engine.saved_count, engine.seeds)
         engine.progress(f"[info] state saved to {engine.state_path} — use --resume to continue")
     else:
         if os.path.isfile(engine.state_path):

@@ -158,20 +158,97 @@ def score_density(markdown: str, raw_html: Optional[str] = None) -> DensityScore
 
 def _normalize_sentence(s: str) -> str:
     s = s.lower().strip()
+    # Strip Markdown emphasis markers and links before general punctuation removal
+    s = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", s)  # [text](url) -> text
     s = re.sub(r"[^\w\s]", "", s)
+    s = re.sub(r"_", " ", s)  # underscores (Markdown emphasis residue)
     s = re.sub(r"\s+", " ", s)
-    return s
+    return s.strip()
+
+
+def _word_count_no_links(s: str) -> int:
+    """Count words after removing markdown link URLs (keep link text)."""
+    stripped = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", s)
+    return len(stripped.split())
+
+
+def _unwrap_paragraphs(text: str) -> str:
+    """Join soft-wrapped lines into paragraphs so sentence splitting is consistent.
+
+    Different tools wrap lines differently (crawl4ai: long lines, scrapy: ~80 col).
+    Without unwrapping, the same sentence split across lines produces different
+    fragments, making cross-tool consensus unreliable.
+
+    Paragraph boundaries: blank lines, headings (#), list items (*/- /digits),
+    blockquotes (>), code fences (```), and definition lists (:).
+    """
+    lines = text.splitlines()
+    paragraphs = []
+    current: list[str] = []
+
+    for line in lines:
+        stripped = line.strip()
+        # Paragraph boundary: blank line, heading, list item, blockquote, code fence,
+        # standalone link lines, or short lines (likely nav/label elements).
+        is_boundary = (
+            not stripped
+            or stripped.startswith("#")
+            or stripped.startswith("```")
+            or stripped.startswith(">")
+            or re.match(r"^[\*\-\+]\s", stripped)
+            or re.match(r"^\d+\.\s", stripped)
+            or stripped.startswith(":")
+            or stripped.startswith("|")
+            or re.match(r"^\[.*\]\(.*\)$", stripped)  # standalone link line
+            or re.match(r"^Tags?:", stripped, re.IGNORECASE)  # tag/label lines
+            or _word_count_no_links(stripped) <= 3  # short lines are labels/nav
+        )
+        if is_boundary:
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+            paragraphs.append(stripped)
+        else:
+            current.append(stripped)
+
+    if current:
+        paragraphs.append(" ".join(current))
+
+    return "\n".join(paragraphs)
 
 
 def _extract_sentences(text: str, min_words: int = 10) -> List[str]:
-    """Extract meaningful sentences (10+ words) from Markdown text."""
-    raw_sentences = re.split(r"[.!?\n]+", text)
+    """Extract meaningful sentences (10+ words) from Markdown text.
+
+    Unwraps soft line breaks first so that the same sentence wrapped
+    differently by different tools still produces the same extracted text.
+    """
+    unwrapped = _unwrap_paragraphs(text)
+    raw_sentences = re.split(r"[.!?\n]+", unwrapped)
     sentences = []
     for s in raw_sentences:
         normalized = _normalize_sentence(s)
         if len(normalized.split()) >= min_words:
             sentences.append(normalized)
     return sentences
+
+
+def _extract_phrases(text: str, min_words: int = 3) -> List[str]:
+    """Extract short phrases (3+ words) for cross-page repetition detection.
+
+    Nav chrome like "Previous topic", "Theme Auto Light Dark", "Show Source"
+    is typically 3-8 words — too short for _extract_sentences(min_words=10).
+    This function captures those short repeating fragments that are the primary
+    boilerplate signal.
+    """
+    unwrapped = _unwrap_paragraphs(text)
+    raw = re.split(r"[.!?\n|]+", unwrapped)
+    phrases = []
+    for s in raw:
+        normalized = _normalize_sentence(s)
+        if len(normalized.split()) >= min_words:
+            phrases.append(normalized)
+    return phrases
 
 
 @dataclass
@@ -183,6 +260,7 @@ class ConsensusScore:
     precision: float = 0.0   # shared / total — how much output is real content
     recall: float = 0.0      # consensus captured / total consensus
     my_sentence_set: List[str] = field(default_factory=list)  # for cross-page analysis
+    my_phrase_set: List[str] = field(default_factory=list)     # short phrases for repeat rate
 
 
 def score_consensus(
@@ -236,6 +314,7 @@ def score_consensus(
         precision=precision,
         recall=recall,
         my_sentence_set=list(my_sentences),
+        my_phrase_set=_extract_phrases(tool_output),
     )
 
 
@@ -244,12 +323,12 @@ def score_consensus(
 # ---------------------------------------------------------------------------
 
 def compute_repetition_rate(pages: List["PageQuality"]) -> float:
-    """Fraction of unique sentences that appear on more than half of all pages.
+    """Fraction of unique phrases that appear on more than half of all pages.
 
-    Nav chrome (prev/next links, version selectors, language pickers) repeats
-    on every page. Real content appears on at most a handful of pages.
-    A high repeat rate means the tool is carrying boilerplate into every chunk,
-    which degrades RAG retrieval precision.
+    Uses short phrases (3+ words) via _extract_phrases(), not the 10+ word
+    sentences used for consensus. Nav chrome like "Previous topic", "Theme
+    Auto Light Dark", "Show Source" is 3-8 words — too short for sentence
+    extraction but exactly what repeats on every page.
 
     Returns a float in [0, 1]. 0 = no repetition, 1 = everything repeats.
     """
@@ -257,17 +336,18 @@ def compute_repetition_rate(pages: List["PageQuality"]) -> float:
         return 0.0
 
     threshold = len(pages) * 0.5
-    sentence_counts: Counter = Counter()
+    phrase_counts: Counter = Counter()
     for page in pages:
-        if page.consensus and page.consensus.my_sentence_set:
-            for s in set(page.consensus.my_sentence_set):
-                sentence_counts[s] += 1
+        if page.consensus and page.consensus.my_phrase_set:
+            # Use set() so a phrase appearing twice on ONE page counts once
+            for phrase in set(page.consensus.my_phrase_set):
+                phrase_counts[phrase] += 1
 
-    if not sentence_counts:
+    if not phrase_counts:
         return 0.0
 
-    repeated = sum(1 for count in sentence_counts.values() if count > threshold)
-    return repeated / len(sentence_counts)
+    repeated = sum(1 for count in phrase_counts.values() if count > threshold)
+    return repeated / len(phrase_counts)
 
 
 # ---------------------------------------------------------------------------
