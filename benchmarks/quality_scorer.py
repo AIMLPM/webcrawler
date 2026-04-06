@@ -158,6 +158,16 @@ def score_density(markdown: str, raw_html: Optional[str] = None) -> DensityScore
 
 def _normalize_sentence(s: str) -> str:
     s = s.lower().strip()
+    # Fix mojibake: double-encoded UTF-8 smart quotes (â€™ etc.)
+    # This happens when UTF-8 bytes are decoded as Latin-1 then re-encoded.
+    try:
+        s = s.encode("latin-1").decode("utf-8")
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        pass
+    # Normalize unicode quotes/dashes to ASCII equivalents
+    s = s.replace("\u2019", "'").replace("\u2018", "'")   # smart single quotes
+    s = s.replace("\u201c", '"').replace("\u201d", '"')   # smart double quotes
+    s = s.replace("\u2013", "-").replace("\u2014", "-")   # en/em dash
     # Strip Markdown emphasis markers and links before general punctuation removal
     s = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", s)  # [text](url) -> text
     s = re.sub(r"[^\w\s]", "", s)

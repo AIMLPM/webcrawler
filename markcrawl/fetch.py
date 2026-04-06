@@ -56,10 +56,32 @@ def build_session(
     return session
 
 
+def _fix_encoding(response: requests.Response) -> None:
+    """Fix the well-known requests ISO-8859-1 default encoding issue.
+
+    When a server returns ``Content-Type: text/html`` with no charset,
+    ``requests`` defaults to ISO-8859-1 per HTTP/1.1 spec.  But almost all
+    modern HTML is UTF-8, so ``response.text`` produces mojibake (e.g.
+    smart quotes ``\u2019`` become ``Ã¢â\u0082¬â\u0084¢``).
+
+    Fix: if the detected encoding is the HTTP default and the content
+    looks like UTF-8, override it before anyone reads ``response.text``.
+    """
+    if (
+        response.encoding
+        and response.encoding.lower().replace("-", "") == "iso88591"
+        and response.apparent_encoding
+        and response.apparent_encoding.lower().startswith("utf")
+    ):
+        response.encoding = response.apparent_encoding
+
+
 def fetch(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
     """Perform an HTTP GET request, returning the response or ``None`` on failure."""
     try:
-        return session.get(url, timeout=timeout, allow_redirects=True)
+        resp = session.get(url, timeout=timeout, allow_redirects=True)
+        _fix_encoding(resp)
+        return resp
     except requests.RequestException as exc:
         logger.warning("Fetch error for %s: %s", url, exc)
         return None

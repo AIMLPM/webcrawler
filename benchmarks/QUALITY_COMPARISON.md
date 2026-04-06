@@ -35,7 +35,7 @@ Four automated quality metrics — no LLM or human review needed:
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/life/page/1</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/paraphrased/page/1</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -46,72 +46,52 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [paraphrased](/tag/paraphrased/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
 Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
 [inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+“Not all of us can do great things. But we can do small things with great love.”
+by Mother Teresa
+[(about)](/author/Mother-Teresa)
 
 Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[misattributed-to-mother-teresa](/tag/misattributed-to-mother-teresa/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+## Top Ten tags
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[love](/tag/love/)
 
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.”
-by Douglas Adams
-[(about)](/author/Douglas-Adams)
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [life](https://quotes.toscrape.com/tag/life/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“It is better to be hated for what you are than to be loved for what you are not.” by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-“Today you are You, that is truer than true. There is no one alive who is Youer than You.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [comedy](https://quotes.toscrape.com/tag/comedy/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Life is like riding a bicycle. To keep your balance, you must keep moving.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [simile](https://quotes.toscrape.com/tag/simile/page/1/)
-“Life isn't about finding yourself. Life is about creating yourself.” by George Bernard Shaw [(about)](https://quotes.toscrape.com/author/George-Bernard-Shaw)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Finish each day and be done with it. You have done what you could. Some blunders and absurdities no doubt crept in; forget them as soon as you can. Tomorrow is a new day. You shall begin it serenely and with too high a spirit to be encumbered with your old nonsense.” by Ralph Waldo Emerson [(about)](https://quotes.toscrape.com/author/Ralph-Waldo-Emerson)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [regrets](https://quotes.toscrape.com/tag/regrets/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/life/page/2/)
-
-
+### Viewing tag: [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
+Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“Not all of us can do great things. But we can do small things with great love.” by Mother Teresa [(about)](https://quotes.toscrape.com/author/Mother-Teresa)
+Tags: [misattributed-to-mother-teresa](https://quotes.toscrape.com/tag/misattributed-to-mother-teresa/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -122,30 +102,11 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [life](https://quotes.toscrape.com/tag/life/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“It is better to be hated for what you are than to be loved for what you are not.” by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-“Today you are You, that is truer than true. There is no one alive who is Youer than You.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [comedy](https://quotes.toscrape.com/tag/comedy/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Life is like riding a bicycle. To keep your balance, you must keep moving.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [simile](https://quotes.toscrape.com/tag/simile/page/1/)
-“Life isn't about finding yourself. Life is about creating yourself.” by George Bernard Shaw [(about)](https://quotes.toscrape.com/author/George-Bernard-Shaw)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Finish each day and be done with it. You have done what you could. Some blunders and absurdities no doubt crept in; forget them as soon as you can. Tomorrow is a new day. You shall begin it serenely and with too high a spirit to be encumbered with your old nonsense.” by Ralph Waldo Emerson [(about)](https://quotes.toscrape.com/author/Ralph-Waldo-Emerson)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [regrets](https://quotes.toscrape.com/tag/regrets/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/life/page/2/)
-
-
+### Viewing tag: [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
+Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“Not all of us can do great things. But we can do small things with great love.” by Mother Teresa [(about)](https://quotes.toscrape.com/author/Mother-Teresa)
+Tags: [misattributed-to-mother-teresa](https://quotes.toscrape.com/tag/misattributed-to-mother-teresa/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -158,42 +119,41 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [paraphrased](/tag/paraphrased/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
 Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
 [inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+“Not all of us can do great things. But we can do small things with great love.”
+by Mother Teresa
+[(about)](/author/Mother-Teresa)
 
 Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[misattributed-to-mother-teresa](/tag/misattributed-to-mother-teresa/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+## Top Ten tags
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[love](/tag/love/)
 
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.”
-by Douglas Adams
-[(about)](/author/Douglas-Adams)
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
 ```
 
 **crawlee**
@@ -206,38 +166,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [paraphrased](/tag/paraphrased/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
 Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
 [inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+“Not all of us can do great things. But we can do small things with great love.”
+by Mother Teresa
+[(about)](/author/Mother-Teresa)
 
 Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[misattributed-to-mother-teresa](/tag/misattributed-to-mother-teresa/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+## Top Ten tags
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
 ```
 
 **colly+md**
@@ -250,38 +209,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [paraphrased](/tag/paraphrased/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
 Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
 [inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+“Not all of us can do great things. But we can do small things with great love.”
+by Mother Teresa
+[(about)](/author/Mother-Teresa)
 
 Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[misattributed-to-mother-teresa](/tag/misattributed-to-mother-teresa/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+## Top Ten tags
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
 ```
 
 **playwright**
@@ -294,38 +252,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [paraphrased](/tag/paraphrased/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
 Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
 [inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+“Not all of us can do great things. But we can do small things with great love.”
+by Mother Teresa
+[(about)](/author/Mother-Teresa)
 
 Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[misattributed-to-mother-teresa](/tag/misattributed-to-mother-teresa/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+## Top Ten tags
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
 ```
 
 **firecrawl** — no output for this URL
@@ -359,7 +316,7 @@ Tags:
 
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 291 | 8 | 0% | 0 | 1.9 | 0.0 | 93% | 86% |
+| markcrawl | 291 | 8 | 0% | 0 | 1.9 | 0.0 | 98% | 90% |
 | crawl4ai | 491 | 170 ⚠ | 2% | 0 | 10.5 | 0.0 | 96% | 92% |
 | crawl4ai-raw | 493 | 171 ⚠ | 2% | 0 | 10.6 | 0.0 | 96% | 92% |
 | scrapy+md | 389 | 98 ⚠ | 1% | 0 | 1.9 | 0.0 | 100% | 92% |
@@ -371,52 +328,30 @@ Tags:
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/crime_51/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [History](../category/books/history_32/index.html)
-* Sapiens: A Brief History of Humankind
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Crime
 
-# Sapiens: A Brief History of Humankind
+# Crime
 
-Â£54.23
-
-In stock (20 available)
-
-
----
+**1** result.
 
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 
-## Product Description
+1. ### [The Long Shadow of ...](../../../the-long-shadow-of-small-ghosts-murder-and-memory-in-an-american-city_848/index.html "The Long Shadow of Small Ghosts: Murder and Memory in an American City")
 
-From a renowned historian comes a groundbreaking narrative of humanityâs creation and evolutionâa #1 international bestsellerâthat explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be âhuman.âOne hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only oneâh From a renowned historian comes a groundbreaking narrative of humanityâs creation and evolutionâa #1 international bestsellerâthat explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be âhuman.âOne hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only oneâhomo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
+   Â£10.97
 
-## Product Information
+   In stock
 
-|  |  |
-| --- | --- |
-| UPC | 4165285e1663650f |
-| Product Type | Books |
-| Price (excl. tax) | Â£54.23 |
-| Price (incl. tax) | Â£54.23 |
-| Tax | Â£0.00 |
-| Availability | In stock (20 available) |
-| Number of reviews | 0 |
-
-## Products you recently viewed
-
-* ### [Sharp Objects](../sharp-objects_997/index.html "Sharp Objects")
-
-  Â£47.82
-
-  In stock
+   Add to basket
 ```
 
 **crawl4ai**
@@ -424,43 +359,43 @@ From a renowned historian comes a groundbreaking narrative of humanityâs cr
 [Books to Scrape](http://books.toscrape.com/index.html) We love being scraped!
   * [Home](http://books.toscrape.com/index.html)
   * [Books](http://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [History](http://books.toscrape.com/catalogue/category/books/history_32/index.html)
-  * Sapiens: A Brief History of Humankind
+  * Crime
 
 
-![Sapiens: A Brief History of Humankind](http://books.toscrape.com/media/cache/ce/5f/ce5f052c65cc963cf4422be096e915c9.jpg)
-# Sapiens: A Brief History of Humankind
-£54.23
-* * *
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-## Product Description
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-## Product Information  
-| UPC  | 4165285e1663650f  |  
-| --- | --- |  
-| Product Type  | Books  |  
-| Price (excl. tax)  | £54.23  |  
-| Price (incl. tax)  | £54.23  |  
-| Tax  | £0.00  |  
-| Availability  | In stock (20 available)  |  
-| Number of reviews  | 0  |  
-## Products you recently viewed
-  * [![Sharp Objects](http://books.toscrape.com/media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg)](http://books.toscrape.com/catalogue/sharp-objects_997/index.html)
-### [Sharp Objects](http://books.toscrape.com/catalogue/sharp-objects_997/index.html "Sharp Objects")
-£47.82
-Add to basket
-  * [![Soumission](http://books.toscrape.com/media/cache/3e/ef/3eef99c9d9adef34639f510662022830.jpg)](http://books.toscrape.com/catalogue/soumission_998/index.html)
-### [Soumission](http://books.toscrape.com/catalogue/soumission_998/index.html "Soumission")
-£50.10
-Add to basket
-  * [![Tipping the Velvet](http://books.toscrape.com/media/cache/26/0c/260c6ae16bce31c8f8c95daddd9f4a1c.jpg)](http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html)
-### [Tipping the Velvet](http://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html "Tipping the Velvet")
-£53.74
-Add to basket
-  * [![A Light in the Attic](http://books.toscrape.com/media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg)](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)
-### [A Light in the ...](http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html "A Light in the Attic")
-£51.77
-Add to basket
+  * [ Books ](http://books.toscrape.com/catalogue/category/books_1/index.html)
+    * [ Travel ](http://books.toscrape.com/catalogue/category/books/travel_2/index.html)
+    * [ Mystery ](http://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
+    * [ Historical Fiction ](http://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
+    * [ Sequential Art ](http://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
+    * [ Classics ](http://books.toscrape.com/catalogue/category/books/classics_6/index.html)
+    * [ Philosophy ](http://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
+    * [ Romance ](http://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ Womens Fiction ](http://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
+    * [ Fiction ](http://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
+    * [ Childrens ](http://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
+    * [ Religion ](http://books.toscrape.com/catalogue/category/books/religion_12/index.html)
+    * [ Nonfiction ](http://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
+    * [ Music ](http://books.toscrape.com/catalogue/category/books/music_14/index.html)
+    * [ Default ](http://books.toscrape.com/catalogue/category/books/default_15/index.html)
+    * [ Science Fiction ](http://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
+    * [ Sports and Games ](http://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
+    * [ Add a comment ](http://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
+    * [ Fantasy ](http://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
+    * [ New Adult ](http://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
+    * [ Young Adult ](http://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
+    * [ Science ](http://books.toscrape.com/catalogue/category/books/science_22/index.html)
+    * [ Poetry ](http://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
+    * [ Paranormal ](http://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
+    * [ Art ](http://books.toscrape.com/catalogue/category/books/art_25/index.html)
+    * [ Psychology ](http://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
+    * [ Autobiography ](http://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
+    * [ Parenting ](http://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
+    * [ Adult Fiction ](http://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
+    * [ Humor ](http://books.toscrape.com/catalogue/category/books/humor_30/index.html)
+    * [ Horror ](http://books.toscrape.com/catalogue/category/books/horror_31/index.html)
+    * [ History ](http://books.toscrape.com/catalogue/category/books/history_32/index.html)
+    * [ Food and Drink ](http://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
+    * [ Christian Fiction ](http://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **crawl4ai-raw**
@@ -468,130 +403,131 @@ Add to basket
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [History](https://books.toscrape.com/catalogue/category/books/history_32/index.html)
-  * Sapiens: A Brief History of Humankind
+  * Crime
 
 
-![Sapiens: A Brief History of Humankind](https://books.toscrape.com/media/cache/ce/5f/ce5f052c65cc963cf4422be096e915c9.jpg)
-# Sapiens: A Brief History of Humankind
-£54.23
-* * *
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-## Product Description
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-## Product Information  
-| UPC  | 4165285e1663650f  |  
-| --- | --- |  
-| Product Type  | Books  |  
-| Price (excl. tax)  | £54.23  |  
-| Price (incl. tax)  | £54.23  |  
-| Tax  | £0.00  |  
-| Availability  | In stock (20 available)  |  
-| Number of reviews  | 0  |  
-## Products you recently viewed
-  * [![Sharp Objects](https://books.toscrape.com/media/cache/32/51/3251cf3a3412f53f339e42cac2134093.jpg)](https://books.toscrape.com/catalogue/sharp-objects_997/index.html)
-### [Sharp Objects](https://books.toscrape.com/catalogue/sharp-objects_997/index.html "Sharp Objects")
-£47.82
-Add to basket
-  * [![Soumission](https://books.toscrape.com/media/cache/3e/ef/3eef99c9d9adef34639f510662022830.jpg)](https://books.toscrape.com/catalogue/soumission_998/index.html)
-### [Soumission](https://books.toscrape.com/catalogue/soumission_998/index.html "Soumission")
-£50.10
-Add to basket
-  * [![Tipping the Velvet](https://books.toscrape.com/media/cache/26/0c/260c6ae16bce31c8f8c95daddd9f4a1c.jpg)](https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html)
-### [Tipping the Velvet](https://books.toscrape.com/catalogue/tipping-the-velvet_999/index.html "Tipping the Velvet")
-£53.74
-Add to basket
-  * [![A Light in the Attic](https://books.toscrape.com/media/cache/2c/da/2cdad67c44b002e7ead0cc35693c0e8b.jpg)](https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html)
-### [A Light in the ...](https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html "A Light in the Attic")
-£51.77
-Add to basket
+  * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
+    * [ Travel ](https://books.toscrape.com/catalogue/category/books/travel_2/index.html)
+    * [ Mystery ](https://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
+    * [ Historical Fiction ](https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
+    * [ Sequential Art ](https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
+    * [ Classics ](https://books.toscrape.com/catalogue/category/books/classics_6/index.html)
+    * [ Philosophy ](https://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
+    * [ Romance ](https://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ Womens Fiction ](https://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
+    * [ Fiction ](https://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
+    * [ Childrens ](https://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
+    * [ Religion ](https://books.toscrape.com/catalogue/category/books/religion_12/index.html)
+    * [ Nonfiction ](https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
+    * [ Music ](https://books.toscrape.com/catalogue/category/books/music_14/index.html)
+    * [ Default ](https://books.toscrape.com/catalogue/category/books/default_15/index.html)
+    * [ Science Fiction ](https://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
+    * [ Sports and Games ](https://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
+    * [ Add a comment ](https://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
+    * [ Fantasy ](https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
+    * [ New Adult ](https://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
+    * [ Young Adult ](https://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
+    * [ Science ](https://books.toscrape.com/catalogue/category/books/science_22/index.html)
+    * [ Poetry ](https://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
+    * [ Paranormal ](https://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
+    * [ Art ](https://books.toscrape.com/catalogue/category/books/art_25/index.html)
+    * [ Psychology ](https://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
+    * [ Autobiography ](https://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
+    * [ Parenting ](https://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
+    * [ Adult Fiction ](https://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
+    * [ Humor ](https://books.toscrape.com/catalogue/category/books/humor_30/index.html)
+    * [ Horror ](https://books.toscrape.com/catalogue/category/books/horror_31/index.html)
+    * [ History ](https://books.toscrape.com/catalogue/category/books/history_32/index.html)
+    * [ Food and Drink ](https://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
+    * [ Christian Fiction ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **scrapy+md**
 ```
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [History](../category/books/history_32/index.html)
-* Sapiens: A Brief History of Humankind
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Crime
 
-# Sapiens: A Brief History of Humankind
-
-£54.23
-
-In stock (20 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | 4165285e1663650f |
-| Product Type | Books |
-| Price (excl. tax) | £54.23 |
-| Price (incl. tax) | £54.23 |
-| Tax | £0.00 |
-| Availability | In stock (20 available) |
-| Number of reviews | 0 |
-
-## Products you recently viewed
-
-* ### [Sharp Objects](../sharp-objects_997/index.html "Sharp Objects")
-
-  £47.82
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [Romance](../romance_8/index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
+  + [Adult Fiction](../adult-fiction_29/index.html)
+  + [Humor](../humor_30/index.html)
+  + [Horror](../horror_31/index.html)
+  + [History](../history_32/index.html)
+  + [Food and Drink](../food-and-drink_33/index.html)
+  + [Christian Fiction](../christian-fiction_34/index.html)
 ```
 
 **crawlee**
 ```
-Sapiens: A Brief History of Humankind | Books to Scrape - Sandbox
+Crime |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [History](../category/books/history_32/index.html)
-* Sapiens: A Brief History of Humankind
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Crime
 
-# Sapiens: A Brief History of Humankind
-
-£54.23
-
-In stock (20 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | 4165285e1663650f |
-| Product Type | Books |
-| Price (excl. tax) | £54.23 |
-| Price (incl. tax) | £54.23 |
-| Tax | £0.00 |
-| Availability | In stock (20 available) |
-| Number of reviews | 0 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [Romance](../romance_8/index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
 ```
 
 **colly+md**
@@ -599,86 +535,87 @@ From a renowned historian comes a groundbreaking narrative of humanity’s creat
   
 
 
-Sapiens: A Brief History of Humankind | Books to Scrape - Sandbox
+Crime |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [History](../category/books/history_32/index.html)
-* Sapiens: A Brief History of Humankind
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Crime
 
-# Sapiens: A Brief History of Humankind
-
-£54.23
-
-In stock (20 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | 4165285e1663650f |
-| Product Type | Books |
-| Price (excl. tax) | £54.23 |
-| Price (incl. tax) | £54.23 |
-| Tax | £0.00 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [Romance](../romance_8/index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
 ```
 
 **playwright**
 ```
-Sapiens: A Brief History of Humankind | Books to Scrape - Sandbox
+Crime |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [History](../category/books/history_32/index.html)
-* Sapiens: A Brief History of Humankind
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Crime
 
-# Sapiens: A Brief History of Humankind
-
-£54.23
-
-In stock (20 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—h From a renowned historian comes a groundbreaking narrative of humanity’s creation and evolution—a #1 international bestseller—that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be “human.”One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one—homo sapiens. What happened to the others? And what may happen to us?Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.Dr. Harari also compels us to look ahead, because over the last few decades humans have begun to bend laws of natural selection that have governed life for the past four billion years. We are acquiring the ability to design not only the world around us, but also ourselves. Where is this leading us, and what do we want to become?Featuring 27 photographs, 6 maps, and 25 illustrations/diagrams, this provocative and insightful work is sure to spark debate and is essential reading for aficionados of Jared Diamond, James Gleick, Matt Ridley, Robert Wright, and Sharon Moalem. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | 4165285e1663650f |
-| Product Type | Books |
-| Price (excl. tax) | £54.23 |
-| Price (incl. tax) | £54.23 |
-| Tax | £0.00 |
-| Availability | In stock (20 available) |
-| Number of reviews | 0 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [Romance](../romance_8/index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
 ```
 
 **firecrawl** — no output for this URL
@@ -769,58 +706,57 @@ From a renowned historian comes a groundbreaking narrative of humanity’s creat
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/advanced/testing-websockets</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/tutorial/security/oauth2-jwt</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Testing WebSockets[¶](#testing-websockets "Permanent link")
+# OAuth2 with Password (and hashing), Bearer with JWT tokens[¶](#oauth2-with-password-and-hashing-bearer-with-jwt-tokens "Permanent link")
 
-You can use the same `TestClient` to test WebSockets.
+Now that we have all the security flow, let's make the application actually secure, using JWT tokens and secure password hashing.
 
-For this, you use the `TestClient` in a `with` statement, connecting to the WebSocket:
+This code is something you can actually use in your application, save the password hashes in your database, etc.
 
-Python 3.10+
+We are going to start from where we left in the previous chapter and increment it.
+
+## About JWT[¶](#about-jwt "Permanent link")
+
+JWT means "JSON Web Tokens".
+
+It's a standard to codify a JSON object in a long dense string without spaces. It looks like this:
 
 ```False
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from fastapi.websockets import WebSocket
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
 
-app = FastAPI()
+It is not encrypted, so, anyone could recover the information from the contents.
 
+But it's signed. So, when you receive a token that you emitted, you can verify that you actually emitted it.
 
-@app.get("/")
-async def read_main():
-    return {"msg": "Hello World"}
+That way, you can create a token with an expiration of, let's say, 1 week. And then when the user comes back the next day with the token, you know that user is still logged in to your system.
 
+After a week, the token will be expired and the user will not be authorized and will have to sign in again to get a new token. And if the user (or a third party) tried to modify the token to change the expiration, you would be able to discover it, because the signatures would not match.
 
-@app.websocket("/ws")
-async def websocket(websocket: WebSocket):
-    await websocket.accept()
-    await websocket.send_json({"msg": "Hello WebSocket"})
-    await websocket.close()
+If you want to play with JWT tokens and see how they work, check [https://jwt.io](https://jwt.io/).
 
+## Install `PyJWT`[¶](#install-pyjwt "Permanent link")
 
-def test_read_main():
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"msg": "Hello World"}
+We need to install `PyJWT` to generate and verify the JWT tokens in Python.
 
+Make sure you create a [virtual environment](../../../virtual-environments/), activate it, and then install `pyjwt`:
 
-def test_websocket():
-    client = TestClient(app)
-    with client.websocket_connect("/ws") as websocket:
-        data = websocket.receive_json()
-        assert data == {"msg": "Hello WebSocket"}
+```False
+$ pip install pyjwt
+
+---> 100%
+```
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/advanced/testing-websockets/#testing-websockets)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#oauth2-with-password-and-hashing-bearer-with-jwt-tokens)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -838,7 +774,7 @@ def test_websocket():
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Testing WebSockets 
+OAuth2 with Password (and hashing), Bearer with JWT tokens 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -853,7 +789,7 @@ Testing WebSockets
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/advanced/testing-websockets/?q= "Share")
+[ ](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -863,7 +799,7 @@ Initializing search
 
 **crawl4ai-raw**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/advanced/testing-websockets/#testing-websockets)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#oauth2-with-password-and-hashing-bearer-with-jwt-tokens)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -881,7 +817,7 @@ Initializing search
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Testing WebSockets 
+OAuth2 with Password (and hashing), Bearer with JWT tokens 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -896,8 +832,8 @@ Testing WebSockets
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/advanced/testing-websockets/?q= "Share")
-Initializing search 
+[ ](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/?q= "Share")
+Type to start searching
 [ fastapi/fastapi 
   * 0.135.3
   * 96.9k
@@ -910,47 +846,47 @@ FastAPI
 
 [fastapi/fastapi](https://github.com/fastapi/fastapi "Go to repository")
 
-* [FastAPI](../..)
-* [Features](../../features/)
-* [Learn](../../learn/)
+* [FastAPI](../../..)
+* [Features](../../../features/)
+* [Learn](../../../learn/)
 
   Learn
-  + [Python Types Intro](../../python-types/)
-  + [Concurrency and async / await](../../async/)
-  + [Environment Variables](../../environment-variables/)
-  + [Virtual Environments](../../virtual-environments/)
-  + [Tutorial - User Guide](../../tutorial/)
+  + [Python Types Intro](../../../python-types/)
+  + [Concurrency and async / await](../../../async/)
+  + [Environment Variables](../../../environment-variables/)
+  + [Virtual Environments](../../../virtual-environments/)
+  + [Tutorial - User Guide](../../)
 
     Tutorial - User Guide
-    - [First Steps](../../tutorial/first-steps/)
-    - [Path Parameters](../../tutorial/path-params/)
-    - [Query Parameters](../../tutorial/query-params/)
-    - [Request Body](../../tutorial/body/)
-    - [Query Parameters and String Validations](../../tutorial/query-params-str-validations/)
-    - [Path Parameters and Numeric Validations](../../tutorial/path-params-numeric-validations/)
-    - [Query Parameter Models](../../tutorial/query-param-models/)
-    - [Body - Multiple Parameters](../../tutorial/body-multiple-params/)
-    - [Body - Fields](../../tutorial/body-fields/)
-    - [Body - Nested Models](../../tutorial/body-nested-models/)
-    - [Declare Request Example Data](../../tutorial/schema-extra-example/)
-    - [Extra Data Types](../../tutorial/extra-data-types/)
-    - [Cookie Parameters](../../tutorial/cookie-params/)
-    - [Header Parameters](../../tutorial/header-params/)
-    - [Cookie Parameter Models](../../tutorial/cookie-param-models/)
-    - [Header Parameter Models](../../tutorial/header-param-models/)
-    - [Response Model - Return Type](../../tutorial/response-model/)
-    - [Extra Models](../../tutorial/extra-models/)
-    - [Response Status Code](../../tutorial/response-status-code/)
-    - [Form Data](../../tutorial/request-forms/)
-    - [Form Models](../../tutorial/request-form-models/)
-    - [Request Files](../../tutorial/request-files/)
-    - [Request Forms and Files](../../tutorial/request-forms-and-files/)
-    - [Handling Errors](../../tutorial/handling-errors/)
+    - [First Steps](../../first-steps/)
+    - [Path Parameters](../../path-params/)
+    - [Query Parameters](../../query-params/)
+    - [Request Body](../../body/)
+    - [Query Parameters and String Validations](../../query-params-str-validations/)
+    - [Path Parameters and Numeric Validations](../../path-params-numeric-validations/)
+    - [Query Parameter Models](../../query-param-models/)
+    - [Body - Multiple Parameters](../../body-multiple-params/)
+    - [Body - Fields](../../body-fields/)
+    - [Body - Nested Models](../../body-nested-models/)
+    - [Declare Request Example Data](../../schema-extra-example/)
+    - [Extra Data Types](../../extra-data-types/)
+    - [Cookie Parameters](../../cookie-params/)
+    - [Header Parameters](../../header-params/)
+    - [Cookie Parameter Models](../../cookie-param-models/)
+    - [Header Parameter Models](../../header-param-models/)
+    - [Response Model - Return Type](../../response-model/)
+    - [Extra Models](../../extra-models/)
+    - [Response Status Code](../../response-status-code/)
+    - [Form Data](../../request-forms/)
+    - [Form Models](../../request-form-models/)
+    - [Request Files](../../request-files/)
+    - [Request Forms and Files](../../request-forms-and-files/)
+    - [Handling Errors](../../handling-errors/)
 ```
 
 **crawlee**
 ```
-Testing WebSockets - FastAPI
+OAuth2 with Password (and hashing), Bearer with JWT tokens - FastAPI
 
 
 
@@ -959,7 +895,7 @@ Testing WebSockets - FastAPI
 
 
 
-\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
@@ -981,7 +917,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/advanced/testing-websockets/#testing-websockets)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#oauth2-with-password-and-hashing-bearer-with-jwt-tokens)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -994,7 +930,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-Testing WebSockets - FastAPI
+OAuth2 with Password (and hashing), Bearer with JWT tokens - FastAPI
 
 
 
@@ -1003,14 +939,14 @@ Testing WebSockets - FastAPI
 
 
 
-\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
 
 
 
-[Skip to content](#testing-websockets)
+[Skip to content](#oauth2-with-password-and-hashing-bearer-with-jwt-tokens)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1037,7 +973,7 @@ Testing WebSockets - FastAPI
 
 **playwright**
 ```
-Testing WebSockets - FastAPI
+OAuth2 with Password (and hashing), Bearer with JWT tokens - FastAPI
 
 
 
@@ -1046,14 +982,14 @@ Testing WebSockets - FastAPI
 
 
 
-\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/advanced/testing-websockets/#testing-websockets)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/#oauth2-with-password-and-hashing-bearer-with-jwt-tokens)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1119,7 +1055,7 @@ Testing WebSockets - FastAPI
 
 | Tool | Avg words | Preamble words | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 2817 | 1 | 0% | 14 | 9.1 | 4.6 | 90% | 69% |
+| markcrawl | 2817 | 1 | 0% | 14 | 9.1 | 4.6 | 100% | 76% |
 | crawl4ai | 3268 | 64 ⚠ | 0% | 98 | 16.6 | 4.6 | 100% | 58% |
 | crawl4ai-raw | 3268 | 64 ⚠ | 0% | 98 | 16.6 | 4.6 | 100% | 58% |
 | scrapy+md | 3418 | 4 | 0% | 91 | 17.7 | 5.1 | 100% | 100% |
@@ -1131,139 +1067,122 @@ Testing WebSockets - FastAPI
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/glossary.html</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.13</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Glossary[Â¶](#glossary "Permalink to this headline")
+# Python 3.13.12 documentation
 
-`>>>`
-:   The default Python prompt of the interactive shell. Often seen for code
-    examples which can be executed interactively in the interpreter.
+Welcome! This is the official documentation for Python 3.13.12.
 
-`...`
-:   Can refer to:
+**Documentation sections:**
 
-    * The default Python prompt of the interactive shell when entering the
-      code for an indented code block, when within a pair of matching left and
-      right delimiters (parentheses, square brackets, curly braces or triple
-      quotes), or after specifying a decorator.
-    * The [`Ellipsis`](library/constants.html#Ellipsis "Ellipsis") built-in constant.
+|  |  |
+| --- | --- |
+| [What's new in Python 3.13?](whatsnew/3.13.html)   Or [all "What's new" documents since Python 2.0](whatsnew/index.html)  [Tutorial](tutorial/index.html)  Start here: a tour of Python's syntax and features  [Library reference](library/index.html)  Standard library and builtins  [Language reference](reference/index.html)  Syntax and language elements  [Python setup and usage](using/index.html)  How to install, configure, and use Python  [Python HOWTOs](howto/index.html)  In-depth topic manuals | [Installing Python modules](installing/index.html)  Third-party modules and PyPI.org  [Distributing Python modules](distributing/index.html)  Publishing modules for use by other people  [Extending and embedding](extending/index.html)  For C/C++ programmers  [Python's C API](c-api/index.html)  C API reference  [FAQs](faq/index.html)  Frequently asked questions (with answers!)  [Deprecations](deprecations/index.html)  Deprecated functionality |
 
-2to3
-:   A tool that tries to convert Python 2.x code to Python 3.x code by
-    handling most of the incompatibilities which can be detected by parsing the
-    source and traversing the parse tree.
+**Indices, glossary, and search:**
 
-    2to3 is available in the standard library as [`lib2to3`](library/2to3.html#module-lib2to3 "lib2to3: The 2to3 library"); a standalone
-    entry point is provided as `Tools/scripts/2to3`. See
-    [2to3 â Automated Python 2 to 3 code translation](library/2to3.html#to3-reference).
+|  |  |
+| --- | --- |
+| [Global module index](py-modindex.html)  All modules and libraries  [General index](genindex.html)  All functions, classes, and terms  [Glossary](glossary.html)  Terms explained | [Search page](search.html)  Search this documentation  [Complete table of contents](contents.html)  Lists all sections and subsections |
 
-abstract base class
-:   Abstract base classes complement [duck-typing](#term-duck-typing) by
-    providing a way to define interfaces when other techniques like
-    [`hasattr()`](library/functions.html#hasattr "hasattr") would be clumsy or subtly wrong (for example with
-    [magic methods](reference/datamodel.html#special-lookup)). ABCs introduce virtual
-    subclasses, which are classes that donât inherit from a class but are
-    still recognized by [`isinstance()`](library/functions.html#isinstance "isinstance") and [`issubclass()`](library/functions.html#issubclass "issubclass"); see the
-    [`abc`](library/abc.html#module-abc "abc: Abstract base classes according to :pep:`3119`.") module documentation. Python comes with many built-in ABCs for
-    data structures (in the [`collections.abc`](library/collections.abc.html#module-collections.abc "collections.abc: Abstract base classes for containers") module), numbers (in the
-    [`numbers`](library/numbers.html#module-numbers "numbers: Numeric abstract base classes (Complex, Real, Integral, etc.).") module), streams (in the [`io`](library/io.html#module-io "io: Core tools for working with streams.") module), import finders
-    and loaders (in the [`importlib.abc`](library/importlib.html#module-importlib.abc "importlib.abc: Abstract base classes related to import") module). You can create your own
-    ABCs with the [`abc`](library/abc.html#module-abc "abc: Abstract base classes according to :pep:`3119`.") module.
+**Project information:**
 
-annotation
-:   A label associated with a variable, a class
-    attribute or a function parameter or return value,
+|  |  |
+| --- | --- |
+| [Reporting issues](bugs.html)  [Contributing to docs](https://devguide.python.org/documentation/help-documenting/)  [Download the documentation](download.html) | [History and license of Python](license.html)  [Copyright](copyright.html)  [About the documentation](about.html) |
 ```
 
 **crawl4ai**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.13/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13.12 3.12 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[“Why is Python Installed on my Computer?” FAQ](https://docs.python.org/3.10/faq/installed.html "previous chapter")
-#### Next topic
-[About these documents](https://docs.python.org/3.10/about.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/glossary.rst)
+### Download
+[Download these documents](https://docs.python.org/3.13/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
+
+
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/about.html "About these documents") |
-  * [previous](https://docs.python.org/3.10/faq/installed.html "“Why is Python Installed on my Computer?” FAQ") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.13/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.13/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.13/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [Glossary](https://docs.python.org/3.10/glossary.html)
-  * | 
-  * Theme  Auto Light Dark |
-
-
-# Glossary[¶](https://docs.python.org/3.10/glossary.html#glossary "Permalink to this headline") 
-
-`>>>`
-    
-The default Python prompt of the interactive shell. Often seen for code examples which can be executed interactively in the interpreter. 
-
-`...`
-    
-Can refer to:
-  * The default Python prompt of the interactive shell when entering the code for an indented code block, when within a pair of matching left and right delimiters (parentheses, square brackets, curly braces or triple quotes), or after specifying a decorator.
-  * The [`Ellipsis`](https://docs.python.org/3.10/library/constants.html#Ellipsis "Ellipsis") built-in constant.
-
 ```
 
 **crawl4ai-raw**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.13/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13.12 3.12 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[“Why is Python Installed on my Computer?” FAQ](https://docs.python.org/3.10/faq/installed.html "previous chapter")
-#### Next topic
-[About these documents](https://docs.python.org/3.10/about.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/glossary.rst)
+### Download
+[Download these documents](https://docs.python.org/3.13/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
+
+
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/about.html "About these documents") |
-  * [previous](https://docs.python.org/3.10/faq/installed.html "“Why is Python Installed on my Computer?” FAQ") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.13/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.13/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.13/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [Glossary](https://docs.python.org/3.10/glossary.html)
-  * | 
-  * Theme  Auto Light Dark |
-
-
-# Glossary[¶](https://docs.python.org/3.10/glossary.html#glossary "Permalink to this headline") 
-
-`>>>`
-    
-The default Python prompt of the interactive shell. Often seen for code examples which can be executed interactively in the interpreter. 
-
-`...`
-    
-Can refer to:
-  * The default Python prompt of the interactive shell when entering the code for an indented code block, when within a pair of matching left and right delimiters (parentheses, square brackets, curly braces or triple quotes), or after specifying a decorator.
-  * The [`Ellipsis`](https://docs.python.org/3.10/library/constants.html#Ellipsis "Ellipsis") built-in constant.
-
 ```
 
 **scrapy+md**
@@ -1273,47 +1192,46 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[“Why is Python Installed on my Computer?” FAQ](faq/installed.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 
-[About these documents](about.html "next chapter")
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+* [Python 3.13 (stable)](https://docs.python.org/3.13/)
+* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+* [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+* [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+* [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+* [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+* [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+* [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+* [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+* [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+* [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+* [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+* [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+* [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+* [All versions](https://www.python.org/doc/versions/)
 
-### This Page
+### Other resources
 
-* [Report a Bug](bugs.html)
-* [Show Source](https://github.com/python/cpython/blob/3.10/Doc/glossary.rst)
+* [PEP Index](https://peps.python.org/)
+* [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+* [Book List](https://wiki.python.org/moin/PythonBooks)
+* [Audio/Visual Talks](https://www.python.org/doc/av/)
+* [Python Developer’s Guide](https://devguide.python.org/)
 
 ### Navigation
-
-* [index](genindex.html "General Index")
-* [modules](py-modindex.html "Python Module Index") |
-* [next](about.html "About these documents") |
-* [previous](faq/installed.html "“Why is Python Installed on my Computer?” FAQ") |
-* [Python](https://www.python.org/) »
-
-* [3.10.20 Documentation](index.html) »
-* Glossary
-* |
-* Theme
-  Auto
-  Light
-  Dark
-   |
-
-# Glossary[¶](#glossary "Permalink to this headline")
-
-`>>>`
-:   The default Python prompt of the interactive shell. Often seen for code
-    examples which can be executed interactively in the interpreter.
 ```
 
 **crawlee**
 ```
-Glossary — Python 3.10.20 documentation
-
+3.13.12 Documentation
 
 
 
@@ -1338,7 +1256,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.13.123.123.113.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1347,17 +1265,16 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[“Why is Python Installed on my Computer?” FAQ](faq/installed.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 ```
 
 **colly+md**
 ```
-Glossary — Python 3.10.20 documentation
-
+3.13.12 Documentation
 
 
 
@@ -1387,21 +1304,21 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[“Why is Python Installed on my Computer?” FAQ](faq/installed.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 
-[About these documents](about.html "next chapter")
-
-### This Page
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+* [Python 3.13 (stable)](https://docs.python.org/3.13/)
+* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
 ```
 
 **playwright**
 ```
-Glossary — Python 3.10.20 documentation
-
+3.13.12 Documentation
 
 
 
@@ -1426,7 +1343,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.13.123.123.113.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1435,11 +1352,11 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[“Why is Python Installed on my Computer?” FAQ](faq/installed.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 ```
 
 **firecrawl** — no output for this URL
