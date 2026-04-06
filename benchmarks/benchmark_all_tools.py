@@ -181,20 +181,78 @@ def check_scrapy() -> bool:
 
 
 def check_firecrawl() -> bool:
-    """Check if FireCrawl is available.
+    """Check if FireCrawl is available and the API key is valid.
 
     FireCrawl requires either:
     - FIRECRAWL_API_KEY env var (uses their SaaS API — free tier available)
     - FIRECRAWL_API_URL env var (self-hosted via docker-compose)
 
+    For SaaS keys, validates the key against the API and checks remaining
+    credits.  Sets ``check_firecrawl.status`` with a human-readable detail
+    string (e.g. ``"42 credits remaining"``).
+
     Note: FireCrawl self-hosting requires docker-compose with multiple services
     (API, worker, Redis). It cannot be run as a single Docker container.
     """
+    check_firecrawl.status = ""
+
     try:
         import firecrawl  # noqa: F401
     except ImportError:
+        check_firecrawl.status = "firecrawl-py not installed"
         return False
-    return bool(os.environ.get("FIRECRAWL_API_KEY") or os.environ.get("FIRECRAWL_API_URL"))
+
+    api_key = os.environ.get("FIRECRAWL_API_KEY")
+    api_url = os.environ.get("FIRECRAWL_API_URL")
+
+    if not (api_key or api_url):
+        check_firecrawl.status = "FIRECRAWL_API_KEY not set"
+        return False
+
+    # Self-hosted — we can't verify credits, just trust it
+    if api_url and not api_key:
+        check_firecrawl.status = f"self-hosted ({api_url})"
+        return True
+
+    # SaaS — validate key and check credits via SDK
+    fc_kwargs = {}
+    if api_key:
+        fc_kwargs["api_key"] = api_key
+    if api_url:
+        fc_kwargs["api_url"] = api_url
+
+    try:
+        app = firecrawl.FirecrawlApp(**fc_kwargs)
+        usage = app.get_credit_usage()
+    except Exception as exc:
+        msg = str(exc)
+        if "401" in msg or "Unauthorized" in msg:
+            check_firecrawl.status = "invalid API key"
+        else:
+            check_firecrawl.status = f"API error: {msg[:100]}"
+        return False
+
+    try:
+        # SDK returns a CreditUsage object with attributes
+        remaining = getattr(usage, "remaining_credits", None)
+        total = getattr(usage, "plan_credits", None)
+
+        # Fallback: try dict-style access
+        if remaining is None and isinstance(usage, dict):
+            remaining = usage.get("remaining_credits", usage.get("remaining"))
+            total = usage.get("plan_credits", usage.get("total"))
+
+        if remaining is not None:
+            check_firecrawl.status = f"{remaining:,}/{total or '?'} credits remaining"
+            if remaining <= 0:
+                check_firecrawl.status += " — NO CREDITS LEFT"
+                return False
+        else:
+            check_firecrawl.status = "key valid (could not determine credits)"
+    except (TypeError, KeyError, AttributeError):
+        check_firecrawl.status = "key valid (could not parse credit info)"
+
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -1086,16 +1144,22 @@ def main():
     skipped = {}
     print("Checking tools...")
     for name, tool in TOOLS.items():
-        ok = tool["check"]()
+        check_fn = tool["check"]
+        ok = check_fn()
         extra = ""
-        if name == "firecrawl" and ok:
-            extra = f" [{firecrawl_tier} tier]"
-        status = "available" if ok else "NOT INSTALLED"
+        if name == "firecrawl":
+            detail = getattr(check_fn, "status", "")
+            if ok:
+                extra = f" [{firecrawl_tier} tier — {detail}]" if detail else f" [{firecrawl_tier} tier]"
+            elif detail:
+                extra = f" ({detail})"
+        status = "available" if ok else "NOT AVAILABLE"
         print(f"  {name}: {status}{extra}")
         if ok:
             available.append(name)
         else:
-            skipped[name] = "not installed"
+            reason = getattr(check_fn, "status", "") if name == "firecrawl" else "not installed"
+            skipped[name] = reason or "not installed"
 
     if not available:
         print("\nNo tools available. Install at least: pip install markcrawl")
