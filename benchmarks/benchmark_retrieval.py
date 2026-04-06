@@ -723,18 +723,87 @@ def _get_openai_client():
     return OpenAI(api_key=api_key)
 
 
+MAX_EMBED_TOKENS = 8000  # OpenAI limit is 8192; leave margin
+EMBED_TIMEOUT = 30  # seconds per API call
+EMBED_RETRIES = 3  # retry on timeout/network error
+EMBED_CACHE_DIR = BENCH_DIR / "embed_cache"
+
+
+def _truncate_to_tokens(text: str, max_tokens: int = MAX_EMBED_TOKENS) -> str:
+    """Rough truncation to stay under token limit (~4 chars per token)."""
+    max_chars = max_tokens * 4
+    if len(text) <= max_chars:
+        return text
+    return text[:max_chars]
+
+
+def _embed_cache_key(texts: List[str], model: str) -> str:
+    """Compute a stable hash for a batch of texts + model."""
+    import hashlib
+    h = hashlib.sha256()
+    h.update(model.encode())
+    for t in texts:
+        h.update(t.encode())
+    return h.hexdigest()
+
+
+def _load_embed_cache(cache_key: str) -> Optional[List[List[float]]]:
+    """Load cached embeddings if they exist."""
+    cache_file = EMBED_CACHE_DIR / f"{cache_key}.json"
+    if cache_file.is_file():
+        with open(cache_file, "r") as f:
+            return json.load(f)
+    return None
+
+
+def _save_embed_cache(cache_key: str, vectors: List[List[float]]) -> None:
+    """Save embeddings to disk cache."""
+    EMBED_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_file = EMBED_CACHE_DIR / f"{cache_key}.json"
+    with open(cache_file, "w") as f:
+        json.dump(vectors, f)
+
+
 def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[List[float]]:
-    """Embed a batch of texts using OpenAI's API. Handles batching for large inputs."""
+    """Embed a batch of texts using OpenAI's API.
+
+    Features:
+    - Disk cache: embeddings are cached by content hash, so re-runs are instant
+    - Retry with timeout: survives wifi drops (retries 3x with 30s timeout)
+    - Batching: sends 100 texts per API call
+    """
+    # Check full-batch cache first
+    cache_key = _embed_cache_key(texts, model)
+    cached = _load_embed_cache(cache_key)
+    if cached is not None:
+        return cached
+
     all_vectors = []
-    batch_size = 100  # OpenAI limit is 2048, but 100 keeps requests reasonable
+    batch_size = 100
 
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
-        # Replace empty strings with a space (API rejects empty)
-        batch = [t if t.strip() else " " for t in batch]
-        response = client.embeddings.create(input=batch, model=model)
-        all_vectors.extend([d.embedding for d in response.data])
+        batch = [_truncate_to_tokens(t) if t.strip() else " " for t in batch]
 
+        # Retry loop with timeout
+        for attempt in range(EMBED_RETRIES):
+            try:
+                response = client.embeddings.create(
+                    input=batch, model=model, timeout=EMBED_TIMEOUT,
+                )
+                all_vectors.extend([d.embedding for d in response.data])
+                break
+            except Exception as exc:
+                if attempt < EMBED_RETRIES - 1:
+                    wait = 2 ** attempt * 2  # 2s, 4s, 8s
+                    print(f"    Embed API error (attempt {attempt+1}/{EMBED_RETRIES}): {exc}")
+                    print(f"    Retrying in {wait}s...")
+                    time.sleep(wait)
+                else:
+                    raise
+
+    # Cache the result
+    _save_embed_cache(cache_key, all_vectors)
     return all_vectors
 
 
@@ -1388,6 +1457,128 @@ def find_latest_run(runs_dir: Path) -> Optional[Path]:
 # Main
 # ---------------------------------------------------------------------------
 
+CHECKPOINT_DIR = BENCH_DIR / "retrieval_checkpoints"
+
+
+def _checkpoint_key(run_name: str, tool: str, site: str, config_label: str) -> str:
+    """Stable key for a checkpoint file."""
+    safe = f"{run_name}__{tool}__{site}__{config_label}".replace("/", "_")
+    return safe
+
+
+def _save_checkpoint(run_name: str, tool: str, site: str, config_label: str, result: ToolSiteRetrievalResult) -> None:
+    """Save a completed tool/site result to disk."""
+    CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    key = _checkpoint_key(run_name, tool, site, config_label)
+    data = {
+        "tool": result.tool,
+        "site": result.site,
+        "total_queries": result.total_queries,
+        "hits": result.hits,
+        "hit_rate": result.hit_rate,
+        "total_chunks": result.total_chunks,
+        "total_pages": result.total_pages,
+        "avg_chunk_words": result.avg_chunk_words,
+        "embed_time": result.embed_time,
+        "search_time": result.search_time,
+        "hits_at_k": result.hits_at_k,
+        "mrr": result.mrr,
+        "chunk_config_label": result.chunk_config_label,
+        "mode_results": {},
+        "query_results": [],  # primary (embedding) mode
+    }
+    # Save each mode's results
+    for mode, mr in result.mode_results.items():
+        mode_data = {
+            "mode": mr.mode,
+            "hits_at_k": mr.hits_at_k,
+            "mrr": mr.mrr,
+            "query_results": [],
+        }
+        for qr in mr.query_results:
+            mode_data["query_results"].append({
+                "query": qr.query,
+                "description": qr.description,
+                "expected_url_match": qr.expected_url_match,
+                "expected_page_match": qr.expected_page_match,
+                "top_k_urls": qr.top_k_urls[:20],  # save top-20 only to limit size
+                "top_k_scores": qr.top_k_scores[:20],
+                "hit": qr.hit,
+                "hit_rank": qr.hit_rank,
+            })
+        data["mode_results"][mode] = mode_data
+
+    # Primary query results
+    for qr in result.query_results:
+        data["query_results"].append({
+            "query": qr.query,
+            "description": qr.description,
+            "expected_url_match": qr.expected_url_match,
+            "expected_page_match": qr.expected_page_match,
+            "top_k_urls": qr.top_k_urls[:20],
+            "top_k_scores": qr.top_k_scores[:20],
+            "hit": qr.hit,
+            "hit_rank": qr.hit_rank,
+        })
+
+    path = CHECKPOINT_DIR / f"{key}.json"
+    with open(path, "w") as f:
+        json.dump(data, f)
+
+
+def _load_checkpoint(run_name: str, tool: str, site: str, config_label: str) -> Optional[ToolSiteRetrievalResult]:
+    """Load a checkpoint if it exists."""
+    key = _checkpoint_key(run_name, tool, site, config_label)
+    path = CHECKPOINT_DIR / f"{key}.json"
+    if not path.is_file():
+        return None
+
+    with open(path, "r") as f:
+        data = json.load(f)
+
+    def _load_qrs(qr_list):
+        return [
+            QueryResult(
+                query=q["query"],
+                description=q["description"],
+                expected_url_match=q["expected_url_match"],
+                expected_page_match=q["expected_page_match"],
+                top_k_urls=q["top_k_urls"],
+                top_k_scores=q["top_k_scores"],
+                hit=q["hit"],
+                hit_rank=q["hit_rank"],
+            )
+            for q in qr_list
+        ]
+
+    mode_results = {}
+    for mode, md in data.get("mode_results", {}).items():
+        mode_results[mode] = RetrievalModeResult(
+            mode=md["mode"],
+            query_results=_load_qrs(md["query_results"]),
+            hits_at_k={int(k): v for k, v in md["hits_at_k"].items()},
+            mrr=md["mrr"],
+        )
+
+    return ToolSiteRetrievalResult(
+        tool=data["tool"],
+        site=data["site"],
+        total_queries=data["total_queries"],
+        hits=data["hits"],
+        hit_rate=data["hit_rate"],
+        total_chunks=data["total_chunks"],
+        total_pages=data["total_pages"],
+        avg_chunk_words=data["avg_chunk_words"],
+        query_results=_load_qrs(data["query_results"]),
+        embed_time=data["embed_time"],
+        search_time=data["search_time"],
+        hits_at_k={int(k): v for k, v in data["hits_at_k"].items()},
+        mrr=data["mrr"],
+        mode_results=mode_results,
+        chunk_config_label=data.get("chunk_config_label", ""),
+    )
+
+
 def _run_benchmark_for_config(
     client,
     run_dir: Path,
@@ -1398,7 +1589,12 @@ def _run_benchmark_for_config(
     config_label: str,
     verbose: bool = True,
 ) -> Dict[str, Dict[str, ToolSiteRetrievalResult]]:
-    """Run the full retrieval benchmark for a single chunk configuration."""
+    """Run the full retrieval benchmark for a single chunk configuration.
+
+    Supports resuming: completed tool/site results are checkpointed to disk
+    and reloaded on restart, so wifi drops only lose the in-progress item.
+    """
+    run_name = run_dir.name
     all_results: Dict[str, Dict[str, ToolSiteRetrievalResult]] = {}
 
     for site in sites:
@@ -1416,6 +1612,16 @@ def _run_benchmark_for_config(
         site_results: Dict[str, ToolSiteRetrievalResult] = {}
 
         for tool in available_tools:
+            # Check for checkpoint first
+            cached_result = _load_checkpoint(run_name, tool, site, config_label)
+            if cached_result is not None:
+                site_results[tool] = cached_result
+                if verbose:
+                    emb = cached_result.mode_results.get("embedding")
+                    h10 = emb.hits_at_k.get(10, 0) if emb else 0
+                    print(f"\n  {tool}: RESUMED from checkpoint — Hit@10: {h10}/{cached_result.total_queries}")
+                continue
+
             jsonl_path = run_dir / tool / site / "pages.jsonl"
             if not jsonl_path.is_file() or jsonl_path.stat().st_size == 0:
                 if verbose:
@@ -1439,6 +1645,9 @@ def _run_benchmark_for_config(
 
             result = run_retrieval_test(client, chunks, queries, tool, site, config_label)
             site_results[tool] = result
+
+            # Checkpoint immediately after each tool/site completes
+            _save_checkpoint(run_name, tool, site, config_label, result)
 
             if verbose:
                 emb = result.mode_results.get("embedding")
@@ -1466,12 +1675,24 @@ def main():
                         help="Run chunk size sensitivity analysis at multiple configurations")
     parser.add_argument("--no-rerank", action="store_true",
                         help="Skip cross-encoder reranking (faster but less complete)")
+    parser.add_argument("--fresh", action="store_true",
+                        help="Clear checkpoints and embedding cache — start from scratch")
     args = parser.parse_args()
 
     # If --no-rerank, remove reranked from modes
     global RETRIEVAL_MODES
     if args.no_rerank:
         RETRIEVAL_MODES = [m for m in RETRIEVAL_MODES if m != "reranked"]
+
+    # Clear caches if --fresh
+    if args.fresh:
+        import shutil
+        if CHECKPOINT_DIR.is_dir():
+            shutil.rmtree(CHECKPOINT_DIR)
+            print("Cleared retrieval checkpoints.")
+        if EMBED_CACHE_DIR.is_dir():
+            shutil.rmtree(EMBED_CACHE_DIR)
+            print("Cleared embedding cache.")
 
     runs_dir = BENCH_DIR / "runs"
 
