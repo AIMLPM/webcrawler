@@ -90,9 +90,9 @@ COMPARISON_SITES = {
         "description": "Stripe API docs (tabbed content, code samples, sidebars)",
     },
     "blog-engineering": {
-        "url": "https://netflixtechblog.com",
+        "url": "https://github.blog/engineering/",
         "max_pages": 20,
-        "description": "Netflix Tech Blog (articles, images, technical content)",
+        "description": "GitHub Engineering Blog (articles, images, technical content)",
     },
 }
 

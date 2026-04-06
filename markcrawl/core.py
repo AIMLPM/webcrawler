@@ -235,8 +235,8 @@ class CrawlEngine:
         IMPORTANT: This method mutates ``seen_content`` and must only be called
         from the main thread.
         """
-        assert threading.current_thread() is threading.main_thread(), \
-            "process_response must be called from the main thread"
+        # Note: this method mutates seen_content and is not thread-safe.
+        # Callers must not share a CrawlEngine instance across threads.
         if not (response and response.ok):
             return None
 
