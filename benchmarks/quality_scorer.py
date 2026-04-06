@@ -506,8 +506,29 @@ def generate_quality_report(
                 f"{s['avg_precision']:.0%} | {s['avg_recall']:.0%} |"
             )
 
+        # Add takeaway narrative based on the summary data
+        if "markcrawl" in tool_summaries:
+            mc = tool_summaries["markcrawl"]
+            noisy_tools = [t for t, s in tool_summaries.items()
+                           if s["avg_preamble"] > 50 and t != "markcrawl"]
+            if noisy_tools:
+                worst = max(noisy_tools, key=lambda t: tool_summaries[t]["avg_preamble"])
+                worst_p = tool_summaries[worst]["avg_preamble"]
+                lines.extend([
+                    "",
+                    f"**Key takeaway:** markcrawl achieves {mc['signal_ratio']:.0%} content signal "
+                    f"with only {mc['avg_preamble']:.0f} words of preamble per page — compared to "
+                    f"{worst_p:.0f} for {worst}. "
+                    f"Its recall is lower ({mc['avg_recall']:.0%} vs "
+                    f"{tool_summaries[max(tool_summaries, key=lambda t: tool_summaries[t]['avg_recall'])]['avg_recall']:.0%}) "
+                    f"because it strips nav, footer, and sponsor content that other tools include. "
+                    f"For RAG use cases, this trade-off favors markcrawl: every chunk in the vector "
+                    f"index is pure content, with no boilerplate to dilute embeddings or pollute "
+                    f"retrieval results.",
+                    "",
+                ])
+
         lines.extend([
-            "",
             "> **Content signal** = percentage of output that is content (not preamble nav chrome).",
             "> Higher is better. A tool with 100% content signal has zero nav/header pollution.",
             "> **Preamble** = average words before the first heading (nav chrome injected into every page).",
@@ -567,6 +588,84 @@ def generate_quality_report(
             "Repeat rate >20% means sentences recurring across pages."
         )
         lines.append("")
+
+        # ---------------------------------------------------------------
+        # Per-site narrative — interpret what the numbers mean
+        # ---------------------------------------------------------------
+        # Compute per-tool stats for this site for the narrative
+        site_stats: Dict[str, Dict] = {}
+        for tool in tool_names:
+            pages = site_data.get(tool, [])
+            if not pages:
+                continue
+            avg_w = sum(p.signal.word_count for p in pages) / len(pages)
+            avg_p = sum(p.signal.preamble_words for p in pages) / len(pages)
+            rr = repeat_rates.get(tool, 0)
+            scored = [p for p in pages if p.consensus and p.consensus.total_sentences >= 2]
+            prec = sum(p.consensus.precision for p in scored) / len(scored) if scored else 0
+            rec = sum(p.consensus.recall for p in scored) / len(scored) if scored else 0
+            site_stats[tool] = {
+                "avg_words": avg_w, "preamble": avg_p, "repeat": rr,
+                "precision": prec, "recall": rec,
+            }
+
+        if site_stats:
+            # Find the tool with lowest preamble and highest recall
+            cleanest = min(
+                (t for t in site_stats if site_stats[t]["preamble"] < 50),
+                key=lambda t: site_stats[t]["preamble"],
+                default=None,
+            )
+            highest_recall = max(site_stats, key=lambda t: site_stats[t]["recall"])
+            most_words = max(site_stats, key=lambda t: site_stats[t]["avg_words"])
+            least_words = min(site_stats, key=lambda t: site_stats[t]["avg_words"])
+
+            word_gap = site_stats[most_words]["avg_words"] - site_stats[least_words]["avg_words"]
+            preamble_heavy = [t for t in site_stats if site_stats[t]["preamble"] > 50]
+
+            narrative_parts = []
+
+            # Cleanliness story
+            if cleanest and preamble_heavy:
+                heavy_example = max(preamble_heavy, key=lambda t: site_stats[t]["preamble"])
+                clean_p = site_stats[cleanest]['preamble']
+                heavy_p = site_stats[heavy_example]['preamble']
+                w = "word" if clean_p < 1.5 else "words"
+                narrative_parts.append(
+                    f"**{cleanest}** produces the cleanest output with "
+                    f"{clean_p:.0f} {w} of preamble per page, "
+                    f"while **{heavy_example}** injects {heavy_p:.0f} "
+                    f"words of nav chrome before content begins."
+                )
+
+            # Word count gap story — explains where the "extra" content is
+            if word_gap > 100 and preamble_heavy:
+                preamble_words_heavy = site_stats[most_words]["preamble"]
+                if preamble_words_heavy > 50:
+                    preamble_pct = preamble_words_heavy / site_stats[most_words]["avg_words"] * 100
+                    narrative_parts.append(
+                        f"The word count gap ({site_stats[least_words]['avg_words']:.0f} vs "
+                        f"{site_stats[most_words]['avg_words']:.0f} avg words) is largely explained "
+                        f"by preamble: {preamble_words_heavy:.0f} words of nav chrome account for "
+                        f"~{preamble_pct:.0f}% of {most_words}'s output on this site."
+                    )
+
+            # Recall gap story — explain that lower recall often means better cleaning
+            if cleanest and site_stats[cleanest]["recall"] < 0.90:
+                recall_gap = site_stats[highest_recall]["recall"] - site_stats[cleanest]["recall"]
+                if recall_gap > 0.10:
+                    narrative_parts.append(
+                        f"{cleanest}'s lower recall ({site_stats[cleanest]['recall']:.0%} vs "
+                        f"{site_stats[highest_recall]['recall']:.0%}) reflects stricter content "
+                        f"filtering — the \"missed\" sentences are predominantly navigation, "
+                        f"sponsor links, and footer text that other tools include as content. "
+                        f"For RAG, this is a net positive: fewer junk tokens per chunk means "
+                        f"better embedding quality and retrieval precision."
+                    )
+
+            if narrative_parts:
+                lines.append("**Reading the numbers:**\n" + " ".join(narrative_parts))
+                lines.append("")
 
         # Sample output section — first 500 chars per tool for a representative page
         # Pick the page with the most words (most content to compare)

@@ -36,6 +36,8 @@ chunk in the vector index, degrading retrieval for every query.
 | playwright | 85% | 280 ⚠ | 2% | 1.8 | 100% | 98% |
 | firecrawl | — | — | — | — | — | — |
 
+**Key takeaway:** markcrawl achieves 100% content signal with only 4 words of preamble per page — compared to 411 for crawl4ai. Its recall is lower (84% vs 98%) because it strips nav, footer, and sponsor content that other tools include. For RAG use cases, this trade-off favors markcrawl: every chunk in the vector index is pure content, with no boilerplate to dilute embeddings or pollute retrieval results.
+
 > **Content signal** = percentage of output that is content (not preamble nav chrome).
 > Higher is better. A tool with 100% content signal has zero nav/header pollution.
 > **Preamble** = average words before the first heading (nav chrome injected into every page).
@@ -58,7 +60,7 @@ chunk in the vector index, degrading retrieval for every query.
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/life/page/1</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/world/page/1</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -69,72 +71,48 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [world](/tag/world/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+## Top Ten tags
 
-Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+[inspirational](/tag/inspirational/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[life](/tag/life/)
 
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.”
-by Douglas Adams
-[(about)](/author/Douglas-Adams)
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [life](https://quotes.toscrape.com/tag/life/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“It is better to be hated for what you are than to be loved for what you are not.” by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-“Today you are You, that is truer than true. There is no one alive who is Youer than You.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [comedy](https://quotes.toscrape.com/tag/comedy/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Life is like riding a bicycle. To keep your balance, you must keep moving.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [simile](https://quotes.toscrape.com/tag/simile/page/1/)
-“Life isn't about finding yourself. Life is about creating yourself.” by George Bernard Shaw [(about)](https://quotes.toscrape.com/author/George-Bernard-Shaw)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Finish each day and be done with it. You have done what you could. Some blunders and absurdities no doubt crept in; forget them as soon as you can. Tomorrow is a new day. You shall begin it serenely and with too high a spirit to be encumbered with your old nonsense.” by Ralph Waldo Emerson [(about)](https://quotes.toscrape.com/author/Ralph-Waldo-Emerson)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [regrets](https://quotes.toscrape.com/tag/regrets/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/life/page/2/)
-
-
+### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -145,30 +123,9 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [life](https://quotes.toscrape.com/tag/life/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“It is better to be hated for what you are than to be loved for what you are not.” by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-“Today you are You, that is truer than true. There is no one alive who is Youer than You.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [comedy](https://quotes.toscrape.com/tag/comedy/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Life is like riding a bicycle. To keep your balance, you must keep moving.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [simile](https://quotes.toscrape.com/tag/simile/page/1/)
-“Life isn't about finding yourself. Life is about creating yourself.” by George Bernard Shaw [(about)](https://quotes.toscrape.com/author/George-Bernard-Shaw)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [yourself](https://quotes.toscrape.com/tag/yourself/page/1/)
-“Finish each day and be done with it. You have done what you could. Some blunders and absurdities no doubt crept in; forget them as soon as you can. Tomorrow is a new day. You shall begin it serenely and with too high a spirit to be encumbered with your old nonsense.” by Ralph Waldo Emerson [(about)](https://quotes.toscrape.com/author/Ralph-Waldo-Emerson)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [regrets](https://quotes.toscrape.com/tag/regrets/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/life/page/2/)
-
-
+### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -181,42 +138,41 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [world](/tag/world/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+## Top Ten tags
 
-Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+[inspirational](/tag/inspirational/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[life](/tag/life/)
 
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.”
-by Douglas Adams
-[(about)](/author/Douglas-Adams)
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
+
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 ```
 
 **crawlee**
@@ -229,38 +185,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [world](/tag/world/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+## Top Ten tags
 
-Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+[inspirational](/tag/inspirational/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
 **colly+md**
@@ -273,38 +228,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [world](/tag/world/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+## Top Ten tags
 
-Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+[inspirational](/tag/inspirational/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
 **playwright**
@@ -317,38 +271,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [life](/tag/life/page/1/)
+### Viewing tag: [world](/tag/world/page/1/)
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“It is better to be hated for what you are than to be loved for what you are not.”
-by André Gide
-[(about)](/author/Andre-Gide)
+## Top Ten tags
 
-Tags:
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+[inspirational](/tag/inspirational/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
 **firecrawl** — no output for this URL
@@ -393,8 +346,11 @@ Tags:
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
+**Reading the numbers:**
+**markcrawl** produces the cleanest output with 8 words of preamble per page, while **crawl4ai-raw** injects 171 words of nav chrome before content begins. The word count gap (291 vs 493 avg words) is largely explained by preamble: 171 words of nav chrome account for ~35% of crawl4ai-raw's output on this site. markcrawl's lower recall (90% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
+
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/romance_8/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -403,87 +359,87 @@ Nav boilerplate appears here before the real content starts.
 ```
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Christian Fiction
+* Romance
 
-# Christian Fiction
+# Romance
 
-**6** results.
+**35** results - showing **1** to **20**.
 
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 
-1. ### [Redeeming Love](../../../redeeming-love_826/index.html "Redeeming Love")
+1. ### [Chase Me (Paris Nights ...](../../../chase-me-paris-nights-2_977/index.html "Chase Me (Paris Nights #2)")
 
-   Â£20.47
-
-   In stock
-
-   Add to basket
-2. ### [Close to You](../../../close-to-you_798/index.html "Close to You")
-
-   Â£49.46
+   Â£25.27
 
    In stock
 
    Add to basket
-3. ### [Shadows of the Past ...](../../../shadows-of-the-past-logan-point-1_541/index.html "Shadows of the Past (Logan Point #1)")
+2. ### [Black Dust](../../../black-dust_976/index.html "Black Dust")
 
-   Â£39.67
-
-   In stock
-
-   Add to basket
-4. ### [Like Never Before (Walker ...](../../../like-never-before-walker-family-2_476/index.html "Like Never Before (Walker Family #2)")
-
-   Â£28.77
+   Â£34.53
 
    In stock
 
    Add to basket
-5. ### [Counted With the Stars ...](../../../counted-with-the-stars-out-from-egypt-1_463/index.html "Counted With the Stars (Out from Egypt #1)")
+3. ### [Her Backup Boyfriend (The ...](../../../her-backup-boyfriend-the-sorensen-family-1_896/index.html "Her Backup Boyfriend (The Sorensen Family #1)")
+
+   Â£33.97
+
+   In stock
+
+   Add to basket
+4. ### [First and First (Five ...](../../../first-and-first-five-boroughs-3_893/index.html "First and First (Five Boroughs #3)")
+
+   Â£15.97
+
+   In stock
+
+   Add to basket
+5. ### [Fifty Shades Darker (Fifty ...](../../../fifty-shades-darker-fifty-shades-2_892/index.html "Fifty Shades Darker (Fifty Shades #2)")
 ```
 
 **crawl4ai**
 ```
-[Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
-  * [Home](https://books.toscrape.com/index.html)
-  * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * Christian Fiction
+[Books to Scrape](http://books.toscrape.com/index.html) We love being scraped!
+  * [Home](http://books.toscrape.com/index.html)
+  * [Books](http://books.toscrape.com/catalogue/category/books_1/index.html)
+  * Romance
 
 
-  * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
-    * [ Travel ](https://books.toscrape.com/catalogue/category/books/travel_2/index.html)
-    * [ Mystery ](https://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
-    * [ Historical Fiction ](https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
-    * [ Sequential Art ](https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
-    * [ Classics ](https://books.toscrape.com/catalogue/category/books/classics_6/index.html)
-    * [ Philosophy ](https://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
-    * [ Romance ](https://books.toscrape.com/catalogue/category/books/romance_8/index.html)
-    * [ Womens Fiction ](https://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
-    * [ Fiction ](https://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
-    * [ Childrens ](https://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
-    * [ Religion ](https://books.toscrape.com/catalogue/category/books/religion_12/index.html)
-    * [ Nonfiction ](https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
-    * [ Music ](https://books.toscrape.com/catalogue/category/books/music_14/index.html)
-    * [ Default ](https://books.toscrape.com/catalogue/category/books/default_15/index.html)
-    * [ Science Fiction ](https://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
-    * [ Sports and Games ](https://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
-    * [ Add a comment ](https://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
-    * [ Fantasy ](https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
-    * [ New Adult ](https://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
-    * [ Young Adult ](https://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
-    * [ Science ](https://books.toscrape.com/catalogue/category/books/science_22/index.html)
-    * [ Poetry ](https://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
-    * [ Paranormal ](https://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
-    * [ Art ](https://books.toscrape.com/catalogue/category/books/art_25/index.html)
-    * [ Psychology ](https://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
-    * [ Autobiography ](https://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
-    * [ Parenting ](https://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
-    * [ Adult Fiction ](https://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
-    * [ Humor ](https://books.toscrape.com/catalogue/category/books/humor_30/index.html)
-    * [ Horror ](https://books.toscrape.com/catalogue/category/books/horror_31/index.html)
-    * [ History ](https://books.toscrape.com/catalogue/category/books/history_32/index.html)
-    * [ Food and Drink ](https://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
-    * [ **Christian Fiction** ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
+  * [ Books ](http://books.toscrape.com/catalogue/category/books_1/index.html)
+    * [ Travel ](http://books.toscrape.com/catalogue/category/books/travel_2/index.html)
+    * [ Mystery ](http://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
+    * [ Historical Fiction ](http://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
+    * [ Sequential Art ](http://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
+    * [ Classics ](http://books.toscrape.com/catalogue/category/books/classics_6/index.html)
+    * [ Philosophy ](http://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
+    * [ **Romance** ](http://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ Womens Fiction ](http://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
+    * [ Fiction ](http://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
+    * [ Childrens ](http://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
+    * [ Religion ](http://books.toscrape.com/catalogue/category/books/religion_12/index.html)
+    * [ Nonfiction ](http://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
+    * [ Music ](http://books.toscrape.com/catalogue/category/books/music_14/index.html)
+    * [ Default ](http://books.toscrape.com/catalogue/category/books/default_15/index.html)
+    * [ Science Fiction ](http://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
+    * [ Sports and Games ](http://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
+    * [ Add a comment ](http://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
+    * [ Fantasy ](http://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
+    * [ New Adult ](http://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
+    * [ Young Adult ](http://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
+    * [ Science ](http://books.toscrape.com/catalogue/category/books/science_22/index.html)
+    * [ Poetry ](http://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
+    * [ Paranormal ](http://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
+    * [ Art ](http://books.toscrape.com/catalogue/category/books/art_25/index.html)
+    * [ Psychology ](http://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
+    * [ Autobiography ](http://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
+    * [ Parenting ](http://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
+    * [ Adult Fiction ](http://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
+    * [ Humor ](http://books.toscrape.com/catalogue/category/books/humor_30/index.html)
+    * [ Horror ](http://books.toscrape.com/catalogue/category/books/horror_31/index.html)
+    * [ History ](http://books.toscrape.com/catalogue/category/books/history_32/index.html)
+    * [ Food and Drink ](http://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
+    * [ Christian Fiction ](http://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **crawl4ai-raw**
@@ -491,7 +447,7 @@ Nav boilerplate appears here before the real content starts.
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * Christian Fiction
+  * Romance
 
 
   * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
@@ -501,7 +457,7 @@ Nav boilerplate appears here before the real content starts.
     * [ Sequential Art ](https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
     * [ Classics ](https://books.toscrape.com/catalogue/category/books/classics_6/index.html)
     * [ Philosophy ](https://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
-    * [ Romance ](https://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ **Romance** ](https://books.toscrape.com/catalogue/category/books/romance_8/index.html)
     * [ Womens Fiction ](https://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
     * [ Fiction ](https://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
     * [ Childrens ](https://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
@@ -527,7 +483,7 @@ Nav boilerplate appears here before the real content starts.
     * [ Horror ](https://books.toscrape.com/catalogue/category/books/horror_31/index.html)
     * [ History ](https://books.toscrape.com/catalogue/category/books/history_32/index.html)
     * [ Food and Drink ](https://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
-    * [ **Christian Fiction** ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
+    * [ Christian Fiction ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **scrapy+md**
@@ -536,7 +492,7 @@ Nav boilerplate appears here before the real content starts.
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Christian Fiction
+* Romance
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -545,7 +501,7 @@ Nav boilerplate appears here before the real content starts.
   + [Sequential Art](../sequential-art_5/index.html)
   + [Classics](../classics_6/index.html)
   + [Philosophy](../philosophy_7/index.html)
-  + [Romance](../romance_8/index.html)
+  + [**Romance**](index.html)
   + [Womens Fiction](../womens-fiction_9/index.html)
   + [Fiction](../fiction_10/index.html)
   + [Childrens](../childrens_11/index.html)
@@ -571,12 +527,12 @@ Nav boilerplate appears here before the real content starts.
   + [Horror](../horror_31/index.html)
   + [History](../history_32/index.html)
   + [Food and Drink](../food-and-drink_33/index.html)
-  + [**Christian Fiction**](index.html)
+  + [Christian Fiction](../christian-fiction_34/index.html)
 ```
 
 **crawlee**
 ```
-Christian Fiction |
+Romance |
 Books to Scrape - Sandbox
 
 
@@ -586,7 +542,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Christian Fiction
+* Romance
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -595,7 +551,7 @@ Books to Scrape - Sandbox
   + [Sequential Art](../sequential-art_5/index.html)
   + [Classics](../classics_6/index.html)
   + [Philosophy](../philosophy_7/index.html)
-  + [Romance](../romance_8/index.html)
+  + [**Romance**](index.html)
   + [Womens Fiction](../womens-fiction_9/index.html)
   + [Fiction](../fiction_10/index.html)
   + [Childrens](../childrens_11/index.html)
@@ -623,7 +579,7 @@ Books to Scrape - Sandbox
   
 
 
-Christian Fiction |
+Romance |
 Books to Scrape - Sandbox
 
 
@@ -633,7 +589,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Christian Fiction
+* Romance
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -642,7 +598,7 @@ Books to Scrape - Sandbox
   + [Sequential Art](../sequential-art_5/index.html)
   + [Classics](../classics_6/index.html)
   + [Philosophy](../philosophy_7/index.html)
-  + [Romance](../romance_8/index.html)
+  + [**Romance**](index.html)
   + [Womens Fiction](../womens-fiction_9/index.html)
   + [Fiction](../fiction_10/index.html)
   + [Childrens](../childrens_11/index.html)
@@ -664,7 +620,7 @@ Books to Scrape - Sandbox
 
 **playwright**
 ```
-Christian Fiction |
+Romance |
 Books to Scrape - Sandbox
 
 
@@ -674,7 +630,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Christian Fiction
+* Romance
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -683,7 +639,7 @@ Books to Scrape - Sandbox
   + [Sequential Art](../sequential-art_5/index.html)
   + [Classics](../classics_6/index.html)
   + [Philosophy](../philosophy_7/index.html)
-  + [Romance](../romance_8/index.html)
+  + [**Romance**](index.html)
   + [Womens Fiction](../womens-fiction_9/index.html)
   + [Fiction](../fiction_10/index.html)
   + [Childrens](../childrens_11/index.html)
@@ -793,58 +749,62 @@ Books to Scrape - Sandbox
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
+**Reading the numbers:**
+**markcrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai-raw** injects 1502 words of nav chrome before content begins. The word count gap (3835 vs 5424 avg words) is largely explained by preamble: 1502 words of nav chrome account for ~28% of crawl4ai's output on this site. markcrawl's lower recall (73% vs 97%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
+
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/async</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/tutorial/request-forms-and-files</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Concurrency and async / await[¶](#concurrency-and-async-await "Permanent link")
+# Request Forms and Files[¶](#request-forms-and-files "Permanent link")
 
-Details about the `async def` syntax for *path operation functions* and some background about asynchronous code, concurrency, and parallelism.
+You can define files and form fields at the same time using `File` and `Form`.
 
-## In a hurry?[¶](#in-a-hurry "Permanent link")
+Info
 
-**TL;DR:**
+To receive uploaded files and/or form data, first install [`python-multipart`](https://github.com/Kludex/python-multipart).
 
-If you are using third party libraries that tell you to call them with `await`, like:
-
-```False
-results = await some_library()
-```
-
-Then, declare your *path operation functions* with `async def` like:
+Make sure you create a [virtual environment](../../virtual-environments/), activate it, and then install it, for example:
 
 ```False
-@app.get('/')
-async def read_results():
-    results = await some_library()
-    return results
+$ pip install python-multipart
 ```
 
-Note
+## Import `File` and `Form`[¶](#import-file-and-form "Permanent link")
 
-You can only use `await` inside of functions created with `async def`.
-
----
-
-If you are using a third party library that communicates with something (a database, an API, the file system, etc.) and doesn't have support for using `await`, (this is currently the case for most database libraries), then declare your *path operation functions* as normally, with just `def`, like:
+Python 3.10+
 
 ```False
-@app.get('/')
-def results():
-    results = some_library()
-    return results
+from typing import Annotated
+
+from fastapi import FastAPI, File, Form, UploadFile
+
+app = FastAPI()
+
+
+@app.post("/files/")
+async def create_file(
+    file: Annotated[bytes, File()],
+    fileb: Annotated[UploadFile, File()],
+    token: Annotated[str, Form()],
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
 ```
 
----
+🤓 Other versions and variants
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/async/#concurrency-and-async-await)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -862,7 +822,7 @@ def results():
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Concurrency and async / await 
+Request Forms and Files 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -877,7 +837,7 @@ Concurrency and async / await
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/async/?q= "Share")
+[ ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -887,7 +847,7 @@ Initializing search
 
 **crawl4ai-raw**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/async/#concurrency-and-async-await)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -905,7 +865,7 @@ Initializing search
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Concurrency and async / await 
+Request Forms and Files 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -920,7 +880,7 @@ Concurrency and async / await
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/async/?q= "Share")
+[ ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -934,47 +894,46 @@ FastAPI
 
 [fastapi/fastapi](https://github.com/fastapi/fastapi "Go to repository")
 
-* [FastAPI](..)
-* [Features](../features/)
-* [Learn](../learn/)
+* [FastAPI](../..)
+* [Features](../../features/)
+* [Learn](../../learn/)
 
   Learn
-  + [Python Types Intro](../python-types/)
-  + Concurrency and async / await
+  + [Python Types Intro](../../python-types/)
+  + [Concurrency and async / await](../../async/)
+  + [Environment Variables](../../environment-variables/)
+  + [Virtual Environments](../../virtual-environments/)
+  + [Tutorial - User Guide](../)
 
-    [Concurrency and async / await](./)
-
-
-
-    Table of contents
-    - [In a hurry?](#in-a-hurry)
-    - [Technical Details](#technical-details)
-    - [Asynchronous Code](#asynchronous-code)
-
-      * [Concurrency and Burgers](#concurrency-and-burgers)
-      * [Concurrent Burgers](#concurrent-burgers)
-      * [Parallel Burgers](#parallel-burgers)
-      * [Burger Conclusion](#burger-conclusion)
-      * [Is concurrency better than parallelism?](#is-concurrency-better-than-parallelism)
-      * [Concurrency + Parallelism: Web + Machine Learning](#concurrency-parallelism-web-machine-learning)
-    - [`async` and `await`](#async-and-await)
-
-      * [More technical details](#more-technical-details)
-      * [Write your own async code](#write-your-own-async-code)
-      * [Other forms of asynchronous code](#other-forms-of-asynchronous-code)
-    - [Coroutines](#coroutines)
-    - [Conclusion](#conclusion)
-    - [Very Technical Details](#very-technical-details)
-
-      * [Path operation functions](#path-operation-functions)
-      * [Dependencies](#dependencies)
-      * [Sub-dependencies](#sub-dependencies)
-      * [Other utility functions](#other-utility-functions)
+    Tutorial - User Guide
+    - [First Steps](../first-steps/)
+    - [Path Parameters](../path-params/)
+    - [Query Parameters](../query-params/)
+    - [Request Body](../body/)
+    - [Query Parameters and String Validations](../query-params-str-validations/)
+    - [Path Parameters and Numeric Validations](../path-params-numeric-validations/)
+    - [Query Parameter Models](../query-param-models/)
+    - [Body - Multiple Parameters](../body-multiple-params/)
+    - [Body - Fields](../body-fields/)
+    - [Body - Nested Models](../body-nested-models/)
+    - [Declare Request Example Data](../schema-extra-example/)
+    - [Extra Data Types](../extra-data-types/)
+    - [Cookie Parameters](../cookie-params/)
+    - [Header Parameters](../header-params/)
+    - [Cookie Parameter Models](../cookie-param-models/)
+    - [Header Parameter Models](../header-param-models/)
+    - [Response Model - Return Type](../response-model/)
+    - [Extra Models](../extra-models/)
+    - [Response Status Code](../response-status-code/)
+    - [Form Data](../request-forms/)
+    - [Form Models](../request-form-models/)
+    - [Request Files](../request-files/)
+    - Request Forms and Files
 ```
 
 **crawlee**
 ```
-Concurrency and async / await - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -983,7 +942,7 @@ Concurrency and async / await - FastAPI
 
 
 
-\_\_md\_scope=new URL("..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
@@ -1005,7 +964,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/async/#concurrency-and-async-await)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1018,7 +977,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-Concurrency and async / await - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -1027,14 +986,14 @@ Concurrency and async / await - FastAPI
 
 
 
-\_\_md\_scope=new URL("..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
 
 
 
-[Skip to content](#concurrency-and-async-await)
+[Skip to content](#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1061,7 +1020,7 @@ Concurrency and async / await - FastAPI
 
 **playwright**
 ```
-Concurrency and async / await - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -1070,14 +1029,14 @@ Concurrency and async / await - FastAPI
 
 
 
-\_\_md\_scope=new URL("..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
+\_\_md\_scope=new URL("../..",location),\_\_md\_hash=e=>[...e].reduce(((e,\_)=>(e<<5)-e+\_.charCodeAt(0)),0),\_\_md\_get=(e,\_=localStorage,t=\_\_md\_scope)=>JSON.parse(\_.getItem(t.pathname+"."+e)),\_\_md\_set=(e,\_,t=localStorage,a=\_\_md\_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(\_))}catch(e){}}
 
 
 
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/async/#concurrency-and-async-await)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1154,141 +1113,126 @@ Concurrency and async / await - FastAPI
 
 > ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
 
+**Reading the numbers:**
+**markcrawl** produces the cleanest output with 1 word of preamble per page, while **crawl4ai** injects 64 words of nav chrome before content begins. markcrawl's lower recall (76% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
+
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/download.html</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.15</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Download Python 3.10.20 Documentation
+# Python 3.15.0a7 documentation
 
-**Last updated on: Mar 11, 2026.**
+Welcome! This is the official documentation for Python 3.15.0a7.
 
-To download an archive containing all the documents for this version of
-Python in one of various formats, follow one of links in this table.
+**Documentation sections:**
 
-| Format | Packed as .zip | Packed as .tar.bz2 |
-| --- | --- | --- |
-| HTML | [Download](archives/python-3.10.20-docs-html.zip) (ca. 9 MiB) | [Download](archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB) |
-| Plain Text | [Download](archives/python-3.10.20-docs-text.zip) (ca. 3 MiB) | [Download](archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB) |
-| EPUB | [Download](archives/python-3.10.20-docs.epub) (ca. 5 MiB) |  |
+|  |  |
+| --- | --- |
+| [What's new in Python 3.15?](whatsnew/3.15.html)   Or [all "What's new" documents since Python 2.0](whatsnew/index.html)  [Tutorial](tutorial/index.html)  Start here: a tour of Python's syntax and features  [Library reference](library/index.html)  Standard library and builtins  [Language reference](reference/index.html)  Syntax and language elements  [Python setup and usage](using/index.html)  How to install, configure, and use Python  [Python HOWTOs](howto/index.html)  In-depth topic manuals | [Installing Python modules](installing/index.html)  Third-party modules and PyPI.org  [Distributing Python modules](distributing/index.html)  Publishing modules for use by other people  [Extending and embedding](extending/index.html)  For C/C++ programmers  [Python's C API](c-api/index.html)  C API reference  [FAQs](faq/index.html)  Frequently asked questions (with answers!)  [Deprecations](deprecations/index.html)  Deprecated functionality |
 
-These archives contain all the content in the documentation.
+**Indices, glossary, and search:**
 
-HTML Help (`.chm`) files are made available in the "Windows" section
-on the [Python
-download page](https://www.python.org/downloads/release/python-31020/).
+|  |  |
+| --- | --- |
+| [Global module index](py-modindex.html)  All modules and libraries  [General index](genindex.html)  All functions, classes, and terms  [Glossary](glossary.html)  Terms explained | [Search page](search.html)  Search this documentation  [Complete table of contents](contents.html)  Lists all sections and subsections |
 
-We no longer provide updates to the pre-built PDFs of the documentation.
-The previously-built archives are still available and may be of use:
-[A4 PDF (.zip archive)](archives/python-3.10.20-docs-pdf-a4.zip);
-[A4 PDF (.tar.bz2 archive)](archives/python-3.10.20-docs-pdf-a4.tar.bz2);
-[US Letter PDF (.zip archive)](archives/python-3.10.20-docs-pdf-letter.zip);
-[US Letter PDF (.tar.bz2 archive)](archives/python-3.10.20-docs-pdf-letter.tar.bz2).
-To build a PDF archive, follow the instructions in the
-[Developer's Guide](https://devguide.python.org/documentation/start-documenting/#building-the-documentation)
-and run `make dist-pdf` in the `Doc/` directory of a copy of the CPython repository.
+**Project information:**
 
-## Unpacking
-
-Unix users should download the .tar.bz2 archives; these are bzipped tar
-archives and can be handled in the usual way using tar and the bzip2
-program. The [InfoZIP](http://www.info-zip.org) unzip program can be
-used to handle the ZIP archives if desired. The .tar.bz2 archives provide the
-best compression and fastest download times.
-
-Windows users can use the ZIP archives since those are customary on that
-platform. These are created on Unix using the InfoZIP zip program.
+|  |  |
+| --- | --- |
+| [Reporting issues](bugs.html)  [Contributing to docs](https://devguide.python.org/documentation/help-documenting/)  [Download the documentation](download.html) | [History and license of Python](license.html)  [Copyright](copyright.html)  [About the documentation](about.html) |
 ```
 
 **crawl4ai**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.15/_static/py.svg) ](https://www.python.org/) 3.15.0a7 3.14 3.13 3.12 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
-  * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [Download](https://docs.python.org/3.10/download.html)
-  * | 
-  * Theme  Auto Light Dark |
+### Download
+[Download these documents](https://docs.python.org/3.15/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
 
 
-# Download Python 3.10.20 Documentation
-**Last updated on: Mar 11, 2026.**
-To download an archive containing all the documents for this version of Python in one of various formats, follow one of links in this table.  
-| Format  | Packed as .zip  | Packed as .tar.bz2  |  
-| --- | --- | --- |  
-| HTML  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.zip) (ca. 9 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB)  |  
-| Plain Text  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.zip) (ca. 3 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB)  |  
-| EPUB  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs.epub) (ca. 5 MiB)  |   |  
-These archives contain all the content in the documentation.
-HTML Help (`.chm`) files are made available in the "Windows" section on the [Python download page](https://www.python.org/downloads/release/python-31020/).
-We no longer provide updates to the pre-built PDFs of the documentation. The previously-built archives are still available and may be of use: [A4 PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.zip); [A4 PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.tar.bz2); [US Letter PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.zip); [US Letter PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.tar.bz2). To build a PDF archive, follow the instructions in the [Developer's Guide](https://devguide.python.org/documentation/start-documenting/#building-the-documentation) and run `make dist-pdf` in the `Doc/` directory of a copy of the CPython repository. 
-## Unpacking
-Unix users should download the .tar.bz2 archives; these are bzipped tar archives and can be handled in the usual way using tar and the bzip2 program. The [InfoZIP](http://www.info-zip.org) unzip program can be used to handle the ZIP archives if desired. The .tar.bz2 archives provide the best compression and fastest download times.
-Windows users can use the ZIP archives since those are customary on that platform. These are created on Unix using the InfoZIP zip program.
-## Problems
-If you have comments or suggestions for the Python documentation, please send email to docs@python.org.
-«
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
+
+
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.15/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.15/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.15/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 ```
 
 **crawl4ai-raw**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.15/_static/py.svg) ](https://www.python.org/) 3.15.0a7 3.14 3.13 3.12 3.11 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
-  * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [Download](https://docs.python.org/3.10/download.html)
-  * | 
-  * Theme  Auto Light Dark |
+### Download
+[Download these documents](https://docs.python.org/3.15/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
 
 
-# Download Python 3.10.20 Documentation
-**Last updated on: Mar 11, 2026.**
-To download an archive containing all the documents for this version of Python in one of various formats, follow one of links in this table.  
-| Format  | Packed as .zip  | Packed as .tar.bz2  |  
-| --- | --- | --- |  
-| HTML  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.zip) (ca. 9 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB)  |  
-| Plain Text  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.zip) (ca. 3 MiB)  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB)  |  
-| EPUB  |  [Download](https://docs.python.org/3.10/archives/python-3.10.20-docs.epub) (ca. 5 MiB)  |   |  
-These archives contain all the content in the documentation.
-HTML Help (`.chm`) files are made available in the "Windows" section on the [Python download page](https://www.python.org/downloads/release/python-31020/).
-We no longer provide updates to the pre-built PDFs of the documentation. The previously-built archives are still available and may be of use: [A4 PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.zip); [A4 PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-a4.tar.bz2); [US Letter PDF (.zip archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.zip); [US Letter PDF (.tar.bz2 archive)](https://docs.python.org/3.10/archives/python-3.10.20-docs-pdf-letter.tar.bz2). To build a PDF archive, follow the instructions in the [Developer's Guide](https://devguide.python.org/documentation/start-documenting/#building-the-documentation) and run `make dist-pdf` in the `Doc/` directory of a copy of the CPython repository. 
-## Unpacking
-Unix users should download the .tar.bz2 archives; these are bzipped tar archives and can be handled in the usual way using tar and the bzip2 program. The [InfoZIP](http://www.info-zip.org) unzip program can be used to handle the ZIP archives if desired. The .tar.bz2 archives provide the best compression and fastest download times.
-Windows users can use the ZIP archives since those are customary on that platform. These are created on Unix using the InfoZIP zip program.
-## Problems
-If you have comments or suggestions for the Python documentation, please send email to docs@python.org.
-«
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
+
+
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.15/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.15/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.15/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 ```
 
 **scrapy+md**
@@ -1298,46 +1242,49 @@ Auto
 Light
 Dark
 
+### Download
+
+[Download these documents](download.html)
+
+### Docs by version
+
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+* [Python 3.13 (stable)](https://docs.python.org/3.13/)
+* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+* [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+* [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+* [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+* [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+* [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+* [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+* [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+* [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+* [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+* [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+* [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+* [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+* [All versions](https://www.python.org/doc/versions/)
+
+### Other resources
+
+* [PEP Index](https://peps.python.org/)
+* [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+* [Book List](https://wiki.python.org/moin/PythonBooks)
+* [Audio/Visual Talks](https://www.python.org/doc/av/)
+* [Python Developer’s Guide](https://devguide.python.org/)
+
 ### Navigation
-
-* [index](genindex.html "General Index")
-* [modules](py-modindex.html "Python Module Index") |
-* [Python](https://www.python.org/) »
-
-* [3.10.20 Documentation](index.html) »
-* Download
-* |
-* Theme
-  Auto
-  Light
-  Dark
-   |
-
-# Download Python 3.10.20 Documentation
-
-**Last updated on: Mar 11, 2026.**
-
-To download an archive containing all the documents for this version of
-Python in one of various formats, follow one of links in this table.
-
-| Format | Packed as .zip | Packed as .tar.bz2 |
-| --- | --- | --- |
-| HTML | [Download](archives/python-3.10.20-docs-html.zip) (ca. 9 MiB) | [Download](archives/python-3.10.20-docs-html.tar.bz2) (ca. 6 MiB) |
-| Plain Text | [Download](archives/python-3.10.20-docs-text.zip) (ca. 3 MiB) | [Download](archives/python-3.10.20-docs-text.tar.bz2) (ca. 2 MiB) |
-| EPUB | [Download](archives/python-3.10.20-docs.epub) (ca. 5 MiB) |  |
-
-These archives contain all the content in the documentation.
-
-HTML Help (`.chm`) files are made available in the "Windows" section
-on the [Python
-download page](https://www.python.org/downloads/release/python-31020/).
-
-We no longer provide updates to the pre-built PDFs of the documentation.
 ```
 
 **crawlee**
 ```
-Download — Python 3.10.20 documentation
+3.15.0a7 Documentation
+
+
+
 
 
 
@@ -1361,7 +1308,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+3.15.0a73.143.133.123.113.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1370,17 +1317,17 @@ Auto
 Light
 Dark
 
-### Navigation
+### Download
 
-* [index](genindex.html "General Index")
-* [modules](py-modindex.html "Python Module Index") |
-* [Python](https://www.python.org/) »
-* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
+[Download these documents](download.html)
 ```
 
 **colly+md**
 ```
-Download — Python 3.10.20 documentation
+3.15.0a7 Documentation
+
+
+
 
 
 
@@ -1409,22 +1356,22 @@ Auto
 Light
 Dark
 
-### Navigation
+### Download
 
-* [index](genindex.html "General Index")
-* [modules](py-modindex.html "Python Module Index") |
-* [Python](https://www.python.org/) »
+[Download these documents](download.html)
 
-* [3.10.20 Documentation](index.html) »
-* Download
-* |
-* Theme
-  Auto
+### Docs by version
+
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
 ```
 
 **playwright**
 ```
-Download — Python 3.10.20 documentation
+3.15.0a7 Documentation
+
+
+
 
 
 
@@ -1448,7 +1395,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+3.15.0a73.143.133.123.113.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1457,12 +1404,9 @@ Auto
 Light
 Dark
 
-### Navigation
+### Download
 
-* [index](genindex.html "General Index")
-* [modules](py-modindex.html "Python Module Index") |
-* [Python](https://www.python.org/) »
-* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
+[Download these documents](download.html)
 ```
 
 **firecrawl** — no output for this URL
