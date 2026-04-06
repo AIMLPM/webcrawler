@@ -506,8 +506,8 @@ def generate_quality_report(
                 f"{s['avg_precision']:.0%} | {s['avg_recall']:.0%} |"
             )
 
-        # Footnote row at the bottom of the summary table
-        lines.append(f"| **[1]** Avg words per page before the first heading (nav chrome) | | | | | | |")
+        # Footnote below the summary table
+        lines.extend(["", "**[1]** Avg words per page before the first heading (nav chrome).", ""])
 
         # Add takeaway narrative based on the summary data
         if "markcrawl" in tool_summaries:
@@ -583,11 +583,13 @@ def generate_quality_report(
                 f"{avg_code:.1f} | {avg_precision:.0%} | {avg_recall:.0%} |"
             )
 
-        # Footnote row at the bottom of the per-site table
-        lines.append(f"| **[1]** Avg words per page before the first heading (nav chrome). "
-                      f"**⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). "
-                      f"| | | | | | | | |")
-        lines.append("")
+        # Footnote below the per-site table
+        lines.extend([
+            "",
+            "**[1]** Avg words per page before the first heading (nav chrome). "
+            "**⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).",
+            "",
+        ])
 
         # ---------------------------------------------------------------
         # Per-site narrative — interpret what the numbers mean

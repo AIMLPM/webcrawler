@@ -35,7 +35,9 @@ chunk in the vector index, degrading retrieval for every query.
 | colly+md | 85% | 275 ⚠ | 2% | 1.8 | 100% | 98% |
 | playwright | 85% | 280 ⚠ | 2% | 1.8 | 100% | 98% |
 | firecrawl | — | — | — | — | — | — |
-| **[1]** Avg words per page before the first heading (nav chrome) | | | | | | |
+
+**[1]** Avg words per page before the first heading (nav chrome).
+
 
 **Key takeaway:** markcrawl achieves 100% content signal with only 4 words of preamble per page — compared to 411 for crawl4ai. Its recall is lower (84% vs 98%) because it strips nav, footer, and sponsor content that other tools include. For RAG use cases, this trade-off favors markcrawl: every chunk in the vector index is pure content, with no boilerplate to dilute embeddings or pollute retrieval results.
 
@@ -56,10 +58,11 @@ chunk in the vector index, degrading retrieval for every query.
 | colly+md | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 100% | 100% |
 | playwright | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 100% | 100% |
 | firecrawl | — | — | — | — | — | — | — | — |
-| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
+
+**[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/inspirational/page/1</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/author/Jane-Austen</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -70,74 +73,23 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-### Viewing tag: [inspirational](/tag/inspirational/page/1/)
+### Jane Austen
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
 
-Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+**Description:**
 
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
-
-Tags:
-[be-yourself](/tag/be-yourself/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-
-“I have not failed. I've just found 10,000 ways that won't work.”
-by Thomas A. Edison
-[(about)](/author/Thomas-A-Edison)
-
-Tags:
-[edison](/tag/edison/page/1/)
-[failure](/tag/failure/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[paraphrased](/tag/paraphrased/page/1/)
-
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
-
-Tags:
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture.
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
-Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
-Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
-“To the well-organized mind, death is but the next great adventure.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
-Tags: [death](https://quotes.toscrape.com/tag/death/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“It is never too late to be what you might have been.” by George Eliot [(about)](https://quotes.toscrape.com/author/George-Eliot)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“You can never get a cup of tea large enough or a book long enough to suit me.” by C.S. Lewis [(about)](https://quotes.toscrape.com/author/C-S-Lewis)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [reading](https://quotes.toscrape.com/tag/reading/page/1/) [tea](https://quotes.toscrape.com/tag/tea/page/1/)
-“Only in the darkness can you see the stars.” by Martin Luther King Jr. [(about)](https://quotes.toscrape.com/author/Martin-Luther-King-Jr)
-Tags: [hope](https://quotes.toscrape.com/tag/hope/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“When one door of happiness closes, another opens; but often we look so long at the closed door that we do not see the one which has been opened for us.” by Helen Keller [(about)](https://quotes.toscrape.com/author/Helen-Keller)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/inspirational/page/2/)
-
-
-## Top Ten tags
-[love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
+### Jane Austen
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
+**Description:**
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture. 
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 Made with ❤ by [Zyte](https://www.zyte.com)
 ```
@@ -146,32 +98,10 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
-Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
-Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
-“To the well-organized mind, death is but the next great adventure.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
-Tags: [death](https://quotes.toscrape.com/tag/death/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“It is never too late to be what you might have been.” by George Eliot [(about)](https://quotes.toscrape.com/author/George-Eliot)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“You can never get a cup of tea large enough or a book long enough to suit me.” by C.S. Lewis [(about)](https://quotes.toscrape.com/author/C-S-Lewis)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [reading](https://quotes.toscrape.com/tag/reading/page/1/) [tea](https://quotes.toscrape.com/tag/tea/page/1/)
-“Only in the darkness can you see the stars.” by Martin Luther King Jr. [(about)](https://quotes.toscrape.com/author/Martin-Luther-King-Jr)
-Tags: [hope](https://quotes.toscrape.com/tag/hope/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-“When one door of happiness closes, another opens; but often we look so long at the closed door that we do not see the one which has been opened for us.” by Helen Keller [(about)](https://quotes.toscrape.com/author/Helen-Keller)
-Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
-  * [Next →](https://quotes.toscrape.com/tag/inspirational/page/2/)
-
-
-## Top Ten tags
-[love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
+### Jane Austen
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
+**Description:**
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture. 
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 Made with ❤ by [Zyte](https://www.zyte.com)
 ```
@@ -182,42 +112,17 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-### Viewing tag: [inspirational](/tag/inspirational/page/1/)
+### Jane Austen
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
 
-Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+**Description:**
 
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture.
 
-Tags:
-[be-yourself](/tag/be-yourself/page/1/)
-[inspirational](/tag/inspirational/page/1/)
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 
-“I have not failed. I've just found 10,000 ways that won't work.”
-by Thomas A. Edison
-[(about)](/author/Thomas-A-Edison)
-
-Tags:
-[edison](/tag/edison/page/1/)
-[failure](/tag/failure/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[paraphrased](/tag/paraphrased/page/1/)
-
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
-
-Tags:
+Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 
 **crawlee**
@@ -230,38 +135,17 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [inspirational](/tag/inspirational/page/1/)
+### Jane Austen
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
 
-Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+**Description:**
 
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture.
 
-Tags:
-[be-yourself](/tag/be-yourself/page/1/)
-[inspirational](/tag/inspirational/page/1/)
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 
-“I have not failed. I've just found 10,000 ways that won't work.”
-by Thomas A. Edison
-[(about)](/author/Thomas-A-Edison)
-
-Tags:
-[edison](/tag/edison/page/1/)
-[failure](/tag/failure/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[paraphrased](/tag/paraphrased/page/1/)
-
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
+Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 
 **colly+md**
@@ -274,38 +158,17 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [inspirational](/tag/inspirational/page/1/)
+### Jane Austen
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
 
-Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+**Description:**
 
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture.
 
-Tags:
-[be-yourself](/tag/be-yourself/page/1/)
-[inspirational](/tag/inspirational/page/1/)
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 
-“I have not failed. I've just found 10,000 ways that won't work.”
-by Thomas A. Edison
-[(about)](/author/Thomas-A-Edison)
-
-Tags:
-[edison](/tag/edison/page/1/)
-[failure](/tag/failure/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[paraphrased](/tag/paraphrased/page/1/)
-
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
+Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 
 **playwright**
@@ -318,38 +181,17 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [inspirational](/tag/inspirational/page/1/)
+### Jane Austen
 
-“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
-by Albert Einstein
-[(about)](/author/Albert-Einstein)
+**Born:** December 16, 1775 in Steventon Rectory, Hampshire, The United Kingdom
 
-Tags:
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[live](/tag/live/page/1/)
-[miracle](/tag/miracle/page/1/)
-[miracles](/tag/miracles/page/1/)
+**Description:**
 
-“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+Jane Austen was an English novelist whose works of romantic fiction, set among the landed gentry, earned her a place as one of the most widely read writers in English literature, her realism and biting social commentary cementing her historical importance among scholars and critics.Austen lived her entire life as part of a close-knit family located on the lower fringes of the English landed gentry. She was educated primarily by her father and older brothers as well as through her own reading. The steadfast support of her family was critical to her development as a professional writer. Her artistic apprenticeship lasted from her teenage years until she was about 35 years old. During this period, she experimented with various literary forms, including the epistolary novel which she tried then abandoned, and wrote and extensively revised three major novels and began a fourth. From 1811 until 1816, with the release of Sense and Sensibility (1811), Pride and Prejudice (1813), Mansfield Park (1814) and Emma (1815), she achieved success as a published writer. She wrote two additional novels, Northanger Abbey and Persuasion, both published posthumously in 1818, and began a third, which was eventually titled Sanditon, but died before completing it.Austen's works critique the novels of sensibility of the second half of the 18th century and are part of the transition to 19th-century realism. Her plots, though fundamentally comic, highlight the dependence of women on marriage to secure social standing and economic security. Her work brought her little personal fame and only a few positive reviews during her lifetime, but the publication in 1869 of her nephew's A Memoir of Jane Austen introduced her to a wider public, and by the 1940s she had become widely accepted in academia as a great English writer. The second half of the 20th century saw a proliferation of Austen scholarship and the emergence of a Janeite fan culture.
 
-Tags:
-[be-yourself](/tag/be-yourself/page/1/)
-[inspirational](/tag/inspirational/page/1/)
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 
-“I have not failed. I've just found 10,000 ways that won't work.”
-by Thomas A. Edison
-[(about)](/author/Thomas-A-Edison)
-
-Tags:
-[edison](/tag/edison/page/1/)
-[failure](/tag/failure/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[paraphrased](/tag/paraphrased/page/1/)
-
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
+Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 
 **firecrawl** — no output for this URL
@@ -391,58 +233,59 @@ Tags:
 | colly+md | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
 | playwright | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
 | firecrawl | — | — | — | — | — | — | — | — |
-| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
+
+**[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 8 words of preamble per page, while **crawl4ai-raw** injects 171 words of nav chrome before content begins. The word count gap (291 vs 493 avg words) is largely explained by preamble: 171 words of nav chrome account for ~35% of crawl4ai-raw's output on this site. markcrawl's lower recall (90% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/romance_8/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [Default](../category/books/default_15/index.html)
-* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Romance
 
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+# Romance
 
-Â£22.60
-
-In stock (19 available)
-
-
----
+**35** results - showing **1** to **20**.
 
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 
-## Product Description
+1. ### [Chase Me (Paris Nights ...](../../../chase-me-paris-nights-2_977/index.html "Chase Me (Paris Nights #2)")
 
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brownâs robust book tells the story of the University of Washingtonâs 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brownâs robust book tells the story of the University of Washingtonâs 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembledÂ  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls togetherâa perfect melding of commitment, determination, and optimism. Drawing on the boysâ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of timesâthe improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
+   Â£25.27
 
-## Product Information
+   In stock
 
-|  |  |
-| --- | --- |
-| UPC | e10e1e165dc8be4a |
-| Product Type | Books |
-| Price (excl. tax) | Â£22.60 |
-| Price (incl. tax) | Â£22.60 |
-| Tax | Â£0.00 |
-| Availability | In stock (19 available) |
-| Number of reviews | 0 |
+   Add to basket
+2. ### [Black Dust](../../../black-dust_976/index.html "Black Dust")
 
-## Products you recently viewed
+   Â£34.53
 
-* ### [The Coming Woman: A ...](../the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
+   In stock
 
-  Â£17.93
+   Add to basket
+3. ### [Her Backup Boyfriend (The ...](../../../her-backup-boyfriend-the-sorensen-family-1_896/index.html "Her Backup Boyfriend (The Sorensen Family #1)")
 
-  In stock
+   Â£33.97
+
+   In stock
+
+   Add to basket
+4. ### [First and First (Five ...](../../../first-and-first-five-boroughs-3_893/index.html "First and First (Five Boroughs #3)")
+
+   Â£15.97
+
+   In stock
+
+   Add to basket
+5. ### [Fifty Shades Darker (Fifty ...](../../../fifty-shades-darker-fifty-shades-2_892/index.html "Fifty Shades Darker (Fifty Shades #2)")
 ```
 
 **crawl4ai**
@@ -450,43 +293,43 @@ For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story o
 [Books to Scrape](http://books.toscrape.com/index.html) We love being scraped!
   * [Home](http://books.toscrape.com/index.html)
   * [Books](http://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [Default](http://books.toscrape.com/catalogue/category/books/default_15/index.html)
-  * The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+  * Romance
 
 
-![The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics](http://books.toscrape.com/media/cache/d1/2d/d12d26739b5369a6b5b3024e4d08f907.jpg)
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-£22.60
-* * *
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-## Product Description
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-## Product Information  
-| UPC  | e10e1e165dc8be4a  |  
-| --- | --- |  
-| Product Type  | Books  |  
-| Price (excl. tax)  | £22.60  |  
-| Price (incl. tax)  | £22.60  |  
-| Tax  | £0.00  |  
-| Availability  | In stock (19 available)  |  
-| Number of reviews  | 0  |  
-## Products you recently viewed
-  * [![The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull](http://books.toscrape.com/media/cache/3d/54/3d54940e57e662c4dd1f3ff00c78cc64.jpg)](http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html)
-### [The Coming Woman: A ...](http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
-£17.93
-Add to basket
-  * [![The Dirty Little Secrets of Getting Your Dream Job](http://books.toscrape.com/media/cache/92/27/92274a95b7c251fea59a2b8a78275ab4.jpg)](http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html)
-### [The Dirty Little Secrets ...](http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html "The Dirty Little Secrets of Getting Your Dream Job")
-£33.34
-Add to basket
-  * [![The Requiem Red](http://books.toscrape.com/media/cache/68/33/68339b4c9bc034267e1da611ab3b34f8.jpg)](http://books.toscrape.com/catalogue/the-requiem-red_995/index.html)
-### [The Requiem Red](http://books.toscrape.com/catalogue/the-requiem-red_995/index.html "The Requiem Red")
-£22.65
-Add to basket
-  * [![Sapiens: A Brief History of Humankind](http://books.toscrape.com/media/cache/be/a5/bea5697f2534a2f86a3ef27b5a8c12a6.jpg)](http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html)
-### [Sapiens: A Brief History ...](http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html "Sapiens: A Brief History of Humankind")
-£54.23
-Add to basket
+  * [ Books ](http://books.toscrape.com/catalogue/category/books_1/index.html)
+    * [ Travel ](http://books.toscrape.com/catalogue/category/books/travel_2/index.html)
+    * [ Mystery ](http://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
+    * [ Historical Fiction ](http://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
+    * [ Sequential Art ](http://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
+    * [ Classics ](http://books.toscrape.com/catalogue/category/books/classics_6/index.html)
+    * [ Philosophy ](http://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
+    * [ **Romance** ](http://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ Womens Fiction ](http://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
+    * [ Fiction ](http://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
+    * [ Childrens ](http://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
+    * [ Religion ](http://books.toscrape.com/catalogue/category/books/religion_12/index.html)
+    * [ Nonfiction ](http://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
+    * [ Music ](http://books.toscrape.com/catalogue/category/books/music_14/index.html)
+    * [ Default ](http://books.toscrape.com/catalogue/category/books/default_15/index.html)
+    * [ Science Fiction ](http://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
+    * [ Sports and Games ](http://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
+    * [ Add a comment ](http://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
+    * [ Fantasy ](http://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
+    * [ New Adult ](http://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
+    * [ Young Adult ](http://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
+    * [ Science ](http://books.toscrape.com/catalogue/category/books/science_22/index.html)
+    * [ Poetry ](http://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
+    * [ Paranormal ](http://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
+    * [ Art ](http://books.toscrape.com/catalogue/category/books/art_25/index.html)
+    * [ Psychology ](http://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
+    * [ Autobiography ](http://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
+    * [ Parenting ](http://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
+    * [ Adult Fiction ](http://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
+    * [ Humor ](http://books.toscrape.com/catalogue/category/books/humor_30/index.html)
+    * [ Horror ](http://books.toscrape.com/catalogue/category/books/horror_31/index.html)
+    * [ History ](http://books.toscrape.com/catalogue/category/books/history_32/index.html)
+    * [ Food and Drink ](http://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
+    * [ Christian Fiction ](http://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **crawl4ai-raw**
@@ -494,130 +337,131 @@ Add to basket
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [Default](https://books.toscrape.com/catalogue/category/books/default_15/index.html)
-  * The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+  * Romance
 
 
-![The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics](https://books.toscrape.com/media/cache/d1/2d/d12d26739b5369a6b5b3024e4d08f907.jpg)
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-£22.60
-* * *
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-## Product Description
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-## Product Information  
-| UPC  | e10e1e165dc8be4a  |  
-| --- | --- |  
-| Product Type  | Books  |  
-| Price (excl. tax)  | £22.60  |  
-| Price (incl. tax)  | £22.60  |  
-| Tax  | £0.00  |  
-| Availability  | In stock (19 available)  |  
-| Number of reviews  | 0  |  
-## Products you recently viewed
-  * [![The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull](https://books.toscrape.com/media/cache/3d/54/3d54940e57e662c4dd1f3ff00c78cc64.jpg)](https://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html)
-### [The Coming Woman: A ...](https://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
-£17.93
-Add to basket
-  * [![The Dirty Little Secrets of Getting Your Dream Job](https://books.toscrape.com/media/cache/92/27/92274a95b7c251fea59a2b8a78275ab4.jpg)](https://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html)
-### [The Dirty Little Secrets ...](https://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html "The Dirty Little Secrets of Getting Your Dream Job")
-£33.34
-Add to basket
-  * [![The Requiem Red](https://books.toscrape.com/media/cache/68/33/68339b4c9bc034267e1da611ab3b34f8.jpg)](https://books.toscrape.com/catalogue/the-requiem-red_995/index.html)
-### [The Requiem Red](https://books.toscrape.com/catalogue/the-requiem-red_995/index.html "The Requiem Red")
-£22.65
-Add to basket
-  * [![Sapiens: A Brief History of Humankind](https://books.toscrape.com/media/cache/be/a5/bea5697f2534a2f86a3ef27b5a8c12a6.jpg)](https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html)
-### [Sapiens: A Brief History ...](https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html "Sapiens: A Brief History of Humankind")
-£54.23
-Add to basket
+  * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
+    * [ Travel ](https://books.toscrape.com/catalogue/category/books/travel_2/index.html)
+    * [ Mystery ](https://books.toscrape.com/catalogue/category/books/mystery_3/index.html)
+    * [ Historical Fiction ](https://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html)
+    * [ Sequential Art ](https://books.toscrape.com/catalogue/category/books/sequential-art_5/index.html)
+    * [ Classics ](https://books.toscrape.com/catalogue/category/books/classics_6/index.html)
+    * [ Philosophy ](https://books.toscrape.com/catalogue/category/books/philosophy_7/index.html)
+    * [ **Romance** ](https://books.toscrape.com/catalogue/category/books/romance_8/index.html)
+    * [ Womens Fiction ](https://books.toscrape.com/catalogue/category/books/womens-fiction_9/index.html)
+    * [ Fiction ](https://books.toscrape.com/catalogue/category/books/fiction_10/index.html)
+    * [ Childrens ](https://books.toscrape.com/catalogue/category/books/childrens_11/index.html)
+    * [ Religion ](https://books.toscrape.com/catalogue/category/books/religion_12/index.html)
+    * [ Nonfiction ](https://books.toscrape.com/catalogue/category/books/nonfiction_13/index.html)
+    * [ Music ](https://books.toscrape.com/catalogue/category/books/music_14/index.html)
+    * [ Default ](https://books.toscrape.com/catalogue/category/books/default_15/index.html)
+    * [ Science Fiction ](https://books.toscrape.com/catalogue/category/books/science-fiction_16/index.html)
+    * [ Sports and Games ](https://books.toscrape.com/catalogue/category/books/sports-and-games_17/index.html)
+    * [ Add a comment ](https://books.toscrape.com/catalogue/category/books/add-a-comment_18/index.html)
+    * [ Fantasy ](https://books.toscrape.com/catalogue/category/books/fantasy_19/index.html)
+    * [ New Adult ](https://books.toscrape.com/catalogue/category/books/new-adult_20/index.html)
+    * [ Young Adult ](https://books.toscrape.com/catalogue/category/books/young-adult_21/index.html)
+    * [ Science ](https://books.toscrape.com/catalogue/category/books/science_22/index.html)
+    * [ Poetry ](https://books.toscrape.com/catalogue/category/books/poetry_23/index.html)
+    * [ Paranormal ](https://books.toscrape.com/catalogue/category/books/paranormal_24/index.html)
+    * [ Art ](https://books.toscrape.com/catalogue/category/books/art_25/index.html)
+    * [ Psychology ](https://books.toscrape.com/catalogue/category/books/psychology_26/index.html)
+    * [ Autobiography ](https://books.toscrape.com/catalogue/category/books/autobiography_27/index.html)
+    * [ Parenting ](https://books.toscrape.com/catalogue/category/books/parenting_28/index.html)
+    * [ Adult Fiction ](https://books.toscrape.com/catalogue/category/books/adult-fiction_29/index.html)
+    * [ Humor ](https://books.toscrape.com/catalogue/category/books/humor_30/index.html)
+    * [ Horror ](https://books.toscrape.com/catalogue/category/books/horror_31/index.html)
+    * [ History ](https://books.toscrape.com/catalogue/category/books/history_32/index.html)
+    * [ Food and Drink ](https://books.toscrape.com/catalogue/category/books/food-and-drink_33/index.html)
+    * [ Christian Fiction ](https://books.toscrape.com/catalogue/category/books/christian-fiction_34/index.html)
 ```
 
 **scrapy+md**
 ```
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [Default](../category/books/default_15/index.html)
-* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Romance
 
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-
-£22.60
-
-In stock (19 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | e10e1e165dc8be4a |
-| Product Type | Books |
-| Price (excl. tax) | £22.60 |
-| Price (incl. tax) | £22.60 |
-| Tax | £0.00 |
-| Availability | In stock (19 available) |
-| Number of reviews | 0 |
-
-## Products you recently viewed
-
-* ### [The Coming Woman: A ...](../the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
-
-  £17.93
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [**Romance**](index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
+  + [Adult Fiction](../adult-fiction_29/index.html)
+  + [Humor](../humor_30/index.html)
+  + [Horror](../horror_31/index.html)
+  + [History](../history_32/index.html)
+  + [Food and Drink](../food-and-drink_33/index.html)
+  + [Christian Fiction](../christian-fiction_34/index.html)
 ```
 
 **crawlee**
 ```
-The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
+Romance |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [Default](../category/books/default_15/index.html)
-* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Romance
 
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-
-£22.60
-
-In stock (19 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | e10e1e165dc8be4a |
-| Product Type | Books |
-| Price (excl. tax) | £22.60 |
-| Price (incl. tax) | £22.60 |
-| Tax | £0.00 |
-| Availability | In stock (19 available) |
-| Number of reviews | 0 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [**Romance**](index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
 ```
 
 **colly+md**
@@ -625,86 +469,87 @@ For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story o
   
 
 
-The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
+Romance |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [Default](../category/books/default_15/index.html)
-* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Romance
 
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-
-£22.60
-
-In stock (19 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | e10e1e165dc8be4a |
-| Product Type | Books |
-| Price (excl. tax) | £22.60 |
-| Price (incl. tax) | £22.60 |
-| Tax | £0.00 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [**Romance**](index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
 ```
 
 **playwright**
 ```
-The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
+Romance |
+Books to Scrape - Sandbox
 
 
 
 
-[Books to Scrape](../../index.html) We love being scraped!
+[Books to Scrape](../../../../index.html) We love being scraped!
 
-* [Home](../../index.html)
-* [Books](../category/books_1/index.html)
-* [Default](../category/books/default_15/index.html)
-* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+* [Home](../../../../index.html)
+* [Books](../../books_1/index.html)
+* Romance
 
-# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
-
-£22.60
-
-In stock (19 available)
-
- 
-
----
-
-**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
-
-## Product Description
-
-For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
-
-## Product Information
-
-|  |  |
-| --- | --- |
-| UPC | e10e1e165dc8be4a |
-| Product Type | Books |
-| Price (excl. tax) | £22.60 |
-| Price (incl. tax) | £22.60 |
-| Tax | £0.00 |
-| Availability | In stock (19 available) |
-| Number of reviews | 0 |
+* [Books](../../books_1/index.html)
+  + [Travel](../travel_2/index.html)
+  + [Mystery](../mystery_3/index.html)
+  + [Historical Fiction](../historical-fiction_4/index.html)
+  + [Sequential Art](../sequential-art_5/index.html)
+  + [Classics](../classics_6/index.html)
+  + [Philosophy](../philosophy_7/index.html)
+  + [**Romance**](index.html)
+  + [Womens Fiction](../womens-fiction_9/index.html)
+  + [Fiction](../fiction_10/index.html)
+  + [Childrens](../childrens_11/index.html)
+  + [Religion](../religion_12/index.html)
+  + [Nonfiction](../nonfiction_13/index.html)
+  + [Music](../music_14/index.html)
+  + [Default](../default_15/index.html)
+  + [Science Fiction](../science-fiction_16/index.html)
+  + [Sports and Games](../sports-and-games_17/index.html)
+  + [Add a comment](../add-a-comment_18/index.html)
+  + [Fantasy](../fantasy_19/index.html)
+  + [New Adult](../new-adult_20/index.html)
+  + [Young Adult](../young-adult_21/index.html)
+  + [Science](../science_22/index.html)
+  + [Poetry](../poetry_23/index.html)
+  + [Paranormal](../paranormal_24/index.html)
+  + [Art](../art_25/index.html)
+  + [Psychology](../psychology_26/index.html)
+  + [Autobiography](../autobiography_27/index.html)
+  + [Parenting](../parenting_28/index.html)
 ```
 
 **firecrawl** — no output for this URL
@@ -791,64 +636,65 @@ For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story o
 | colly+md | 5000 | 1046 ⚠ | 3% | 99 | 33.1 | 28.7 | 100% | 97% |
 | playwright | 4975 | 1046 ⚠ | 3% | 99 | 32.8 | 28.7 | 100% | 97% |
 | firecrawl | — | — | — | — | — | — | — | — |
-| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
+
+**[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai-raw** injects 1502 words of nav chrome before content begins. The word count gap (3835 vs 5424 avg words) is largely explained by preamble: 1502 words of nav chrome account for ~28% of crawl4ai's output on this site. markcrawl's lower recall (73% vs 97%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/deployment/docker</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/tutorial/request-forms-and-files</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# FastAPI in Containers - Docker[¶](#fastapi-in-containers-docker "Permanent link")
+# Request Forms and Files[¶](#request-forms-and-files "Permanent link")
 
-When deploying FastAPI applications a common approach is to build a **Linux container image**. It's normally done using [**Docker**](https://www.docker.com/). You can then deploy that container image in one of a few possible ways.
+You can define files and form fields at the same time using `File` and `Form`.
 
-Using Linux containers has several advantages including **security**, **replicability**, **simplicity**, and others.
+Info
 
-Tip
+To receive uploaded files and/or form data, first install [`python-multipart`](https://github.com/Kludex/python-multipart).
 
-In a hurry and already know this stuff? Jump to the [`Dockerfile` below 👇](#build-a-docker-image-for-fastapi).
-
-Dockerfile Preview 👀
+Make sure you create a [virtual environment](../../virtual-environments/), activate it, and then install it, for example:
 
 ```False
-FROM python:3.14
-
-WORKDIR /code
-
-COPY ./requirements.txt /code/requirements.txt
-
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-COPY ./app /code/app
-
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
-
-# If running behind a proxy like Nginx or Traefik add --proxy-headers
-# CMD ["fastapi", "run", "app/main.py", "--port", "80", "--proxy-headers"]
+$ pip install python-multipart
 ```
 
-## What is a Container[¶](#what-is-a-container "Permanent link")
+## Import `File` and `Form`[¶](#import-file-and-form "Permanent link")
 
-Containers (mainly Linux containers) are a very **lightweight** way to package applications including all their dependencies and necessary files while keeping them isolated from other containers (other applications or components) in the same system.
+Python 3.10+
 
-Linux containers run using the same Linux kernel of the host (machine, virtual machine, cloud server, etc). This just means that they are very lightweight (compared to full virtual machines emulating an entire operating system).
+```False
+from typing import Annotated
 
-This way, containers consume **little resources**, an amount comparable to running the processes directly (a virtual machine would consume much more).
+from fastapi import FastAPI, File, Form, UploadFile
 
-Containers also have their own **isolated** running processes (commonly just one process), file system, and network, simplifying deployment, security, development, etc.
+app = FastAPI()
 
-## What is a Container Image[¶](#what-is-a-container-image "Permanent link")
+
+@app.post("/files/")
+async def create_file(
+    file: Annotated[bytes, File()],
+    fileb: Annotated[UploadFile, File()],
+    token: Annotated[str, Form()],
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+    }
+```
+
+🤓 Other versions and variants
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -866,7 +712,7 @@ Containers also have their own **isolated** running processes (commonly just one
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-FastAPI in Containers - Docker 
+Request Forms and Files 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -881,7 +727,7 @@ FastAPI in Containers - Docker
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/deployment/docker/?q= "Share")
+[ ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -891,7 +737,7 @@ Initializing search
 
 **crawl4ai-raw**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[ Skip to content ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -909,7 +755,7 @@ Initializing search
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-FastAPI in Containers - Docker 
+Request Forms and Files 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -924,7 +770,7 @@ FastAPI in Containers - Docker
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/deployment/docker/?q= "Share")
+[ ](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -947,38 +793,37 @@ FastAPI
   + [Concurrency and async / await](../../async/)
   + [Environment Variables](../../environment-variables/)
   + [Virtual Environments](../../virtual-environments/)
-  + [Tutorial - User Guide](../../tutorial/)
+  + [Tutorial - User Guide](../)
 
     Tutorial - User Guide
-    - [First Steps](../../tutorial/first-steps/)
-    - [Path Parameters](../../tutorial/path-params/)
-    - [Query Parameters](../../tutorial/query-params/)
-    - [Request Body](../../tutorial/body/)
-    - [Query Parameters and String Validations](../../tutorial/query-params-str-validations/)
-    - [Path Parameters and Numeric Validations](../../tutorial/path-params-numeric-validations/)
-    - [Query Parameter Models](../../tutorial/query-param-models/)
-    - [Body - Multiple Parameters](../../tutorial/body-multiple-params/)
-    - [Body - Fields](../../tutorial/body-fields/)
-    - [Body - Nested Models](../../tutorial/body-nested-models/)
-    - [Declare Request Example Data](../../tutorial/schema-extra-example/)
-    - [Extra Data Types](../../tutorial/extra-data-types/)
-    - [Cookie Parameters](../../tutorial/cookie-params/)
-    - [Header Parameters](../../tutorial/header-params/)
-    - [Cookie Parameter Models](../../tutorial/cookie-param-models/)
-    - [Header Parameter Models](../../tutorial/header-param-models/)
-    - [Response Model - Return Type](../../tutorial/response-model/)
-    - [Extra Models](../../tutorial/extra-models/)
-    - [Response Status Code](../../tutorial/response-status-code/)
-    - [Form Data](../../tutorial/request-forms/)
-    - [Form Models](../../tutorial/request-form-models/)
-    - [Request Files](../../tutorial/request-files/)
-    - [Request Forms and Files](../../tutorial/request-forms-and-files/)
-    - [Handling Errors](../../tutorial/handling-errors/)
+    - [First Steps](../first-steps/)
+    - [Path Parameters](../path-params/)
+    - [Query Parameters](../query-params/)
+    - [Request Body](../body/)
+    - [Query Parameters and String Validations](../query-params-str-validations/)
+    - [Path Parameters and Numeric Validations](../path-params-numeric-validations/)
+    - [Query Parameter Models](../query-param-models/)
+    - [Body - Multiple Parameters](../body-multiple-params/)
+    - [Body - Fields](../body-fields/)
+    - [Body - Nested Models](../body-nested-models/)
+    - [Declare Request Example Data](../schema-extra-example/)
+    - [Extra Data Types](../extra-data-types/)
+    - [Cookie Parameters](../cookie-params/)
+    - [Header Parameters](../header-params/)
+    - [Cookie Parameter Models](../cookie-param-models/)
+    - [Header Parameter Models](../header-param-models/)
+    - [Response Model - Return Type](../response-model/)
+    - [Extra Models](../extra-models/)
+    - [Response Status Code](../response-status-code/)
+    - [Form Data](../request-forms/)
+    - [Form Models](../request-form-models/)
+    - [Request Files](../request-files/)
+    - Request Forms and Files
 ```
 
 **crawlee**
 ```
-FastAPI in Containers - Docker - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -1009,7 +854,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1022,7 +867,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-FastAPI in Containers - Docker - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -1038,7 +883,7 @@ FastAPI in Containers - Docker - FastAPI
 
 
 
-[Skip to content](#fastapi-in-containers-docker)
+[Skip to content](#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1065,7 +910,7 @@ FastAPI in Containers - Docker - FastAPI
 
 **playwright**
 ```
-FastAPI in Containers - Docker - FastAPI
+Request Forms and Files - FastAPI
 
 
 
@@ -1081,7 +926,7 @@ FastAPI in Containers - Docker - FastAPI
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
+[Skip to content](https://fastapi.tiangolo.com/tutorial/request-forms-and-files/#request-forms-and-files)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1155,128 +1000,148 @@ FastAPI in Containers - Docker - FastAPI
 | colly+md | 3125 | 21 | 0% | 98 | 16.6 | 4.6 | 100% | 95% |
 | playwright | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 94% |
 | firecrawl | — | — | — | — | — | — | — | — |
-| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
+
+**[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 1 word of preamble per page, while **crawl4ai** injects 64 words of nav chrome before content begins. markcrawl's lower recall (76% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.11</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/library/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Python 3.11.15 documentation
+# The Python Standard Library[Â¶](#the-python-standard-library "Permalink to this headline")
 
-Welcome! This is the official documentation for Python 3.11.15.
+While [The Python Language Reference](../reference/index.html#reference-index) describes the exact syntax and
+semantics of the Python language, this library reference manual
+describes the standard library that is distributed with Python. It also
+describes some of the optional components that are commonly included
+in Python distributions.
 
-**Documentation sections:**
+Pythonâs standard library is very extensive, offering a wide range of
+facilities as indicated by the long table of contents listed below. The
+library contains built-in modules (written in C) that provide access to
+system functionality such as file I/O that would otherwise be
+inaccessible to Python programmers, as well as modules written in Python
+that provide standardized solutions for many problems that occur in
+everyday programming. Some of these modules are explicitly designed to
+encourage and enhance the portability of Python programs by abstracting
+away platform-specifics into platform-neutral APIs.
 
-|  |  |
-| --- | --- |
-| [What's new in Python 3.11?](whatsnew/3.11.html)   Or [all "What's new" documents since Python 2.0](whatsnew/index.html)  [Tutorial](tutorial/index.html)  Start here: a tour of Python's syntax and features  [Library reference](library/index.html)  Standard library and builtins  [Language reference](reference/index.html)  Syntax and language elements  [Python setup and usage](using/index.html)  How to install, configure, and use Python  [Python HOWTOs](howto/index.html)  In-depth topic manuals | [Installing Python modules](installing/index.html)  Third-party modules and PyPI.org  [Distributing Python modules](distributing/index.html)  Publishing modules for use by other people  [Extending and embedding](extending/index.html)  For C/C++ programmers  [Python's C API](c-api/index.html)  C API reference  [FAQs](faq/index.html)  Frequently asked questions (with answers!) |
+The Python installers for the Windows platform usually include
+the entire standard library and often also include many additional
+components. For Unix-like operating systems Python is normally provided
+as a collection of packages, so it may be necessary to use the packaging
+tools provided with the operating system to obtain some or all of the
+optional components.
 
-**Indices, glossary, and search:**
+In addition to the standard library, there is a growing collection of
+several thousand components (from individual programs and modules to
+packages and entire application development frameworks), available from
+the [Python Package Index](https://pypi.org).
 
-|  |  |
-| --- | --- |
-| [Global module index](py-modindex.html)  All modules and libraries  [General index](genindex.html)  All functions, classes, and terms  [Glossary](glossary.html)  Terms explained | [Search page](search.html)  Search this documentation  [Complete table of contents](contents.html)  Lists all sections and subsections |
-
-**Project information:**
-
-|  |  |
-| --- | --- |
-| [Reporting issues](bugs.html)  [Contributing to Docs](https://devguide.python.org/docquality/#helping-with-documentation)  [Download the documentation](download.html) | [History and license of Python](license.html)  [Copyright](copyright.html)  [About the documentation](about.html) |
+* [Introduction](intro.html)
+  * [Notes on availability](intro.html#notes-on-availability)
+* [Built-in Functions](functions.html)
+* [Built-in Constants](constants.html)
+  * [Constants added by the `site` module](constants.html#constants-added-by-the-site-module)
+* [Built-in Types](stdtypes.html)
+  * [Truth Value Testing](stdtypes.html#truth-value-testing)
+  * [Boolean Operations â `and`, `or`, `not`](stdtypes.html#boolean-operations-and-or-not)
+  * [Comparisons](stdtypes.html#comparisons)
+  * [Numeric Types â `int`, `float`, `complex`](stdtypes.html#numeric-types-int-float-complex)
 ```
 
 **crawl4ai**
 ```
-[ ![Python logo](https://docs.python.org/3.11/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11.15 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-### Download
-[Download these documents](https://docs.python.org/3.11/download.html)
-### Docs by version
-  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
-  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
-  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
-  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
-  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
-  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
-  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
-  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
-  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
-  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
-  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
-  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
-  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
-  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
-  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
-  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
-  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
-  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
-  * [All versions](https://www.python.org/doc/versions/)
-
-
-### Other resources
-  * [PEP Index](https://peps.python.org/)
-  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
-  * [Book List](https://wiki.python.org/moin/PythonBooks)
-  * [Audio/Visual Talks](https://www.python.org/doc/av/)
-  * [Python Developer’s Guide](https://devguide.python.org/)
+#### Previous topic
+[10. Full Grammar specification](https://docs.python.org/3.10/reference/grammar.html "previous chapter")
+#### Next topic
+[Introduction](https://docs.python.org/3.10/library/intro.html "next chapter")
+### This Page
+  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
+  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/library/index.rst)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.11/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.11/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.11/_static/py.svg)
+  * [index](https://docs.python.org/3.10/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
+  * [next](https://docs.python.org/3.10/library/intro.html "Introduction") |
+  * [previous](https://docs.python.org/3.10/reference/grammar.html "10. Full Grammar specification") |
+  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
   * [Python](https://www.python.org/) »
+  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
+dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
+  * [The Python Standard Library](https://docs.python.org/3.10/library/index.html)
+  * | 
+  * Theme  Auto Light Dark |
+
+
+# The Python Standard Library[¶](https://docs.python.org/3.10/library/index.html#the-python-standard-library "Permalink to this headline")
+While [The Python Language Reference](https://docs.python.org/3.10/reference/index.html#reference-index) describes the exact syntax and semantics of the Python language, this library reference manual describes the standard library that is distributed with Python. It also describes some of the optional components that are commonly included in Python distributions.
+Python’s standard library is very extensive, offering a wide range of facilities as indicated by the long table of contents listed below. The library contains built-in modules (written in C) that provide access to system functionality such as file I/O that would otherwise be inaccessible to Python programmers, as well as modules written in Python that provide standardized solutions for many problems that occur in everyday programming. Some of these modules are explicitly designed to encourage and enhance the portability of Python programs by abstracting away platform-specifics into platform-neutral APIs.
+The Python installers for the Windows platform usually include the entire standard library and often also include many additional components. For Unix-like operating systems Python is normally provided as a collection of packages, so it may be necessary to use the packaging tools provided with the operating system to obtain some or all of the optional components.
+In addition to the standard library, there is a growing collection of several thousand components (from individual programs and modules to packages and entire application development frameworks), available from the [Python Package Index](https://pypi.org).
+  * [Introduction](https://docs.python.org/3.10/library/intro.html)
+    * [Notes on availability](https://docs.python.org/3.10/library/intro.html#notes-on-availability)
+  * [Built-in Functions](https://docs.python.org/3.10/library/functions.html)
+  * [Built-in Constants](https://docs.python.org/3.10/library/constants.html)
+    * [Constants added by the `site` module](https://docs.python.org/3.10/library/constants.html#constants-added-by-the-site-module)
+  * [Built-in Types](https://docs.python.org/3.10/library/stdtypes.html)
+    * [Truth Value Testing](https://docs.python.org/3.10/library/stdtypes.html#truth-value-testing)
+    * [Boolean Operations — `and`, `or`, `not`](https://docs.python.org/3.10/library/stdtypes.html#boolean-operations-and-or-not)
 ```
 
 **crawl4ai-raw**
 ```
-[ ![Python logo](https://docs.python.org/3.11/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11.15 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-### Download
-[Download these documents](https://docs.python.org/3.11/download.html)
-### Docs by version
-  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
-  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
-  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
-  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
-  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
-  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
-  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
-  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
-  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
-  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
-  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
-  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
-  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
-  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
-  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
-  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
-  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
-  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
-  * [All versions](https://www.python.org/doc/versions/)
-
-
-### Other resources
-  * [PEP Index](https://peps.python.org/)
-  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
-  * [Book List](https://wiki.python.org/moin/PythonBooks)
-  * [Audio/Visual Talks](https://www.python.org/doc/av/)
-  * [Python Developer’s Guide](https://devguide.python.org/)
+#### Previous topic
+[10. Full Grammar specification](https://docs.python.org/3.10/reference/grammar.html "previous chapter")
+#### Next topic
+[Introduction](https://docs.python.org/3.10/library/intro.html "next chapter")
+### This Page
+  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
+  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/library/index.rst)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.11/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.11/py-modindex.html "Python Module Index") |
-  * ![Python logo](https://docs.python.org/3.11/_static/py.svg)
+  * [index](https://docs.python.org/3.10/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
+  * [next](https://docs.python.org/3.10/library/intro.html "Introduction") |
+  * [previous](https://docs.python.org/3.10/reference/grammar.html "10. Full Grammar specification") |
+  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
   * [Python](https://www.python.org/) »
+  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
+dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
+  * [The Python Standard Library](https://docs.python.org/3.10/library/index.html)
+  * | 
+  * Theme  Auto Light Dark |
+
+
+# The Python Standard Library[¶](https://docs.python.org/3.10/library/index.html#the-python-standard-library "Permalink to this headline")
+While [The Python Language Reference](https://docs.python.org/3.10/reference/index.html#reference-index) describes the exact syntax and semantics of the Python language, this library reference manual describes the standard library that is distributed with Python. It also describes some of the optional components that are commonly included in Python distributions.
+Python’s standard library is very extensive, offering a wide range of facilities as indicated by the long table of contents listed below. The library contains built-in modules (written in C) that provide access to system functionality such as file I/O that would otherwise be inaccessible to Python programmers, as well as modules written in Python that provide standardized solutions for many problems that occur in everyday programming. Some of these modules are explicitly designed to encourage and enhance the portability of Python programs by abstracting away platform-specifics into platform-neutral APIs.
+The Python installers for the Windows platform usually include the entire standard library and often also include many additional components. For Unix-like operating systems Python is normally provided as a collection of packages, so it may be necessary to use the packaging tools provided with the operating system to obtain some or all of the optional components.
+In addition to the standard library, there is a growing collection of several thousand components (from individual programs and modules to packages and entire application development frameworks), available from the [Python Package Index](https://pypi.org).
+  * [Introduction](https://docs.python.org/3.10/library/intro.html)
+    * [Notes on availability](https://docs.python.org/3.10/library/intro.html#notes-on-availability)
+  * [Built-in Functions](https://docs.python.org/3.10/library/functions.html)
+  * [Built-in Constants](https://docs.python.org/3.10/library/constants.html)
+    * [Constants added by the `site` module](https://docs.python.org/3.10/library/constants.html#constants-added-by-the-site-module)
+  * [Built-in Types](https://docs.python.org/3.10/library/stdtypes.html)
+    * [Truth Value Testing](https://docs.python.org/3.10/library/stdtypes.html#truth-value-testing)
+    * [Boolean Operations — `and`, `or`, `not`](https://docs.python.org/3.10/library/stdtypes.html#boolean-operations-and-or-not)
 ```
 
 **scrapy+md**
@@ -1286,46 +1151,49 @@ Auto
 Light
 Dark
 
-### Download
+#### Previous topic
 
-[Download these documents](download.html)
+[10. Full Grammar specification](../reference/grammar.html "previous chapter")
 
-### Docs by version
+#### Next topic
 
-* [Python 3.15 (in development)](https://docs.python.org/3.15/)
-* [Python 3.14 (stable)](https://docs.python.org/3.14/)
-* [Python 3.13 (stable)](https://docs.python.org/3.13/)
-* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
-* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
-* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
-* [Python 3.9 (EOL)](https://docs.python.org/3.9/)
-* [Python 3.8 (EOL)](https://docs.python.org/3.8/)
-* [Python 3.7 (EOL)](https://docs.python.org/3.7/)
-* [Python 3.6 (EOL)](https://docs.python.org/3.6/)
-* [Python 3.5 (EOL)](https://docs.python.org/3.5/)
-* [Python 3.4 (EOL)](https://docs.python.org/3.4/)
-* [Python 3.3 (EOL)](https://docs.python.org/3.3/)
-* [Python 3.2 (EOL)](https://docs.python.org/3.2/)
-* [Python 3.1 (EOL)](https://docs.python.org/3.1/)
-* [Python 3.0 (EOL)](https://docs.python.org/3.0/)
-* [Python 2.7 (EOL)](https://docs.python.org/2.7/)
-* [Python 2.6 (EOL)](https://docs.python.org/2.6/)
-* [All versions](https://www.python.org/doc/versions/)
+[Introduction](intro.html "next chapter")
 
-### Other resources
+### This Page
 
-* [PEP Index](https://peps.python.org/)
-* [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
-* [Book List](https://wiki.python.org/moin/PythonBooks)
-* [Audio/Visual Talks](https://www.python.org/doc/av/)
-* [Python Developer’s Guide](https://devguide.python.org/)
+* [Report a Bug](../bugs.html)
+* [Show Source](https://github.com/python/cpython/blob/3.10/Doc/library/index.rst)
 
 ### Navigation
+
+* [index](../genindex.html "General Index")
+* [modules](../py-modindex.html "Python Module Index") |
+* [next](intro.html "Introduction") |
+* [previous](../reference/grammar.html "10. Full Grammar specification") |
+* [Python](https://www.python.org/) »
+
+* [3.10.20 Documentation](../index.html) »
+* The Python Standard Library
+* |
+* Theme
+  Auto
+  Light
+  Dark
+   |
+
+# The Python Standard Library[¶](#the-python-standard-library "Permalink to this headline")
+
+While [The Python Language Reference](../reference/index.html#reference-index) describes the exact syntax and
+semantics of the Python language, this library reference manual
+describes the standard library that is distributed with Python. It also
 ```
 
 **crawlee**
 ```
-3.11.15 Documentation
+The Python Standard Library — Python 3.10.20 documentation
+
+
+
 
 
 
@@ -1348,7 +1216,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.11.153.103.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1357,19 +1225,19 @@ Auto
 Light
 Dark
 
-### Download
+#### Previous topic
 
-[Download these documents](download.html)
+[10. Full Grammar specification](../reference/grammar.html "previous chapter")
 
-### Docs by version
-
-* [Python 3.15 (in development)](https://docs.python.org/3.15/)
-* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+#### Next topic
 ```
 
 **colly+md**
 ```
-3.11.15 Documentation
+The Python Standard Library — Python 3.10.20 documentation
+
+
+
 
 
 
@@ -1397,23 +1265,23 @@ Auto
 Light
 Dark
 
-### Download
+#### Previous topic
 
-[Download these documents](download.html)
+[10. Full Grammar specification](../reference/grammar.html "previous chapter")
 
-### Docs by version
+#### Next topic
 
-* [Python 3.15 (in development)](https://docs.python.org/3.15/)
-* [Python 3.14 (stable)](https://docs.python.org/3.14/)
-* [Python 3.13 (stable)](https://docs.python.org/3.13/)
-* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
-* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
-* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+[Introduction](intro.html "next chapter")
+
+### This Page
 ```
 
 **playwright**
 ```
-3.11.15 Documentation
+The Python Standard Library — Python 3.10.20 documentation
+
+
+
 
 
 
@@ -1436,7 +1304,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.11.153.103.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1445,14 +1313,11 @@ Auto
 Light
 Dark
 
-### Download
+#### Previous topic
 
-[Download these documents](download.html)
+[10. Full Grammar specification](../reference/grammar.html "previous chapter")
 
-### Docs by version
-
-* [Python 3.15 (in development)](https://docs.python.org/3.15/)
-* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+#### Next topic
 ```
 
 **firecrawl** — no output for this URL
