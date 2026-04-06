@@ -35,12 +35,12 @@ chunk in the vector index, degrading retrieval for every query.
 | colly+md | 85% | 275 ⚠ | 2% | 1.8 | 100% | 98% |
 | playwright | 85% | 280 ⚠ | 2% | 1.8 | 100% | 98% |
 | firecrawl | — | — | — | — | — | — |
+| **[1]** Avg words per page before the first heading (nav chrome) | | | | | | |
 
 **Key takeaway:** markcrawl achieves 100% content signal with only 4 words of preamble per page — compared to 411 for crawl4ai. Its recall is lower (84% vs 98%) because it strips nav, footer, and sponsor content that other tools include. For RAG use cases, this trade-off favors markcrawl: every chunk in the vector index is pure content, with no boilerplate to dilute embeddings or pollute retrieval results.
 
 > **Content signal** = percentage of output that is content (not preamble nav chrome).
 > Higher is better. A tool with 100% content signal has zero nav/header pollution.
-> **[1] Preamble** = average words per page before the first heading (nav chrome injected into every page).
 > **Repeat rate** = fraction of phrases appearing on >50% of pages (boilerplate).
 > **Junk/page** = known boilerplate phrases detected per page.
 
@@ -56,13 +56,10 @@ chunk in the vector index, degrading retrieval for every query.
 | colly+md | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 100% | 100% |
 | playwright | 261 | 3 | 2% | 3 | 2.6 | 0.0 | 100% | 100% |
 | firecrawl | — | — | — | — | — | — | — | — |
-
-> [1] Preamble = average words per page before the first heading.
->
-> ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
+| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/world/page/1</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/inspirational/page/1</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -73,48 +70,72 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-### Viewing tag: [world](/tag/world/page/1/)
+### Viewing tag: [inspirational](/tag/inspirational/page/1/)
 
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[change](/tag/change/page/1/)
-[deep-thoughts](/tag/deep-thoughts/page/1/)
-[thinking](/tag/thinking/page/1/)
-[world](/tag/world/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[life](/tag/life/page/1/)
+[live](/tag/live/page/1/)
+[miracle](/tag/miracle/page/1/)
+[miracles](/tag/miracles/page/1/)
 
-## Top Ten tags
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[love](/tag/love/)
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-[inspirational](/tag/inspirational/)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
-[life](/tag/life/)
+Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-[humor](/tag/humor/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[books](/tag/books/)
-
-[reading](/tag/reading/)
-
-[friendship](/tag/friendship/)
-
-[friends](/tag/friends/)
-
-[truth](/tag/truth/)
-
-[simile](/tag/simile/)
+Tags:
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
+### Viewing tag: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
+Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
+Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
+Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
+“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
+Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
+“To the well-organized mind, death is but the next great adventure.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
+Tags: [death](https://quotes.toscrape.com/tag/death/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“It is never too late to be what you might have been.” by George Eliot [(about)](https://quotes.toscrape.com/author/George-Eliot)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“You can never get a cup of tea large enough or a book long enough to suit me.” by C.S. Lewis [(about)](https://quotes.toscrape.com/author/C-S-Lewis)
+Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [reading](https://quotes.toscrape.com/tag/reading/page/1/) [tea](https://quotes.toscrape.com/tag/tea/page/1/)
+“Only in the darkness can you see the stars.” by Martin Luther King Jr. [(about)](https://quotes.toscrape.com/author/Martin-Luther-King-Jr)
+Tags: [hope](https://quotes.toscrape.com/tag/hope/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“When one door of happiness closes, another opens; but often we look so long at the closed door that we do not see the one which has been opened for us.” by Helen Keller [(about)](https://quotes.toscrape.com/author/Helen-Keller)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+  * [Next →](https://quotes.toscrape.com/tag/inspirational/page/2/)
+
+
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -125,9 +146,30 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
+### Viewing tag: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [live](https://quotes.toscrape.com/tag/live/page/1/) [miracle](https://quotes.toscrape.com/tag/miracle/page/1/) [miracles](https://quotes.toscrape.com/tag/miracles/page/1/)
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
+Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“I have not failed. I've just found 10,000 ways that won't work.” by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
+Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
+Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
+“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
+Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
+“To the well-organized mind, death is but the next great adventure.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
+Tags: [death](https://quotes.toscrape.com/tag/death/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“It is never too late to be what you might have been.” by George Eliot [(about)](https://quotes.toscrape.com/author/George-Eliot)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“You can never get a cup of tea large enough or a book long enough to suit me.” by C.S. Lewis [(about)](https://quotes.toscrape.com/author/C-S-Lewis)
+Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [reading](https://quotes.toscrape.com/tag/reading/page/1/) [tea](https://quotes.toscrape.com/tag/tea/page/1/)
+“Only in the darkness can you see the stars.” by Martin Luther King Jr. [(about)](https://quotes.toscrape.com/author/Martin-Luther-King-Jr)
+Tags: [hope](https://quotes.toscrape.com/tag/hope/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+“When one door of happiness closes, another opens; but often we look so long at the closed door that we do not see the one which has been opened for us.” by Helen Keller [(about)](https://quotes.toscrape.com/author/Helen-Keller)
+Tags: [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
+  * [Next →](https://quotes.toscrape.com/tag/inspirational/page/2/)
+
+
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -140,41 +182,42 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-### Viewing tag: [world](/tag/world/page/1/)
+### Viewing tag: [inspirational](/tag/inspirational/page/1/)
 
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[change](/tag/change/page/1/)
-[deep-thoughts](/tag/deep-thoughts/page/1/)
-[thinking](/tag/thinking/page/1/)
-[world](/tag/world/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[life](/tag/life/page/1/)
+[live](/tag/live/page/1/)
+[miracle](/tag/miracle/page/1/)
+[miracles](/tag/miracles/page/1/)
 
-## Top Ten tags
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[love](/tag/love/)
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-[inspirational](/tag/inspirational/)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
-[life](/tag/life/)
+Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-[humor](/tag/humor/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[books](/tag/books/)
-
-[reading](/tag/reading/)
-
-[friendship](/tag/friendship/)
-
-[friends](/tag/friends/)
-
-[truth](/tag/truth/)
-
-[simile](/tag/simile/)
-
-Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
+Tags:
 ```
 
 **crawlee**
@@ -187,37 +230,38 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [world](/tag/world/page/1/)
+### Viewing tag: [inspirational](/tag/inspirational/page/1/)
 
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[change](/tag/change/page/1/)
-[deep-thoughts](/tag/deep-thoughts/page/1/)
-[thinking](/tag/thinking/page/1/)
-[world](/tag/world/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[life](/tag/life/page/1/)
+[live](/tag/live/page/1/)
+[miracle](/tag/miracle/page/1/)
+[miracles](/tag/miracles/page/1/)
 
-## Top Ten tags
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[love](/tag/love/)
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-[inspirational](/tag/inspirational/)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
-[life](/tag/life/)
+Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-[humor](/tag/humor/)
-
-[books](/tag/books/)
-
-[reading](/tag/reading/)
-
-[friendship](/tag/friendship/)
-
-[friends](/tag/friends/)
-
-[truth](/tag/truth/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
 ```
 
 **colly+md**
@@ -230,37 +274,38 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [world](/tag/world/page/1/)
+### Viewing tag: [inspirational](/tag/inspirational/page/1/)
 
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[change](/tag/change/page/1/)
-[deep-thoughts](/tag/deep-thoughts/page/1/)
-[thinking](/tag/thinking/page/1/)
-[world](/tag/world/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[life](/tag/life/page/1/)
+[live](/tag/live/page/1/)
+[miracle](/tag/miracle/page/1/)
+[miracles](/tag/miracles/page/1/)
 
-## Top Ten tags
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[love](/tag/love/)
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-[inspirational](/tag/inspirational/)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
-[life](/tag/life/)
+Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-[humor](/tag/humor/)
-
-[books](/tag/books/)
-
-[reading](/tag/reading/)
-
-[friendship](/tag/friendship/)
-
-[friends](/tag/friends/)
-
-[truth](/tag/truth/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
 ```
 
 **playwright**
@@ -273,37 +318,38 @@ Quotes to Scrape
 
 [Login](/login)
 
-### Viewing tag: [world](/tag/world/page/1/)
+### Viewing tag: [inspirational](/tag/inspirational/page/1/)
 
-“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
+“There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[change](/tag/change/page/1/)
-[deep-thoughts](/tag/deep-thoughts/page/1/)
-[thinking](/tag/thinking/page/1/)
-[world](/tag/world/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[life](/tag/life/page/1/)
+[live](/tag/live/page/1/)
+[miracle](/tag/miracle/page/1/)
+[miracles](/tag/miracles/page/1/)
 
-## Top Ten tags
+“Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.”
+by Marilyn Monroe
+[(about)](/author/Marilyn-Monroe)
 
-[love](/tag/love/)
+Tags:
+[be-yourself](/tag/be-yourself/page/1/)
+[inspirational](/tag/inspirational/page/1/)
 
-[inspirational](/tag/inspirational/)
+“I have not failed. I've just found 10,000 ways that won't work.”
+by Thomas A. Edison
+[(about)](/author/Thomas-A-Edison)
 
-[life](/tag/life/)
+Tags:
+[edison](/tag/edison/page/1/)
+[failure](/tag/failure/page/1/)
+[inspirational](/tag/inspirational/page/1/)
+[paraphrased](/tag/paraphrased/page/1/)
 
-[humor](/tag/humor/)
-
-[books](/tag/books/)
-
-[reading](/tag/reading/)
-
-[friendship](/tag/friendship/)
-
-[friends](/tag/friends/)
-
-[truth](/tag/truth/)
+“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
 ```
 
 **firecrawl** — no output for this URL
@@ -345,16 +391,13 @@ Tags:
 | colly+md | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
 | playwright | 418 | 107 ⚠ | 1% | 11 | 1.9 | 0.0 | 100% | 100% |
 | firecrawl | — | — | — | — | — | — | — | — |
-
-> [1] Preamble = average words per page before the first heading.
->
-> ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
+| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 8 words of preamble per page, while **crawl4ai-raw** injects 171 words of nav chrome before content begins. The word count gap (291 vs 493 avg words) is largely explained by preamble: 171 words of nav chrome account for ~35% of crawl4ai-raw's output on this site. markcrawl's lower recall (90% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/libertarianism-for-beginners_982/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/the-boys-in-the-boat-nine-americans-and-their-epic-quest-for-gold-at-the-1936-berlin-olympics_992/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -363,12 +406,12 @@ Nav boilerplate appears here before the real content starts.
 ```
 * [Home](../../index.html)
 * [Books](../category/books_1/index.html)
-* [Politics](../category/books/politics_48/index.html)
-* Libertarianism for Beginners
+* [Default](../category/books/default_15/index.html)
+* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-# Libertarianism for Beginners
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-Â£51.33
+Â£22.60
 
 In stock (19 available)
 
@@ -379,70 +422,70 @@ In stock (19 available)
 
 ## Product Description
 
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brownâs robust book tells the story of the University of Washingtonâs 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brownâs robust book tells the story of the University of Washingtonâs 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembledÂ  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls togetherâa perfect melding of commitment, determination, and optimism. Drawing on the boysâ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of timesâthe improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 
 ## Product Information
 
 |  |  |
 | --- | --- |
-| UPC | a18a4f574854aced |
+| UPC | e10e1e165dc8be4a |
 | Product Type | Books |
-| Price (excl. tax) | Â£51.33 |
-| Price (incl. tax) | Â£51.33 |
+| Price (excl. tax) | Â£22.60 |
+| Price (incl. tax) | Â£22.60 |
 | Tax | Â£0.00 |
 | Availability | In stock (19 available) |
 | Number of reviews | 0 |
 
 ## Products you recently viewed
 
-* ### [Mesaerion: The Best Science ...](../mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html "Mesaerion: The Best Science Fiction Stories 1800-1849")
+* ### [The Coming Woman: A ...](../the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
 
-  Â£37.59
+  Â£17.93
 
   In stock
 ```
 
 **crawl4ai**
 ```
-[Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
-  * [Home](https://books.toscrape.com/index.html)
-  * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [Politics](https://books.toscrape.com/catalogue/category/books/politics_48/index.html)
-  * Libertarianism for Beginners
+[Books to Scrape](http://books.toscrape.com/index.html) We love being scraped!
+  * [Home](http://books.toscrape.com/index.html)
+  * [Books](http://books.toscrape.com/catalogue/category/books_1/index.html)
+  * [Default](http://books.toscrape.com/catalogue/category/books/default_15/index.html)
+  * The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
 
-![Libertarianism for Beginners](https://books.toscrape.com/media/cache/91/a4/91a46253e165d144ef5938f2d456b88f.jpg)
-# Libertarianism for Beginners
-£51.33
+![The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics](http://books.toscrape.com/media/cache/d1/2d/d12d26739b5369a6b5b3024e4d08f907.jpg)
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+£22.60
 * * *
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 ## Product Description
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 ## Product Information  
-| UPC  | a18a4f574854aced  |  
+| UPC  | e10e1e165dc8be4a  |  
 | --- | --- |  
 | Product Type  | Books  |  
-| Price (excl. tax)  | £51.33  |  
-| Price (incl. tax)  | £51.33  |  
+| Price (excl. tax)  | £22.60  |  
+| Price (incl. tax)  | £22.60  |  
 | Tax  | £0.00  |  
 | Availability  | In stock (19 available)  |  
 | Number of reviews  | 0  |  
 ## Products you recently viewed
-  * [![Mesaerion: The Best Science Fiction Stories 1800-1849](https://books.toscrape.com/media/cache/09/a3/09a3aef48557576e1a85ba7efea8ecb7.jpg)](https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html)
-### [Mesaerion: The Best Science ...](https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html "Mesaerion: The Best Science Fiction Stories 1800-1849")
-£37.59
+  * [![The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull](http://books.toscrape.com/media/cache/3d/54/3d54940e57e662c4dd1f3ff00c78cc64.jpg)](http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html)
+### [The Coming Woman: A ...](http://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
+£17.93
 Add to basket
-  * [![Olio](https://books.toscrape.com/media/cache/55/33/553310a7162dfbc2c6d19a84da0df9e1.jpg)](https://books.toscrape.com/catalogue/olio_984/index.html)
-### [Olio](https://books.toscrape.com/catalogue/olio_984/index.html "Olio")
-£23.88
+  * [![The Dirty Little Secrets of Getting Your Dream Job](http://books.toscrape.com/media/cache/92/27/92274a95b7c251fea59a2b8a78275ab4.jpg)](http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html)
+### [The Dirty Little Secrets ...](http://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html "The Dirty Little Secrets of Getting Your Dream Job")
+£33.34
 Add to basket
-  * [![Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991](https://books.toscrape.com/media/cache/54/60/54607fe8945897cdcced0044103b10b6.jpg)](https://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html)
-### [Our Band Could Be ...](https://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html "Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991")
-£57.25
+  * [![The Requiem Red](http://books.toscrape.com/media/cache/68/33/68339b4c9bc034267e1da611ab3b34f8.jpg)](http://books.toscrape.com/catalogue/the-requiem-red_995/index.html)
+### [The Requiem Red](http://books.toscrape.com/catalogue/the-requiem-red_995/index.html "The Requiem Red")
+£22.65
 Add to basket
-  * [![Rip it Up and Start Again](https://books.toscrape.com/media/cache/81/c4/81c4a973364e17d01f217e1188253d5e.jpg)](https://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html)
-### [Rip it Up and ...](https://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html "Rip it Up and Start Again")
-£35.02
+  * [![Sapiens: A Brief History of Humankind](http://books.toscrape.com/media/cache/be/a5/bea5697f2534a2f86a3ef27b5a8c12a6.jpg)](http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html)
+### [Sapiens: A Brief History ...](http://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html "Sapiens: A Brief History of Humankind")
+£54.23
 Add to basket
 ```
 
@@ -451,42 +494,42 @@ Add to basket
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * [Politics](https://books.toscrape.com/catalogue/category/books/politics_48/index.html)
-  * Libertarianism for Beginners
+  * [Default](https://books.toscrape.com/catalogue/category/books/default_15/index.html)
+  * The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
 
-![Libertarianism for Beginners](https://books.toscrape.com/media/cache/91/a4/91a46253e165d144ef5938f2d456b88f.jpg)
-# Libertarianism for Beginners
-£51.33
+![The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics](https://books.toscrape.com/media/cache/d1/2d/d12d26739b5369a6b5b3024e4d08f907.jpg)
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
+£22.60
 * * *
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 ## Product Description
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 ## Product Information  
-| UPC  | a18a4f574854aced  |  
+| UPC  | e10e1e165dc8be4a  |  
 | --- | --- |  
 | Product Type  | Books  |  
-| Price (excl. tax)  | £51.33  |  
-| Price (incl. tax)  | £51.33  |  
+| Price (excl. tax)  | £22.60  |  
+| Price (incl. tax)  | £22.60  |  
 | Tax  | £0.00  |  
 | Availability  | In stock (19 available)  |  
 | Number of reviews  | 0  |  
 ## Products you recently viewed
-  * [![Mesaerion: The Best Science Fiction Stories 1800-1849](https://books.toscrape.com/media/cache/09/a3/09a3aef48557576e1a85ba7efea8ecb7.jpg)](https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html)
-### [Mesaerion: The Best Science ...](https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html "Mesaerion: The Best Science Fiction Stories 1800-1849")
-£37.59
+  * [![The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull](https://books.toscrape.com/media/cache/3d/54/3d54940e57e662c4dd1f3ff00c78cc64.jpg)](https://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html)
+### [The Coming Woman: A ...](https://books.toscrape.com/catalogue/the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
+£17.93
 Add to basket
-  * [![Olio](https://books.toscrape.com/media/cache/55/33/553310a7162dfbc2c6d19a84da0df9e1.jpg)](https://books.toscrape.com/catalogue/olio_984/index.html)
-### [Olio](https://books.toscrape.com/catalogue/olio_984/index.html "Olio")
-£23.88
+  * [![The Dirty Little Secrets of Getting Your Dream Job](https://books.toscrape.com/media/cache/92/27/92274a95b7c251fea59a2b8a78275ab4.jpg)](https://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html)
+### [The Dirty Little Secrets ...](https://books.toscrape.com/catalogue/the-dirty-little-secrets-of-getting-your-dream-job_994/index.html "The Dirty Little Secrets of Getting Your Dream Job")
+£33.34
 Add to basket
-  * [![Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991](https://books.toscrape.com/media/cache/54/60/54607fe8945897cdcced0044103b10b6.jpg)](https://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html)
-### [Our Band Could Be ...](https://books.toscrape.com/catalogue/our-band-could-be-your-life-scenes-from-the-american-indie-underground-1981-1991_985/index.html "Our Band Could Be Your Life: Scenes from the American Indie Underground, 1981-1991")
-£57.25
+  * [![The Requiem Red](https://books.toscrape.com/media/cache/68/33/68339b4c9bc034267e1da611ab3b34f8.jpg)](https://books.toscrape.com/catalogue/the-requiem-red_995/index.html)
+### [The Requiem Red](https://books.toscrape.com/catalogue/the-requiem-red_995/index.html "The Requiem Red")
+£22.65
 Add to basket
-  * [![Rip it Up and Start Again](https://books.toscrape.com/media/cache/81/c4/81c4a973364e17d01f217e1188253d5e.jpg)](https://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html)
-### [Rip it Up and ...](https://books.toscrape.com/catalogue/rip-it-up-and-start-again_986/index.html "Rip it Up and Start Again")
-£35.02
+  * [![Sapiens: A Brief History of Humankind](https://books.toscrape.com/media/cache/be/a5/bea5697f2534a2f86a3ef27b5a8c12a6.jpg)](https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html)
+### [Sapiens: A Brief History ...](https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html "Sapiens: A Brief History of Humankind")
+£54.23
 Add to basket
 ```
 
@@ -496,12 +539,12 @@ Add to basket
 
 * [Home](../../index.html)
 * [Books](../category/books_1/index.html)
-* [Politics](../category/books/politics_48/index.html)
-* Libertarianism for Beginners
+* [Default](../category/books/default_15/index.html)
+* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-# Libertarianism for Beginners
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-£51.33
+£22.60
 
 In stock (19 available)
 
@@ -513,30 +556,30 @@ In stock (19 available)
 
 ## Product Description
 
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 
 ## Product Information
 
 |  |  |
 | --- | --- |
-| UPC | a18a4f574854aced |
+| UPC | e10e1e165dc8be4a |
 | Product Type | Books |
-| Price (excl. tax) | £51.33 |
-| Price (incl. tax) | £51.33 |
+| Price (excl. tax) | £22.60 |
+| Price (incl. tax) | £22.60 |
 | Tax | £0.00 |
 | Availability | In stock (19 available) |
 | Number of reviews | 0 |
 
 ## Products you recently viewed
 
-* ### [Mesaerion: The Best Science ...](../mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html "Mesaerion: The Best Science Fiction Stories 1800-1849")
+* ### [The Coming Woman: A ...](../the-coming-woman-a-novel-based-on-the-life-of-the-infamous-feminist-victoria-woodhull_993/index.html "The Coming Woman: A Novel Based on the Life of the Infamous Feminist, Victoria Woodhull")
 
-  £37.59
+  £17.93
 ```
 
 **crawlee**
 ```
-Libertarianism for Beginners | Books to Scrape - Sandbox
+The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
 
 
 
@@ -545,12 +588,12 @@ Libertarianism for Beginners | Books to Scrape - Sandbox
 
 * [Home](../../index.html)
 * [Books](../category/books_1/index.html)
-* [Politics](../category/books/politics_48/index.html)
-* Libertarianism for Beginners
+* [Default](../category/books/default_15/index.html)
+* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-# Libertarianism for Beginners
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-£51.33
+£22.60
 
 In stock (19 available)
 
@@ -562,16 +605,16 @@ In stock (19 available)
 
 ## Product Description
 
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 
 ## Product Information
 
 |  |  |
 | --- | --- |
-| UPC | a18a4f574854aced |
+| UPC | e10e1e165dc8be4a |
 | Product Type | Books |
-| Price (excl. tax) | £51.33 |
-| Price (incl. tax) | £51.33 |
+| Price (excl. tax) | £22.60 |
+| Price (incl. tax) | £22.60 |
 | Tax | £0.00 |
 | Availability | In stock (19 available) |
 | Number of reviews | 0 |
@@ -582,7 +625,7 @@ Libertarianism isn't about winning elections; it is first and foremost a politic
   
 
 
-Libertarianism for Beginners | Books to Scrape - Sandbox
+The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
 
 
 
@@ -591,12 +634,12 @@ Libertarianism for Beginners | Books to Scrape - Sandbox
 
 * [Home](../../index.html)
 * [Books](../category/books_1/index.html)
-* [Politics](../category/books/politics_48/index.html)
-* Libertarianism for Beginners
+* [Default](../category/books/default_15/index.html)
+* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-# Libertarianism for Beginners
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-£51.33
+£22.60
 
 In stock (19 available)
 
@@ -608,22 +651,22 @@ In stock (19 available)
 
 ## Product Description
 
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 
 ## Product Information
 
 |  |  |
 | --- | --- |
-| UPC | a18a4f574854aced |
+| UPC | e10e1e165dc8be4a |
 | Product Type | Books |
-| Price (excl. tax) | £51.33 |
-| Price (incl. tax) | £51.33 |
+| Price (excl. tax) | £22.60 |
+| Price (incl. tax) | £22.60 |
 | Tax | £0.00 |
 ```
 
 **playwright**
 ```
-Libertarianism for Beginners | Books to Scrape - Sandbox
+The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics | Books to Scrape - Sandbox
 
 
 
@@ -632,12 +675,12 @@ Libertarianism for Beginners | Books to Scrape - Sandbox
 
 * [Home](../../index.html)
 * [Books](../category/books_1/index.html)
-* [Politics](../category/books/politics_48/index.html)
-* Libertarianism for Beginners
+* [Default](../category/books/default_15/index.html)
+* The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-# Libertarianism for Beginners
+# The Boys in the Boat: Nine Americans and Their Epic Quest for Gold at the 1936 Berlin Olympics
 
-£51.33
+£22.60
 
 In stock (19 available)
 
@@ -649,16 +692,16 @@ In stock (19 available)
 
 ## Product Description
 
-Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling Libertarianism isn't about winning elections; it is first and foremost a political philosophy--a description of how, in the opinion of libertarians, free people ought to treat one another, at least when they use the law, which they regard as potentially dangerous. If libertarians are correct, the law should intrude into people's lives as little as possible, rarely telling them what to do or how to live.A political and economic philosophy as old as John Locke and John Stuart Mill, but as alive and timely as Rand Paul, the Tea Party, and the novels of Ayn Rand, libertarianism emphasizes individual rights and calls for a radical reduction in the power and size of government. "Libertarianism For Beginners" lays out the history and principles of this often-misunderstood philosophy in lucid, dispassionate terms that help illuminate today's political dialogue." ...more
+For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention o For readers of Laura Hillenbrand's Seabiscuit and Unbroken, the dramatic story of the American rowing team that stunned the world at Hitler's 1936 Berlin Olympics Daniel James Brown’s robust book tells the story of the University of Washington’s 1936 eight-oar crew and their epic quest for an Olympic gold medal, a team that transformed the sport and grabbed the attention of millions of Americans. The sons of loggers, shipyard workers, and farmers, the boys defeated elite rivals first from eastern and British universities and finally the German crew rowing for Adolf Hitler in the Olympic games in Berlin, 1936. The emotional heart of the story lies with one rower, Joe Rantz, a teenager without family or prospects, who rows not for glory, but to regain his shattered self-regard and to find a place he can call home. The crew is assembled  by an enigmatic coach and mentored by a visionary, eccentric British boat builder, but it is their trust in each other that makes them a victorious team. They remind the country of what can be done when everyone quite literally pulls together—a perfect melding of commitment, determination, and optimism. Drawing on the boys’ own diaries and journals, their photos and memories of a once-in-a-lifetime shared dream, The Boys in the Boat is an irresistible story about beating the odds and finding hope in the most desperate of times—the improbable, intimate story of nine working-class boys from the American west who, in the depths of the Great Depression, showed the world what true grit really meant. It will appeal to readers of Erik Larson, Timothy Egan, James Bradley, and David Halberstam's The Amateurs. ...more
 
 ## Product Information
 
 |  |  |
 | --- | --- |
-| UPC | a18a4f574854aced |
+| UPC | e10e1e165dc8be4a |
 | Product Type | Books |
-| Price (excl. tax) | £51.33 |
-| Price (incl. tax) | £51.33 |
+| Price (excl. tax) | £22.60 |
+| Price (incl. tax) | £22.60 |
 | Tax | £0.00 |
 | Availability | In stock (19 available) |
 | Number of reviews | 0 |
@@ -748,67 +791,64 @@ Libertarianism isn't about winning elections; it is first and foremost a politic
 | colly+md | 5000 | 1046 ⚠ | 3% | 99 | 33.1 | 28.7 | 100% | 97% |
 | playwright | 4975 | 1046 ⚠ | 3% | 99 | 32.8 | 28.7 | 100% | 97% |
 | firecrawl | — | — | — | — | — | — | — | — |
-
-> [1] Preamble = average words per page before the first heading.
->
-> ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
+| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai-raw** injects 1502 words of nav chrome before content begins. The word count gap (3835 vs 5424 avg words) is largely explained by preamble: 1502 words of nav chrome account for ~28% of crawl4ai's output on this site. markcrawl's lower recall (73% vs 97%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/advanced/custom-response</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/deployment/docker</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Custom Response - HTML, Stream, File, others[¶](#custom-response-html-stream-file-others "Permanent link")
+# FastAPI in Containers - Docker[¶](#fastapi-in-containers-docker "Permanent link")
 
-By default, **FastAPI** will return JSON responses.
+When deploying FastAPI applications a common approach is to build a **Linux container image**. It's normally done using [**Docker**](https://www.docker.com/). You can then deploy that container image in one of a few possible ways.
 
-You can override it by returning a `Response` directly as seen in [Return a Response directly](../response-directly/).
+Using Linux containers has several advantages including **security**, **replicability**, **simplicity**, and others.
 
-But if you return a `Response` directly (or any subclass, like `JSONResponse`), the data won't be automatically converted (even if you declare a `response_model`), and the documentation won't be automatically generated (for example, including the specific "media type", in the HTTP header `Content-Type` as part of the generated OpenAPI).
+Tip
 
-But you can also declare the `Response` that you want to be used (e.g. any `Response` subclass), in the *path operation decorator* using the `response_class` parameter.
+In a hurry and already know this stuff? Jump to the [`Dockerfile` below 👇](#build-a-docker-image-for-fastapi).
 
-The contents that you return from your *path operation function* will be put inside of that `Response`.
-
-Note
-
-If you use a response class with no media type, FastAPI will expect your response to have no content, so it will not document the response format in its generated OpenAPI docs.
-
-## JSON Responses[¶](#json-responses "Permanent link")
-
-By default FastAPI returns JSON responses.
-
-If you declare a [Response Model](../../tutorial/response-model/) FastAPI will use it to serialize the data to JSON, using Pydantic.
-
-If you don't declare a response model, FastAPI will use the `jsonable_encoder` explained in [JSON Compatible Encoder](../../tutorial/encoder/) and put it in a `JSONResponse`.
-
-If you declare a `response_class` with a JSON media type (`application/json`), like is the case with the `JSONResponse`, the data you return will be automatically converted (and filtered) with any Pydantic `response_model` that you declared in the *path operation decorator*. But the data won't be serialized to JSON bytes with Pydantic, instead it will be converted with the `jsonable_encoder` and then passed to the `JSONResponse` class, which will serialize it to bytes using the standard JSON library in Python.
-
-### JSON Performance[¶](#json-performance "Permanent link")
-
-In short, if you want the maximum performance, use a [Response Model](../../tutorial/response-model/) and don't declare a `response_class` in the *path operation decorator*.
-
-Python 3.10+
+Dockerfile Preview 👀
 
 ```False
-# Code above omitted 👆
+FROM python:3.14
 
-@app.post("/items/")
-async def create_item(item: Item) -> Item:
-    return item
+WORKDIR /code
 
-# Code below omitted 👇
+COPY ./requirements.txt /code/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+COPY ./app /code/app
+
+CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+
+# If running behind a proxy like Nginx or Traefik add --proxy-headers
+# CMD ["fastapi", "run", "app/main.py", "--port", "80", "--proxy-headers"]
+```
+
+## What is a Container[¶](#what-is-a-container "Permanent link")
+
+Containers (mainly Linux containers) are a very **lightweight** way to package applications including all their dependencies and necessary files while keeping them isolated from other containers (other applications or components) in the same system.
+
+Linux containers run using the same Linux kernel of the host (machine, virtual machine, cloud server, etc). This just means that they are very lightweight (compared to full virtual machines emulating an entire operating system).
+
+This way, containers consume **little resources**, an amount comparable to running the processes directly (a virtual machine would consume much more).
+
+Containers also have their own **isolated** running processes (commonly just one process), file system, and network, simplifying deployment, security, development, etc.
+
+## What is a Container Image[¶](#what-is-a-container-image "Permanent link")
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/advanced/custom-response/#custom-response-html-stream-file-others)
+[ Skip to content ](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -826,7 +866,7 @@ async def create_item(item: Item) -> Item:
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Custom Response - HTML, Stream, File, others 
+FastAPI in Containers - Docker 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -841,7 +881,7 @@ Custom Response - HTML, Stream, File, others
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/advanced/custom-response/?q= "Share")
+[ ](https://fastapi.tiangolo.com/deployment/docker/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -851,7 +891,7 @@ Initializing search
 
 **crawl4ai-raw**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/advanced/custom-response/#custom-response-html-stream-file-others)
+[ Skip to content ](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -869,7 +909,7 @@ Initializing search
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Custom Response - HTML, Stream, File, others 
+FastAPI in Containers - Docker 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -884,8 +924,8 @@ Custom Response - HTML, Stream, File, others
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/advanced/custom-response/?q= "Share")
-Type to start searching
+[ ](https://fastapi.tiangolo.com/deployment/docker/?q= "Share")
+Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
   * 96.9k
@@ -938,7 +978,7 @@ FastAPI
 
 **crawlee**
 ```
-Custom Response - HTML, Stream, File, others - FastAPI
+FastAPI in Containers - Docker - FastAPI
 
 
 
@@ -969,7 +1009,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/advanced/custom-response/#custom-response-html-stream-file-others)
+[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -982,7 +1022,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-Custom Response - HTML, Stream, File, others - FastAPI
+FastAPI in Containers - Docker - FastAPI
 
 
 
@@ -998,7 +1038,7 @@ Custom Response - HTML, Stream, File, others - FastAPI
 
 
 
-[Skip to content](#custom-response-html-stream-file-others)
+[Skip to content](#fastapi-in-containers-docker)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1025,7 +1065,7 @@ Custom Response - HTML, Stream, File, others - FastAPI
 
 **playwright**
 ```
-Custom Response - HTML, Stream, File, others - FastAPI
+FastAPI in Containers - Docker - FastAPI
 
 
 
@@ -1041,7 +1081,7 @@ Custom Response - HTML, Stream, File, others - FastAPI
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/advanced/custom-response/#custom-response-html-stream-file-others)
+[Skip to content](https://fastapi.tiangolo.com/deployment/docker/#fastapi-in-containers-docker)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1115,150 +1155,128 @@ Custom Response - HTML, Stream, File, others - FastAPI
 | colly+md | 3125 | 21 | 0% | 98 | 16.6 | 4.6 | 100% | 95% |
 | playwright | 3214 | 49 | 0% | 98 | 16.6 | 4.6 | 100% | 94% |
 | firecrawl | — | — | — | — | — | — | — | — |
-
-> [1] Preamble = average words per page before the first heading.
->
-> ⚠ = likely nav/boilerplate problem. Preamble >50 words means nav chrome before first heading. Repeat rate >20% means sentences recurring across pages.
+| **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). | | | | | | | | |
 
 **Reading the numbers:**
 **markcrawl** produces the cleanest output with 1 word of preamble per page, while **crawl4ai** injects 64 words of nav chrome before content begins. markcrawl's lower recall (76% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/tutorial/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.11</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# The Python Tutorial[Â¶](#the-python-tutorial "Permalink to this headline")
+# Python 3.11.15 documentation
 
-Python is an easy to learn, powerful programming language. It has efficient
-high-level data structures and a simple but effective approach to
-object-oriented programming. Pythonâs elegant syntax and dynamic typing,
-together with its interpreted nature, make it an ideal language for scripting
-and rapid application development in many areas on most platforms.
+Welcome! This is the official documentation for Python 3.11.15.
 
-The Python interpreter and the extensive standard library are freely available
-in source or binary form for all major platforms from the Python web site,
-<https://www.python.org/>, and may be freely distributed. The same site also
-contains distributions of and pointers to many free third party Python modules,
-programs and tools, and additional documentation.
+**Documentation sections:**
 
-The Python interpreter is easily extended with new functions and data types
-implemented in C or C++ (or other languages callable from C). Python is also
-suitable as an extension language for customizable applications.
+|  |  |
+| --- | --- |
+| [What's new in Python 3.11?](whatsnew/3.11.html)   Or [all "What's new" documents since Python 2.0](whatsnew/index.html)  [Tutorial](tutorial/index.html)  Start here: a tour of Python's syntax and features  [Library reference](library/index.html)  Standard library and builtins  [Language reference](reference/index.html)  Syntax and language elements  [Python setup and usage](using/index.html)  How to install, configure, and use Python  [Python HOWTOs](howto/index.html)  In-depth topic manuals | [Installing Python modules](installing/index.html)  Third-party modules and PyPI.org  [Distributing Python modules](distributing/index.html)  Publishing modules for use by other people  [Extending and embedding](extending/index.html)  For C/C++ programmers  [Python's C API](c-api/index.html)  C API reference  [FAQs](faq/index.html)  Frequently asked questions (with answers!) |
 
-This tutorial introduces the reader informally to the basic concepts and
-features of the Python language and system. It helps to have a Python
-interpreter handy for hands-on experience, but all examples are self-contained,
-so the tutorial can be read off-line as well.
+**Indices, glossary, and search:**
 
-For a description of standard objects and modules, see [The Python Standard Library](../library/index.html#library-index).
-[The Python Language Reference](../reference/index.html#reference-index) gives a more formal definition of the language. To write
-extensions in C or C++, read [Extending and Embedding the Python Interpreter](../extending/index.html#extending-index) and
-[Python/C API Reference Manual](../c-api/index.html#c-api-index). There are also several books covering Python in depth.
+|  |  |
+| --- | --- |
+| [Global module index](py-modindex.html)  All modules and libraries  [General index](genindex.html)  All functions, classes, and terms  [Glossary](glossary.html)  Terms explained | [Search page](search.html)  Search this documentation  [Complete table of contents](contents.html)  Lists all sections and subsections |
 
-This tutorial does not attempt to be comprehensive and cover every single
-feature, or even every commonly used feature. Instead, it introduces many of
-Pythonâs most noteworthy features, and will give you a good idea of the
-languageâs flavor and style. After reading it, you will be able to read and
-write Python modules and programs, and you will be ready to learn more about the
-various Python library modules described in [The Python Standard Library](../library/index.html#library-index).
+**Project information:**
 
-The [Glossary](../glossary.html#glossary) is also worth going through.
-
-* [1. Whetting Your Appetite](appetite.html)
-* [2. Using the Python Interpreter](interpreter.html)
-  * [2.1. Invoking the Interpreter](interpreter.html#invoking-the-interpreter)
+|  |  |
+| --- | --- |
+| [Reporting issues](bugs.html)  [Contributing to Docs](https://devguide.python.org/docquality/#helping-with-documentation)  [Download the documentation](download.html) | [History and license of Python](license.html)  [Copyright](copyright.html)  [About the documentation](about.html) |
 ```
 
 **crawl4ai**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.11/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11.15 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[Changelog](https://docs.python.org/3.10/whatsnew/changelog.html "previous chapter")
-#### Next topic
-[1. Whetting Your Appetite](https://docs.python.org/3.10/tutorial/appetite.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/tutorial/index.rst)
+### Download
+[Download these documents](https://docs.python.org/3.11/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
+
+
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/tutorial/appetite.html "1. Whetting Your Appetite") |
-  * [previous](https://docs.python.org/3.10/whatsnew/changelog.html "Changelog") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.11/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.11/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.11/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [The Python Tutorial](https://docs.python.org/3.10/tutorial/index.html)
-  * | 
-  * Theme  Auto Light Dark |
-
-
-# The Python Tutorial[¶](https://docs.python.org/3.10/tutorial/index.html#the-python-tutorial "Permalink to this headline")
-Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python’s elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.
-The Python interpreter and the extensive standard library are freely available in source or binary form for all major platforms from the Python web site, <https://www.python.org/>, and may be freely distributed. The same site also contains distributions of and pointers to many free third party Python modules, programs and tools, and additional documentation.
-The Python interpreter is easily extended with new functions and data types implemented in C or C++ (or other languages callable from C). Python is also suitable as an extension language for customizable applications.
-This tutorial introduces the reader informally to the basic concepts and features of the Python language and system. It helps to have a Python interpreter handy for hands-on experience, but all examples are self-contained, so the tutorial can be read off-line as well.
-For a description of standard objects and modules, see [The Python Standard Library](https://docs.python.org/3.10/library/index.html#library-index). [The Python Language Reference](https://docs.python.org/3.10/reference/index.html#reference-index) gives a more formal definition of the language. To write extensions in C or C++, read [Extending and Embedding the Python Interpreter](https://docs.python.org/3.10/extending/index.html#extending-index) and [Python/C API Reference Manual](https://docs.python.org/3.10/c-api/index.html#c-api-index). There are also several books covering Python in depth.
-This tutorial does not attempt to be comprehensive and cover every single feature, or even every commonly used feature. Instead, it introduces many of Python’s most noteworthy features, and will give you a good idea of the language’s flavor and style. After reading it, you will be able to read and write Python modules and programs, and you will be ready to learn more about the various Python library modules described in [The Python Standard Library](https://docs.python.org/3.10/library/index.html#library-index).
-The [Glossary](https://docs.python.org/3.10/glossary.html#glossary) is also worth going through.
-  * [1. Whetting Your Appetite](https://docs.python.org/3.10/tutorial/appetite.html)
-  * [2. Using the Python Interpreter](https://docs.python.org/3.10/tutorial/interpreter.html)
-    * [2.1. Invoking the Interpreter](https://docs.python.org/3.10/tutorial/interpreter.html#invoking-the-interpreter)
-      * [2.1.1. Argument Passing](https://docs.python.org/3.10/tutorial/interpreter.html#argument-passing)
-      * [2.1.2. Interactive Mode](https://docs.python.org/3.10/tutorial/interpreter.html#interactive-mode)
 ```
 
 **crawl4ai-raw**
 ```
-[ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
+[ ![Python logo](https://docs.python.org/3.11/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11.15 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[Changelog](https://docs.python.org/3.10/whatsnew/changelog.html "previous chapter")
-#### Next topic
-[1. Whetting Your Appetite](https://docs.python.org/3.10/tutorial/appetite.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/tutorial/index.rst)
+### Download
+[Download these documents](https://docs.python.org/3.11/download.html)
+### Docs by version
+  * [Python 3.15 (in development)](https://docs.python.org/3.15/)
+  * [Python 3.14 (stable)](https://docs.python.org/3.14/)
+  * [Python 3.13 (stable)](https://docs.python.org/3.13/)
+  * [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+  * [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+  * [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+  * [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+  * [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+  * [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+  * [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+  * [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+  * [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+  * [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+  * [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+  * [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+  * [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+  * [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+  * [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+  * [All versions](https://www.python.org/doc/versions/)
+
+
+### Other resources
+  * [PEP Index](https://peps.python.org/)
+  * [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+  * [Book List](https://wiki.python.org/moin/PythonBooks)
+  * [Audio/Visual Talks](https://www.python.org/doc/av/)
+  * [Python Developer’s Guide](https://devguide.python.org/)
 
 
 ### Navigation
-  * [index](https://docs.python.org/3.10/genindex.html "General Index")
-  * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/tutorial/appetite.html "1. Whetting Your Appetite") |
-  * [previous](https://docs.python.org/3.10/whatsnew/changelog.html "Changelog") |
-  * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
+  * [index](https://docs.python.org/3.11/genindex.html "General Index")
+  * [modules](https://docs.python.org/3.11/py-modindex.html "Python Module Index") |
+  * ![Python logo](https://docs.python.org/3.11/_static/py.svg)
   * [Python](https://www.python.org/) »
-  * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
-dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
-  * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [The Python Tutorial](https://docs.python.org/3.10/tutorial/index.html)
-  * | 
-  * Theme  Auto Light Dark |
-
-
-# The Python Tutorial[¶](https://docs.python.org/3.10/tutorial/index.html#the-python-tutorial "Permalink to this headline")
-Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python’s elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.
-The Python interpreter and the extensive standard library are freely available in source or binary form for all major platforms from the Python web site, <https://www.python.org/>, and may be freely distributed. The same site also contains distributions of and pointers to many free third party Python modules, programs and tools, and additional documentation.
-The Python interpreter is easily extended with new functions and data types implemented in C or C++ (or other languages callable from C). Python is also suitable as an extension language for customizable applications.
-This tutorial introduces the reader informally to the basic concepts and features of the Python language and system. It helps to have a Python interpreter handy for hands-on experience, but all examples are self-contained, so the tutorial can be read off-line as well.
-For a description of standard objects and modules, see [The Python Standard Library](https://docs.python.org/3.10/library/index.html#library-index). [The Python Language Reference](https://docs.python.org/3.10/reference/index.html#reference-index) gives a more formal definition of the language. To write extensions in C or C++, read [Extending and Embedding the Python Interpreter](https://docs.python.org/3.10/extending/index.html#extending-index) and [Python/C API Reference Manual](https://docs.python.org/3.10/c-api/index.html#c-api-index). There are also several books covering Python in depth.
-This tutorial does not attempt to be comprehensive and cover every single feature, or even every commonly used feature. Instead, it introduces many of Python’s most noteworthy features, and will give you a good idea of the language’s flavor and style. After reading it, you will be able to read and write Python modules and programs, and you will be ready to learn more about the various Python library modules described in [The Python Standard Library](https://docs.python.org/3.10/library/index.html#library-index).
-The [Glossary](https://docs.python.org/3.10/glossary.html#glossary) is also worth going through.
-  * [1. Whetting Your Appetite](https://docs.python.org/3.10/tutorial/appetite.html)
-  * [2. Using the Python Interpreter](https://docs.python.org/3.10/tutorial/interpreter.html)
-    * [2.1. Invoking the Interpreter](https://docs.python.org/3.10/tutorial/interpreter.html#invoking-the-interpreter)
-      * [2.1.1. Argument Passing](https://docs.python.org/3.10/tutorial/interpreter.html#argument-passing)
-      * [2.1.2. Interactive Mode](https://docs.python.org/3.10/tutorial/interpreter.html#interactive-mode)
 ```
 
 **scrapy+md**
@@ -1268,49 +1286,46 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[Changelog](../whatsnew/changelog.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 
-[1. Whetting Your Appetite](appetite.html "next chapter")
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+* [Python 3.13 (stable)](https://docs.python.org/3.13/)
+* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
+* [Python 3.9 (EOL)](https://docs.python.org/3.9/)
+* [Python 3.8 (EOL)](https://docs.python.org/3.8/)
+* [Python 3.7 (EOL)](https://docs.python.org/3.7/)
+* [Python 3.6 (EOL)](https://docs.python.org/3.6/)
+* [Python 3.5 (EOL)](https://docs.python.org/3.5/)
+* [Python 3.4 (EOL)](https://docs.python.org/3.4/)
+* [Python 3.3 (EOL)](https://docs.python.org/3.3/)
+* [Python 3.2 (EOL)](https://docs.python.org/3.2/)
+* [Python 3.1 (EOL)](https://docs.python.org/3.1/)
+* [Python 3.0 (EOL)](https://docs.python.org/3.0/)
+* [Python 2.7 (EOL)](https://docs.python.org/2.7/)
+* [Python 2.6 (EOL)](https://docs.python.org/2.6/)
+* [All versions](https://www.python.org/doc/versions/)
 
-### This Page
+### Other resources
 
-* [Report a Bug](../bugs.html)
-* [Show Source](https://github.com/python/cpython/blob/3.10/Doc/tutorial/index.rst)
+* [PEP Index](https://peps.python.org/)
+* [Beginner's Guide](https://wiki.python.org/moin/BeginnersGuide)
+* [Book List](https://wiki.python.org/moin/PythonBooks)
+* [Audio/Visual Talks](https://www.python.org/doc/av/)
+* [Python Developer’s Guide](https://devguide.python.org/)
 
 ### Navigation
-
-* [index](../genindex.html "General Index")
-* [modules](../py-modindex.html "Python Module Index") |
-* [next](appetite.html "1. Whetting Your Appetite") |
-* [previous](../whatsnew/changelog.html "Changelog") |
-* [Python](https://www.python.org/) »
-
-* [3.10.20 Documentation](../index.html) »
-* The Python Tutorial
-* |
-* Theme
-  Auto
-  Light
-  Dark
-   |
-
-# The Python Tutorial[¶](#the-python-tutorial "Permalink to this headline")
-
-Python is an easy to learn, powerful programming language. It has efficient
-high-level data structures and a simple but effective approach to
-object-oriented programming. Python’s elegant syntax and dynamic typing,
 ```
 
 **crawlee**
 ```
-The Python Tutorial — Python 3.10.20 documentation
-
-
-
+3.11.15 Documentation
 
 
 
@@ -1333,7 +1348,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.133.123.11.153.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1342,19 +1357,19 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[Changelog](../whatsnew/changelog.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
+
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
 ```
 
 **colly+md**
 ```
-The Python Tutorial — Python 3.10.20 documentation
-
-
-
+3.11.15 Documentation
 
 
 
@@ -1382,23 +1397,23 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[Changelog](../whatsnew/changelog.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
 
-[1. Whetting Your Appetite](appetite.html "next chapter")
-
-### This Page
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
+* [Python 3.13 (stable)](https://docs.python.org/3.13/)
+* [Python 3.12 (security-fixes)](https://docs.python.org/3.12/)
+* [Python 3.11 (security-fixes)](https://docs.python.org/3.11/)
+* [Python 3.10 (security-fixes)](https://docs.python.org/3.10/)
 ```
 
 **playwright**
 ```
-The Python Tutorial — Python 3.10.20 documentation
-
-
-
+3.11.15 Documentation
 
 
 
@@ -1421,7 +1436,7 @@ width: 100%;
 
 
 
-dev (3.15)3.143.133.123.113.10.203.93.83.73.63.53.43.33.23.13.02.72.6
+dev (3.15)3.143.133.123.11.153.103.93.83.73.63.53.43.33.23.13.02.72.6
 
 Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 
@@ -1430,11 +1445,14 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Download
 
-[Changelog](../whatsnew/changelog.html "previous chapter")
+[Download these documents](download.html)
 
-#### Next topic
+### Docs by version
+
+* [Python 3.15 (in development)](https://docs.python.org/3.15/)
+* [Python 3.14 (stable)](https://docs.python.org/3.14/)
 ```
 
 **firecrawl** — no output for this URL

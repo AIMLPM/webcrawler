@@ -506,6 +506,9 @@ def generate_quality_report(
                 f"{s['avg_precision']:.0%} | {s['avg_recall']:.0%} |"
             )
 
+        # Footnote row at the bottom of the summary table
+        lines.append(f"| **[1]** Avg words per page before the first heading (nav chrome) | | | | | | |")
+
         # Add takeaway narrative based on the summary data
         if "markcrawl" in tool_summaries:
             mc = tool_summaries["markcrawl"]
@@ -531,7 +534,6 @@ def generate_quality_report(
         lines.extend([
             "> **Content signal** = percentage of output that is content (not preamble nav chrome).",
             "> Higher is better. A tool with 100% content signal has zero nav/header pollution.",
-            "> **[1] Preamble** = average words per page before the first heading (nav chrome injected into every page).",
             "> **Repeat rate** = fraction of phrases appearing on >50% of pages (boilerplate).",
             "> **Junk/page** = known boilerplate phrases detected per page.",
             "",
@@ -581,14 +583,10 @@ def generate_quality_report(
                 f"{avg_code:.1f} | {avg_precision:.0%} | {avg_recall:.0%} |"
             )
 
-        lines.append("")
-        lines.extend([
-            "> [1] Preamble = average words per page before the first heading.",
-            ">",
-            "> ⚠ = likely nav/boilerplate problem. "
-            "Preamble >50 words means nav chrome before first heading. "
-            "Repeat rate >20% means sentences recurring across pages.",
-        ])
+        # Footnote row at the bottom of the per-site table
+        lines.append(f"| **[1]** Avg words per page before the first heading (nav chrome). "
+                      f"**⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%). "
+                      f"| | | | | | | | |")
         lines.append("")
 
         # ---------------------------------------------------------------
