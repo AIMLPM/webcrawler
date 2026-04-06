@@ -16,6 +16,7 @@ def save_state(
     to_visit: Deque[str],
     saved_count: int,
     seeds: List[str],
+    visited_for_links: Optional[Set[str]] = None,
 ) -> None:
     state = {
         "seen_urls": list(seen_urls),
@@ -23,6 +24,7 @@ def save_state(
         "to_visit": list(to_visit),
         "saved_count": saved_count,
         "seeds": seeds,
+        "visited_for_links": list(visited_for_links) if visited_for_links is not None else [],
     }
     tmp = state_path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:

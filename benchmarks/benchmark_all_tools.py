@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import shutil
 import statistics
 import subprocess
@@ -1244,8 +1245,9 @@ def main():
             site: threading.Semaphore(args.site_parallelism) for site in sites
         }
 
-        # Build work items: (tool, site) pairs
+        # Build work items: (tool, site) pairs — randomized to reduce ordering bias
         work_items = [(tool, site) for tool in available for site in sites]
+        random.shuffle(work_items)
 
         def _guarded_bench(tool_name: str, site_name: str) -> None:
             with site_semaphores[site_name]:
@@ -1261,10 +1263,14 @@ def main():
                 if exc:
                     print(f"  Warning: benchmark task failed: {exc}")
     else:
-        # Sequential mode (original behavior)
-        print("\n--- Phase 2: Benchmarking (identical URLs per site) ---")
-        for tool_name in available:
-            for site_name in sites:
+        # Sequential mode — randomize tool order per site to eliminate
+        # cache/CDN bias from fixed ordering.
+        print("\n--- Phase 2: Benchmarking (identical URLs per site, randomized tool order) ---")
+        for site_name in sites:
+            tool_order = list(available)
+            random.shuffle(tool_order)
+            print(f"  {site_name} tool order: {', '.join(tool_order)}")
+            for tool_name in tool_order:
                 _bench_tool_site(tool_name, site_name)
 
     phase2_end = time.time()

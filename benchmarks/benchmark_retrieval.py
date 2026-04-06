@@ -41,7 +41,8 @@ TOOLS = [
 
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIMENSIONS = 1536
-TOP_K = 3
+TOP_K = 10  # Retrieve top-10 for multi-K hit rate reporting
+HIT_AT_K = [1, 3, 5, 10]  # Report hit rates at each K value
 CHUNK_MAX_WORDS = 400
 CHUNK_OVERLAP = 50
 
@@ -49,6 +50,9 @@ CHUNK_OVERLAP = 50
 #   - query text (what a user would ask)
 #   - expected URL substring (identifies the correct source page)
 #   - description (what the query tests)
+#
+# ~50 total queries across 4 sites for statistical significance.
+# All url_match values verified against actually-crawled pages.
 TEST_QUERIES: Dict[str, List[Dict]] = {
     "quotes-toscrape": [
         {
@@ -68,6 +72,60 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
             "url_match": "author/Jane-Austen",
             "page_match": "austen",
             "description": "Find author-specific content",
+        },
+        {
+            "query": "What quotes are about the truth?",
+            "url_match": "tag/truth",
+            "page_match": "truth",
+            "description": "Find tag page for truth",
+        },
+        {
+            "query": "Which quotes are about humor and being funny?",
+            "url_match": "tag/humor",
+            "page_match": "humor",
+            "description": "Find humor tag page",
+        },
+        {
+            "query": "What did J.K. Rowling say about choices and abilities?",
+            "url_match": "author/J-K-Rowling",
+            "page_match": "rowling",
+            "description": "Find J.K. Rowling author page",
+        },
+        {
+            "query": "What quotes are tagged with 'change'?",
+            "url_match": "tag/change",
+            "page_match": "change",
+            "description": "Find change tag page",
+        },
+        {
+            "query": "What did Steve Martin say about sunshine?",
+            "url_match": "author/Steve-Martin",
+            "page_match": "steve-martin",
+            "description": "Find Steve Martin author page",
+        },
+        {
+            "query": "Which quotes talk about believing in yourself?",
+            "url_match": "tag/be-yourself",
+            "page_match": "be-yourself",
+            "description": "Find be-yourself tag page",
+        },
+        {
+            "query": "What are the quotes about miracles and living life?",
+            "url_match": "tag/miracle",
+            "page_match": "miracle",
+            "description": "Find miracle tag page",
+        },
+        {
+            "query": "What quotes are about thinking deeply?",
+            "url_match": "tag/thinking",
+            "page_match": "thinking",
+            "description": "Find thinking tag page",
+        },
+        {
+            "query": "What quotes talk about living life fully?",
+            "url_match": "tag/live",
+            "page_match": "live",
+            "description": "Find live tag page",
         },
     ],
     "books-toscrape": [
@@ -89,6 +147,66 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
             "page_match": "",
             "description": "Find specific product detail",
         },
+        {
+            "query": "What science fiction books are available?",
+            "url_match": "science-fiction",
+            "page_match": "science-fiction",
+            "description": "Find science fiction category",
+        },
+        {
+            "query": "What horror books are in the catalog?",
+            "url_match": "horror",
+            "page_match": "horror",
+            "description": "Find horror category",
+        },
+        {
+            "query": "What poetry books can I find?",
+            "url_match": "poetry",
+            "page_match": "poetry",
+            "description": "Find poetry category",
+        },
+        {
+            "query": "What romance novels are available?",
+            "url_match": "romance",
+            "page_match": "romance",
+            "description": "Find romance category",
+        },
+        {
+            "query": "What history books are in the collection?",
+            "url_match": "history",
+            "page_match": "history",
+            "description": "Find history category",
+        },
+        {
+            "query": "What philosophy books are available to read?",
+            "url_match": "philosophy",
+            "page_match": "philosophy",
+            "description": "Find philosophy category",
+        },
+        {
+            "query": "What humor and comedy books can I find?",
+            "url_match": "humor",
+            "page_match": "humor",
+            "description": "Find humor category",
+        },
+        {
+            "query": "What fantasy books are in the bookstore?",
+            "url_match": "fantasy",
+            "page_match": "fantasy",
+            "description": "Find fantasy category",
+        },
+        {
+            "query": "What is the book Sharp Objects about?",
+            "url_match": "sharp-objects",
+            "page_match": "sharp-objects",
+            "description": "Find specific book page",
+        },
+        {
+            "query": "What biography books are in the catalog?",
+            "url_match": "biography",
+            "page_match": "biography",
+            "description": "Find biography category",
+        },
     ],
     "fastapi-docs": [
         {
@@ -104,16 +222,16 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
             "description": "Find specific technical detail",
         },
         {
-            "query": "How do I define query parameters in FastAPI?",
+            "query": "How do I define query parameters in the FastAPI reference?",
             "url_match": "reference/fastapi",
             "page_match": "reference",
-            "description": "Find tutorial content",
+            "description": "Find API reference content",
         },
         {
-            "query": "How do I handle file uploads in FastAPI?",
+            "query": "How does FastAPI handle JSON encoding and base64 bytes?",
             "url_match": "json-base64-bytes",
             "page_match": "json-base64",
-            "description": "Find procedural content",
+            "description": "Find advanced encoding content",
         },
         {
             "query": "What Python types does FastAPI support for request bodies?",
@@ -121,11 +239,71 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
             "page_match": "body",
             "description": "Find reference content",
         },
+        {
+            "query": "How do I use OAuth2 with password flow in FastAPI?",
+            "url_match": "simple-oauth2",
+            "page_match": "oauth2",
+            "description": "Find OAuth2 tutorial",
+        },
+        {
+            "query": "How do I use WebSockets in FastAPI?",
+            "url_match": "websockets",
+            "page_match": "websocket",
+            "description": "Find WebSocket documentation",
+        },
+        {
+            "query": "How do I stream data responses in FastAPI?",
+            "url_match": "stream-data",
+            "page_match": "stream",
+            "description": "Find streaming documentation",
+        },
+        {
+            "query": "How do I return additional response types in FastAPI?",
+            "url_match": "additional-responses",
+            "page_match": "additional-response",
+            "description": "Find additional responses docs",
+        },
+        {
+            "query": "How do I write async tests for FastAPI applications?",
+            "url_match": "async-tests",
+            "page_match": "async-test",
+            "description": "Find testing documentation",
+        },
+        {
+            "query": "How do I define nested Pydantic models for request bodies?",
+            "url_match": "body-nested-models",
+            "page_match": "body-nested",
+            "description": "Find nested model tutorial",
+        },
+        {
+            "query": "How do I handle startup and shutdown events in FastAPI?",
+            "url_match": "events",
+            "page_match": "event",
+            "description": "Find lifecycle events docs",
+        },
+        {
+            "query": "How do I use middleware in FastAPI?",
+            "url_match": "middleware",
+            "page_match": "middleware",
+            "description": "Find middleware reference",
+        },
+        {
+            "query": "How do I use Jinja2 templates in FastAPI?",
+            "url_match": "templating",
+            "page_match": "templat",
+            "description": "Find templating reference",
+        },
+        {
+            "query": "How do I deploy FastAPI to the cloud?",
+            "url_match": "deployment",
+            "page_match": "deploy",
+            "description": "Find deployment documentation",
+        },
     ],
     "python-docs": [
         {
             "query": "What new features were added in Python 3.10?",
-            "url_match": "whatsnew/3.10",
+            "url_match": "whatsnew",
             "page_match": "whatsnew",
             "description": "Find release notes content",
         },
@@ -136,12 +314,6 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
             "description": "Find glossary definition",
         },
         {
-            "query": "What modules are in the Python standard library?",
-            "url_match": "library/index",
-            "page_match": "library",
-            "description": "Find library index content",
-        },
-        {
             "query": "How do I report a bug in Python?",
             "url_match": "bugs",
             "page_match": "bugs",
@@ -149,9 +321,57 @@ TEST_QUERIES: Dict[str, List[Dict]] = {
         },
         {
             "query": "What is structural pattern matching in Python?",
-            "url_match": "whatsnew/3.10",
+            "url_match": "whatsnew",
             "page_match": "whatsnew",
             "description": "Find specific feature documentation",
+        },
+        {
+            "query": "What is Python's glossary definition of a generator?",
+            "url_match": "glossary",
+            "page_match": "glossary",
+            "description": "Find glossary generator definition",
+        },
+        {
+            "query": "What are the Python how-to guides about?",
+            "url_match": "howto",
+            "page_match": "howto",
+            "description": "Find how-to index page",
+        },
+        {
+            "query": "What is the Python module index?",
+            "url_match": "py-modindex",
+            "page_match": "modindex",
+            "description": "Find module index page",
+        },
+        {
+            "query": "What Python tutorial topics are available?",
+            "url_match": "tutorial",
+            "page_match": "tutorial",
+            "description": "Find tutorial index page",
+        },
+        {
+            "query": "What is the Python license and copyright?",
+            "url_match": "license",
+            "page_match": "license",
+            "description": "Find license page",
+        },
+        {
+            "query": "What is the table of contents for Python 3.10 documentation?",
+            "url_match": "contents",
+            "page_match": "contents",
+            "description": "Find contents page",
+        },
+        {
+            "query": "What does the term 'iterable' mean in Python?",
+            "url_match": "glossary",
+            "page_match": "glossary",
+            "description": "Find glossary iterable definition",
+        },
+        {
+            "query": "How do I install and configure Python on my system?",
+            "url_match": "using",
+            "page_match": "using",
+            "description": "Find setup/usage guide",
         },
     ],
 }
@@ -196,6 +416,7 @@ class ToolSiteRetrievalResult:
     query_results: List[QueryResult]
     embed_time: float
     search_time: float
+    hits_at_k: Dict[int, int] = field(default_factory=dict)  # {k: hit_count}
 
 
 # ---------------------------------------------------------------------------
@@ -382,7 +603,17 @@ def run_retrieval_test(
 
     total_pages = len(set(c.url for c in chunks))
     avg_words = sum(len(c.text.split()) for c in chunks) / len(chunks) if chunks else 0
-    hits = sum(1 for r in query_results if r.hit)
+
+    # Compute hit counts at each K threshold
+    hits_at_k: Dict[int, int] = {}
+    for k in HIT_AT_K:
+        hits_at_k[k] = sum(
+            1 for r in query_results if r.hit_rank is not None and r.hit_rank <= k
+        )
+
+    # Default hit count uses the largest K
+    max_k = max(HIT_AT_K)
+    hits = hits_at_k.get(max_k, 0)
 
     return ToolSiteRetrievalResult(
         tool=tool,
@@ -396,6 +627,7 @@ def run_retrieval_test(
         query_results=query_results,
         embed_time=embed_time,
         search_time=search_time,
+        hits_at_k=hits_at_k,
     )
 
 
@@ -403,11 +635,28 @@ def run_retrieval_test(
 # Report generation
 # ---------------------------------------------------------------------------
 
+def _compute_confidence_interval(hits: int, total: int) -> Tuple[float, float]:
+    """Wilson score interval for binomial proportion (95% confidence)."""
+    if total == 0:
+        return (0.0, 0.0)
+    import math
+    z = 1.96  # 95% CI
+    p_hat = hits / total
+    denom = 1 + z * z / total
+    center = (p_hat + z * z / (2 * total)) / denom
+    spread = z * math.sqrt((p_hat * (1 - p_hat) + z * z / (4 * total)) / total) / denom
+    return (max(0.0, center - spread), min(1.0, center + spread))
+
+
 def generate_retrieval_report(
     results: Dict[str, Dict[str, ToolSiteRetrievalResult]],
     tool_names: List[str],
 ) -> str:
     """Generate the RETRIEVAL_COMPARISON.md report."""
+    total_queries_count = sum(
+        len(TEST_QUERIES.get(site, []))
+        for site in results.keys()
+    )
     lines = [
         "# Retrieval Quality Comparison",
         "",
@@ -415,41 +664,51 @@ def generate_retrieval_report(
         "This benchmark chunks each tool's crawl output, embeds it with",
         f"`{EMBEDDING_MODEL}`, and runs the same retrieval queries against each.",
         "",
-        "**What matters:** Hit rate — does the correct source page appear in the",
-        f"top {TOP_K} results? Higher is better.",
+        f"**{total_queries_count} queries** across {len(results)} sites.",
+        "Hit rate = correct source page in top-K results. Higher is better.",
         "",
-        "## Summary",
+        "## Summary: hit rate at multiple K values",
         "",
-        f"| Tool | Queries | Hits | Hit rate | Chunks | Avg chunk words |",
-        "|---|---|---|---|---|---|",
     ]
+
+    # Build multi-K header
+    k_headers = " | ".join(f"Hit@{k}" for k in HIT_AT_K)
+    lines.append(f"| Tool | {k_headers} | Chunks | Avg words |")
+    lines.append("|---" + "|---" * len(HIT_AT_K) + "|---|---|")
 
     # Aggregate across all sites per tool
     for tool in tool_names:
         total_queries = 0
-        total_hits = 0
         total_chunks = 0
         total_chunk_words = 0
         has_data = False
+        agg_hits_at_k: Dict[int, int] = {k: 0 for k in HIT_AT_K}
 
         for site_results in results.values():
             r = site_results.get(tool)
             if r:
                 has_data = True
                 total_queries += r.total_queries
-                total_hits += r.hits
                 total_chunks += r.total_chunks
                 total_chunk_words += r.avg_chunk_words * r.total_chunks
+                for k in HIT_AT_K:
+                    agg_hits_at_k[k] += r.hits_at_k.get(k, 0)
 
         if not has_data:
-            lines.append(f"| {tool} | — | — | — | — | — |")
+            cols = " | ".join("—" for _ in HIT_AT_K)
+            lines.append(f"| {tool} | {cols} | — | — |")
             continue
 
-        hit_rate = total_hits / total_queries if total_queries else 0
         avg_words = total_chunk_words / total_chunks if total_chunks else 0
+        k_cols = []
+        for k in HIT_AT_K:
+            h = agg_hits_at_k[k]
+            rate = h / total_queries if total_queries else 0
+            lo, hi = _compute_confidence_interval(h, total_queries)
+            k_cols.append(f"{rate:.0%} ({h}/{total_queries}) ±{(hi-lo)/2:.0%}")
         lines.append(
-            f"| {tool} | {total_queries} | {total_hits} | "
-            f"{hit_rate:.0%} | {total_chunks} | {avg_words:.0f} |"
+            f"| {tool} | " + " | ".join(k_cols) +
+            f" | {total_chunks} | {avg_words:.0f} |"
         )
 
     lines.extend(["", ""])
@@ -462,25 +721,33 @@ def generate_retrieval_report(
 
         lines.extend([f"## {site}", ""])
 
-        # Hit rate table
+        # Hit rate table with multi-K
+        k_headers = " | ".join(f"Hit@{k}" for k in HIT_AT_K)
         lines.extend([
-            f"| Tool | Hit rate | Hits/{len(queries)} | Chunks | Pages | Embed time |",
-            "|---|---|---|---|---|---|",
+            f"| Tool | {k_headers} | Chunks | Pages | Embed time |",
+            "|---" + "|---" * len(HIT_AT_K) + "|---|---|---|",
         ])
 
         for tool in tool_names:
             r = site_results.get(tool)
             if not r:
-                lines.append(f"| {tool} | — | — | — | — | — |")
+                cols = " | ".join("—" for _ in HIT_AT_K)
+                lines.append(f"| {tool} | {cols} | — | — | — |")
                 continue
+            k_cols = []
+            for k in HIT_AT_K:
+                h = r.hits_at_k.get(k, 0)
+                rate = h / r.total_queries if r.total_queries else 0
+                k_cols.append(f"{rate:.0%} ({h}/{r.total_queries})")
             lines.append(
-                f"| {tool} | {r.hit_rate:.0%} | {r.hits}/{r.total_queries} | "
-                f"{r.total_chunks} | {r.total_pages} | {r.embed_time:.1f}s |"
+                f"| {tool} | " + " | ".join(k_cols) +
+                f" | {r.total_chunks} | {r.total_pages} | {r.embed_time:.1f}s |"
             )
 
         lines.append("")
 
-        # Per-query detail
+        # Per-query detail (show top-3 only for readability)
+        detail_k = 3
         lines.append("<details>")
         lines.append(f"<summary>Query-by-query results for {site}</summary>")
         lines.append("")
@@ -501,9 +768,9 @@ def generate_retrieval_report(
                     continue
 
                 qr = r.query_results[qi]
-                hit_marker = f"#{qr.hit_rank}" if qr.hit else "miss"
+                hit_marker = f"#{qr.hit_rank}" if qr.hit_rank is not None else "miss"
                 row = f"| {tool} | {hit_marker} "
-                for i in range(TOP_K):
+                for i in range(detail_k):
                     if i < len(qr.top_k_urls):
                         short_url = qr.top_k_urls[i].split("//")[-1][:50]
                         score = qr.top_k_scores[i]
@@ -518,12 +785,15 @@ def generate_retrieval_report(
         lines.extend(["</details>", ""])
 
     # Methodology note
+    k_list = ", ".join(str(k) for k in HIT_AT_K)
     lines.extend([
         "## Methodology",
         "",
+        f"- **Queries:** {total_queries_count} across {len(results)} sites (verified against crawled pages)",
         f"- **Embedding model:** `{EMBEDDING_MODEL}` ({EMBEDDING_DIMENSIONS} dimensions)",
         f"- **Chunking:** Markdown-aware, {CHUNK_MAX_WORDS} word max, {CHUNK_OVERLAP} word overlap",
-        f"- **Retrieval:** Cosine similarity, top-{TOP_K} results checked for expected URL",
+        f"- **Retrieval:** Cosine similarity, hit rate reported at K = {k_list}",
+        f"- **Confidence intervals:** Wilson score interval (95%)",
         "- **Same chunking and embedding** for all tools — only extraction quality varies",
         "- **No fine-tuning or tool-specific optimization** — identical pipeline for all",
         "",
@@ -657,21 +927,27 @@ def main():
         f.write(report)
     print(f"\nRetrieval report written to: {output_path}")
 
-    # Print summary
+    # Print summary with multi-K hit rates
     print("\n" + "=" * 60)
     print("SUMMARY")
     print("=" * 60)
+    k_header = "  " + " | ".join(f"Hit@{k:>2}" for k in HIT_AT_K)
+    print(f"{'Tool':>15}  {k_header}")
     for tool in available_tools:
-        total_hits = sum(
-            r.hits for site_results in all_results.values()
-            for t, r in site_results.items() if t == tool
-        )
         total_queries = sum(
             r.total_queries for site_results in all_results.values()
             for t, r in site_results.items() if t == tool
         )
-        if total_queries:
-            print(f"  {tool}: {total_hits}/{total_queries} ({total_hits/total_queries:.0%})")
+        if not total_queries:
+            continue
+        k_vals = []
+        for k in HIT_AT_K:
+            h = sum(
+                r.hits_at_k.get(k, 0) for site_results in all_results.values()
+                for t, r in site_results.items() if t == tool
+            )
+            k_vals.append(f"{h}/{total_queries} ({h/total_queries:.0%})")
+        print(f"  {tool:>15}  {'  '.join(k_vals)}")
 
 
 if __name__ == "__main__":

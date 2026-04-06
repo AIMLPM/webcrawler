@@ -43,6 +43,7 @@ We expect MarkCrawl to lose on some metrics. Here's the pre-written narrative fo
 | Output format | Markdown | Common denominator |
 | Iterations | 3 per site, report median + std dev | Network variance is real |
 | Warm-up | 1 throwaway run per site before timing | Exclude DNS/TLS cold start |
+| Tool order | Randomized per site per run | Eliminate CDN/DNS cache bias from fixed ordering |
 
 ### How each tool runs
 

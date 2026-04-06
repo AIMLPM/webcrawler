@@ -235,6 +235,8 @@ class CrawlEngine:
         IMPORTANT: This method mutates ``seen_content`` and must only be called
         from the main thread.
         """
+        assert threading.current_thread() is threading.main_thread(), \
+            "process_response must be called from the main thread"
         if not (response and response.ok):
             return None
 
@@ -307,8 +309,10 @@ class CrawlEngine:
         url = page_data["url"]
         filename = self.write_page(page_data)
         jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"]))
-        jsonl_file.flush()
         self.saved_count += 1
+        # Flush every 10 pages to reduce syscalls while still protecting against data loss
+        if self.saved_count % 10 == 0:
+            jsonl_file.flush()
 
         if self.total_planned:
             self.progress(f"[prog] saved {self.saved_count}/{self.total_planned} | queued={len(self.to_visit)}")
@@ -401,7 +405,11 @@ class CrawlEngine:
 
             if self.saved_count % state_save_interval == 0:
                 save_state(self.state_path, self.seen_urls, self.seen_content,
-                           self.to_visit, self.saved_count, self.seeds)
+                           self.to_visit, self.saved_count, self.seeds,
+                           self.visited_for_links)
+
+        # Final flush to ensure all buffered writes are persisted
+        jsonl_file.flush()
 
 
 # ---------------------------------------------------------------------------
@@ -456,6 +464,23 @@ def crawl(
         A :class:`CrawlResult` with the count of saved pages, output
         directory path, and path to the JSONL index file.
     """
+    # --- Input validation ---
+    if not base_url or not isinstance(base_url, str):
+        raise ValueError("base_url must be a non-empty string")
+    parsed = up.urlsplit(base_url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"base_url must use http or https, got {parsed.scheme!r}")
+    if delay < 0:
+        raise ValueError("delay must be >= 0")
+    if timeout <= 0:
+        raise ValueError("timeout must be > 0")
+    if max_pages < 0:
+        raise ValueError("max_pages must be >= 0")
+    if concurrency <= 0:
+        raise ValueError("concurrency must be > 0")
+    if min_words < 0:
+        raise ValueError("min_words must be >= 0")
+
     os.makedirs(out_dir, exist_ok=True)
 
     engine = CrawlEngine(
@@ -488,6 +513,7 @@ def crawl(
             engine.to_visit = deque(saved_state["to_visit"])
             engine.saved_count = saved_state["saved_count"]
             engine.seeds = saved_state.get("seeds", [])
+            engine.visited_for_links = set(saved_state.get("visited_for_links", []))
             resumed = True
             engine.progress(f"[info] resuming crawl: {engine.saved_count} page(s) already saved, {len(engine.to_visit)} queued")
         else:
@@ -531,7 +557,8 @@ def crawl(
     # Save or clean up state
     if engine.interrupted or (engine.to_visit and max_pages > 0 and engine.saved_count >= max_pages):
         save_state(engine.state_path, engine.seen_urls, engine.seen_content,
-                   engine.to_visit, engine.saved_count, engine.seeds)
+                   engine.to_visit, engine.saved_count, engine.seeds,
+                   engine.visited_for_links)
         engine.progress(f"[info] state saved to {engine.state_path} — use --resume to continue")
     else:
         if os.path.isfile(engine.state_path):

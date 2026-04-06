@@ -39,7 +39,24 @@ chunk in the vector index, degrading retrieval for every query.
 **[1]** Avg words per page before the first heading (nav chrome).
 
 
-**Key takeaway:** markcrawl achieves 100% content signal with only 4 words of preamble per page — compared to 398 for crawl4ai. Its recall is lower (84% vs 97%) because it strips nav, footer, and sponsor content that other tools include. For RAG use cases, this trade-off favors markcrawl: every chunk in the vector index is pure content, with no boilerplate to dilute embeddings or pollute retrieval results.
+**Key takeaway:** markcrawl has the lowest nav pollution (4 words preamble vs
+398 for crawl4ai), but this comes at a cost: 84% recall vs 97% for crawlee.
+markcrawl's aggressive stripping removes some real content along with the
+boilerplate.
+
+**Where the preamble numbers come from** (per-site breakdown in tables below):
+crawl4ai's 398-word average is dominated by fastapi-docs (1,438 words of nav
+chrome per page — version selectors, language pickers, sidebar navigation).
+On simpler sites like quotes-toscrape, all tools produce near-zero preamble.
+
+**Important caveat — clean ≠ always better for RAG:** The
+[retrieval benchmark](RETRIEVAL_COMPARISON.md) shows that tools with *more*
+content (including some nav text) actually achieve higher retrieval hit rates:
+crawl4ai gets 75% vs markcrawl's 69%. The extra text that inflates preamble
+scores also contains keywords that help embeddings match queries. This is a
+genuine trade-off, not a clear win for either approach. The right choice depends
+on whether your RAG pipeline is more sensitive to noise (favors markcrawl) or
+to missing content (favors higher-recall tools).
 
 > **Content signal** = percentage of output that is content (not preamble nav chrome).
 > Higher is better. A tool with 100% content signal has zero nav/header pollution.

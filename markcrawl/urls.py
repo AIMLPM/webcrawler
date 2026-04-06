@@ -18,8 +18,10 @@ def norm_url(url: str) -> str:
     strips the fragment, and collapses consecutive slashes.
     """
     p = up.urlsplit(url)
+    # Sort query parameters so ?b=2&a=1 deduplicates with ?a=1&b=2
+    query = "&".join(sorted(p.query.split("&"))) if p.query else ""
     # Negative lookbehind preserves :// in scheme
-    normalized = up.urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", p.query, ""))
+    normalized = up.urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", query, ""))
     normalized = re.sub(r"(?<!:)/{2,}", "/", normalized)
     return normalized
 

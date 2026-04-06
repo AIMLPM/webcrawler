@@ -42,6 +42,12 @@ class TestNormUrl:
     def test_preserves_query_string(self):
         assert norm_url("https://example.com/page?q=1&r=2") == "https://example.com/page?q=1&r=2"
 
+    def test_sorts_query_parameters(self):
+        assert norm_url("https://example.com/page?z=3&a=1&m=2") == "https://example.com/page?a=1&m=2&z=3"
+
+    def test_reordered_params_deduplicate(self):
+        assert norm_url("https://example.com/page?b=2&a=1") == norm_url("https://example.com/page?a=1&b=2")
+
 
 # ---------------------------------------------------------------------------
 # same_scope

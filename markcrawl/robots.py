@@ -45,8 +45,28 @@ def discover_sitemaps(session: requests.Session, base: str, robots_text: Optiona
     return sitemaps
 
 
-def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List[str]:
-    """Recursively parse a sitemap XML and return all page URLs."""
+def parse_sitemap_xml(
+    session: requests.Session,
+    url: str,
+    timeout: int,
+    *,
+    _depth: int = 0,
+    _visited: Optional[set] = None,
+    max_depth: int = 5,
+) -> List[str]:
+    """Recursively parse a sitemap XML and return all page URLs.
+
+    Guards against infinite recursion via *max_depth* and a *_visited* set
+    that tracks already-fetched sitemap URLs (prevents cycles).
+    """
+    if _depth > max_depth:
+        return []
+    if _visited is None:
+        _visited = set()
+    if url in _visited:
+        return []
+    _visited.add(url)
+
     try:
         response = session.get(url, timeout=timeout)
         if not response.ok:
@@ -64,7 +84,10 @@ def parse_sitemap_xml(session: requests.Session, url: str, timeout: int) -> List
     for loc in root.findall(".//sm:sitemap/sm:loc", ns):
         child_url = (loc.text or "").strip()
         if child_url:
-            urls.extend(parse_sitemap_xml(session, child_url, timeout))
+            urls.extend(parse_sitemap_xml(
+                session, child_url, timeout,
+                _depth=_depth + 1, _visited=_visited, max_depth=max_depth,
+            ))
 
     for loc in root.findall(".//sm:url/sm:loc", ns):
         page_url = (loc.text or "").strip()
