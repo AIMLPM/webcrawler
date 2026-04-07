@@ -28,6 +28,33 @@ feedback reflects a **reusable rule** or a **one-off fix**:
   the existing rule instead of creating a duplicate.
 - After updating CLAUDE.md, mention the change to the user so they can verify.
 
+### Audience and narrative
+
+Every report should **tell a story**, not just present tables. Lead with the
+question the report answers, build to the conclusion, and let the data support
+the narrative — not the other way around.
+
+Write for three readers simultaneously:
+
+- **The junior developer** choosing a crawler for their first RAG project. They
+  need a clear recommendation and simple comparisons. They'll read the summary
+  table and the first paragraph. If those don't make sense on their own, the
+  report fails for this reader. Avoid jargon without context — if you say "MRR"
+  or "RRF", explain what it means the first time.
+
+- **The senior/principal engineer** evaluating whether to trust the results.
+  They'll skip to the methodology section and check for rigor: sample sizes,
+  confidence intervals, what was controlled, what wasn't. They need enough
+  detail to reproduce the benchmark independently. Never hide a caveat.
+
+- **The engineering manager or executive** deciding whether the cost difference
+  justifies switching tools. They need dollar amounts, percentage savings, and
+  named scenarios they can map to their own scale. They won't read formulas,
+  but they need to know the formulas exist so they trust the numbers.
+
+If a section only serves one reader, that's fine — use clear headings so the
+others can skip it. The summary must serve all three.
+
 ### Tone and credibility
 
 - **Be honest.** If markcrawl loses on a metric, say so. Readers trust reports
