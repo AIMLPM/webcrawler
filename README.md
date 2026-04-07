@@ -61,7 +61,11 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 
 ### Benchmark results (7 tools, 8 sites, 92 queries)
 
-MarkCrawl produces the **fewest chunks** and the **highest LLM answer quality** across all 7 tools tested:
+**Speed:** colly+md is fastest (5.8 pages/sec), scrapy+md second (5.2), markcrawl third (3.0) — but markcrawl is the only tool that fetched all 210 pages without missing any. Playwright-based tools are 2-7x slower. See [speed comparison](benchmarks/SPEED_COMPARISON.md).
+
+**Output cleanliness:** markcrawl has the lowest nav pollution (4 words of preamble per page vs 275-398 for others), at the cost of 84% recall vs 97% for crawlee. See [quality comparison](benchmarks/QUALITY_COMPARISON.md).
+
+**RAG answer quality:** markcrawl produces the highest LLM answer scores (3.91/5) with the fewest chunks per page (14.2). The gap is small but consistent across all 92 queries:
 
 | Tool | Chunks/page | Answer Quality (/5) | Annual cost (100K pages, 1K queries/day) |
 |---|---|---|---|
@@ -74,7 +78,7 @@ MarkCrawl produces the **fewest chunks** and the **highest LLM answer quality** 
 
 Fewer chunks = lower storage and embedding costs. Cleaner chunks = better answers with less context. For the complete cost analysis across all scales (100 to 1M pages) with full methodology, see [benchmarks/COST_AT_SCALE.md](benchmarks/COST_AT_SCALE.md).
 
-See also: [Speed comparison](benchmarks/SPEED_COMPARISON.md) | [Retrieval quality](benchmarks/RETRIEVAL_COMPARISON.md) | [Answer quality](benchmarks/ANSWER_QUALITY.md)
+See also: [Retrieval quality](benchmarks/RETRIEVAL_COMPARISON.md) | [Answer quality](benchmarks/ANSWER_QUALITY.md)
 </details>
 
 ## Installation

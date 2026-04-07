@@ -170,6 +170,20 @@ Reports should link to each other where findings connect:
 - This is a self-benchmark (markcrawl only, no competitors). Don't mix in
   comparative claims. Link to SPEED_COMPARISON.md for head-to-head data.
 
+### README sync
+
+The README contains a benchmark summary inside the `<details>` "How it compares
+to other crawlers" section. This summary must stay in sync with the detailed
+reports. When any benchmark report changes in a way that affects headline numbers:
+
+- Update the README summary to reflect the new findings.
+- The README should cover all four dimensions: speed, output cleanliness, answer
+  quality, and cost. One sentence each for speed and cleanliness, a table for
+  quality/cost.
+- State honest trade-offs (e.g., "markcrawl is third on speed but first on
+  completeness"). Don't only show metrics where markcrawl wins.
+- Link to each detailed report so readers can drill in.
+
 ## Git commits
 
 - Do NOT add `Co-Authored-By` lines to commit messages.
