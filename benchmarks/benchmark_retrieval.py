@@ -791,34 +791,46 @@ def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[
     if cached is not None:
         return cached
 
-    all_vectors = []
-    batch_size = 20  # Conservative: 20 texts × up to ~8k tokens = ~160k (under 300k limit)
+    batch_size = 100  # 100 texts per API call (well under 2048 input limit)
+    max_concurrent = 3  # Parallel API calls (stays under rate limits)
 
+    batches = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
         batch = [_truncate_to_tokens(t) if t.strip() else " " for t in batch]
+        batches.append((i, batch))
 
-        # Retry loop with timeout (only retries transient errors)
+    def _embed_batch(args):
+        idx, batch = args
         for attempt in range(EMBED_RETRIES):
             try:
                 response = client.embeddings.create(
                     input=batch, model=model, timeout=EMBED_TIMEOUT,
                 )
-                all_vectors.extend([d.embedding for d in response.data])
-                break
+                return idx, [d.embedding for d in response.data]
             except Exception as exc:
-                # Don't retry client errors (400) — they'll always fail
                 exc_str = str(exc)
                 is_client_error = "400" in exc_str or "BadRequest" in type(exc).__name__
                 if is_client_error:
                     raise
                 if attempt < EMBED_RETRIES - 1:
-                    wait = 2 ** attempt * 2  # 2s, 4s, 8s
+                    wait = 2 ** attempt * 2
                     print(f"    Embed API error (attempt {attempt+1}/{EMBED_RETRIES}): {exc}")
                     print(f"    Retrying in {wait}s...")
                     time.sleep(wait)
                 else:
                     raise
+
+    from concurrent.futures import ThreadPoolExecutor
+    results = {}
+    with ThreadPoolExecutor(max_workers=max_concurrent) as pool:
+        for idx, vectors in pool.map(_embed_batch, batches):
+            results[idx] = vectors
+
+    # Reassemble in order
+    all_vectors = []
+    for idx, _ in batches:
+        all_vectors.extend(results[idx])
 
     # Cache the result
     _save_embed_cache(cache_key, all_vectors)

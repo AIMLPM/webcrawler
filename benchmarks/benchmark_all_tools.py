@@ -19,21 +19,33 @@ See benchmarks/METHODOLOGY.md for the methodology.
 
 from __future__ import annotations
 
+import os
+import sys
+from pathlib import Path
+
+# ---------------------------------------------------------------------------
+# Auto-relaunch inside .venv if we're running from the system Python.
+# This ensures all pip-installed benchmark tools are importable regardless
+# of whether the user remembered to `source .venv/bin/activate`.
+# ---------------------------------------------------------------------------
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_VENV_PYTHON = _REPO_ROOT / ".venv" / ("Scripts" if sys.platform == "win32" else "bin") / ("python.exe" if sys.platform == "win32" else "python3")
+
+if sys.prefix == sys.base_prefix and _VENV_PYTHON.exists():
+    os.execv(str(_VENV_PYTHON), [str(_VENV_PYTHON)] + sys.argv)
+
 import argparse
 import json
-import os
 import random
 import shutil
 import statistics
 import subprocess
-import sys
 import tempfile
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, Dict, List, Optional
 
 # Add parent dir to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -64,34 +76,35 @@ COMPARISON_SITES = {
     },
     "fastapi-docs": {
         "url": "https://fastapi.tiangolo.com",
-        "max_pages": 25,
+        "max_pages": 500,
         "description": "API documentation (code blocks, headings, tutorials)",
+        "skip_patterns": [r"/[a-z]{2}/"],  # skip translated pages (/tr/, /zh/, etc.)
     },
     "python-docs": {
         "url": "https://docs.python.org/3/library/",
-        "max_pages": 20,
+        "max_pages": 500,
         "description": "Python standard library docs",
     },
     # --- New diverse sites ---
     "react-dev": {
         "url": "https://react.dev/learn",
-        "max_pages": 30,
+        "max_pages": 500,
         "description": "React docs (SPA, JS-rendered, interactive examples)",
         "render_js": True,
     },
     "wikipedia-python": {
         "url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
-        "max_pages": 15,
+        "max_pages": 50,
         "description": "Wikipedia (tables, infoboxes, citations, deep linking)",
     },
     "stripe-docs": {
         "url": "https://docs.stripe.com/payments",
-        "max_pages": 25,
+        "max_pages": 500,
         "description": "Stripe API docs (tabbed content, code samples, sidebars)",
     },
     "blog-engineering": {
         "url": "https://github.blog/engineering/",
-        "max_pages": 20,
+        "max_pages": 200,
         "description": "GitHub Engineering Blog (articles, images, technical content)",
     },
 }
@@ -279,25 +292,130 @@ def check_firecrawl() -> bool:
 
 
 # ---------------------------------------------------------------------------
-# URL discovery — run once, then feed identical URLs to all tools
+# URL discovery — cached with validation
+#
+# Edge cases handled:
+#
+# 1. max_pages increase: If the user requests more pages than the cache
+#    contains (and more than were originally discovered), the cache is
+#    invalidated and a full rediscovery runs.
+#
+# 2. skip_patterns change: The cache stores which skip_patterns were used.
+#    If they differ on the next run, the cache is invalidated. This prevents
+#    stale non-English URLs from leaking in (or English URLs being missing).
+#
+# 3. Network outage during validation: If >50% of cached URLs fail HEAD
+#    checks, we assume a temporary network issue and keep all cached URLs
+#    rather than wiping the cache. This prevents a flaky connection from
+#    destroying a valid cache that took minutes to build.
+#
+# 4. URL ordering: Thread-pool validation returns results in arbitrary
+#    order. We preserve the original discovery order so benchmarks are
+#    reproducible across runs (same pages in same order → comparable
+#    timing results).
+#
+# 5. Cache expiry: Entries older than _URL_CACHE_MAX_AGE_DAYS trigger a
+#    full rediscovery to catch structural site changes (new pages, removed
+#    sections, URL scheme changes).
+#
+# 6. Atomic writes: Cache is written to a .tmp file then os.replace()'d
+#    to avoid corruption if the process is killed mid-write.
+#
+# 7. Docker volume mount: .url_cache.json lives in benchmarks/, which is
+#    volume-mounted in Docker. A host-side cache speeds up Docker runs
+#    too. Fresh Docker builds (no volume) always do full discovery.
 # ---------------------------------------------------------------------------
 
-def discover_urls(url: str, max_pages: int) -> List[str]:
-    """Use MarkCrawl to discover URLs, then return the list for all tools."""
+_URL_CACHE_PATH = os.path.join(os.path.dirname(__file__), ".url_cache.json")
+_URL_CACHE_MAX_AGE_DAYS = 7
+
+
+def _load_url_cache() -> dict:
+    """Load the URL cache from disk."""
+    if not os.path.isfile(_URL_CACHE_PATH):
+        return {}
+    try:
+        with open(_URL_CACHE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def _save_url_cache(cache: dict) -> None:
+    """Atomically write the URL cache."""
+    tmp = _URL_CACHE_PATH + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(cache, f, indent=2)
+    os.replace(tmp, _URL_CACHE_PATH)
+
+
+def _validate_urls(urls: List[str], concurrency: int = 20) -> tuple[List[str], List[str]]:
+    """Check which URLs are still live using HEAD requests.
+
+    Returns (live_urls, dead_urls) preserving the original order of `urls`.
+    If >50% of URLs fail, assumes a network issue and returns all as live
+    to avoid wiping the cache during a temporary outage.
+    """
+    import urllib.request
+
+    # Map url → is_live, preserving order
+    status_map: Dict[str, bool] = {}
+    lock = threading.Lock()
+
+    def _check(url: str) -> None:
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            req.add_header("User-Agent", "markcrawl-benchmark/1.0")
+            resp = urllib.request.urlopen(req, timeout=10)
+            code = resp.getcode()
+        except Exception:
+            # HEAD rejected — try GET
+            try:
+                req = urllib.request.Request(url)
+                req.add_header("User-Agent", "markcrawl-benchmark/1.0")
+                resp = urllib.request.urlopen(req, timeout=10)
+                code = resp.getcode()
+            except Exception:
+                code = 0
+
+        with lock:
+            status_map[url] = (200 <= code < 400)
+
+    with ThreadPoolExecutor(max_workers=concurrency) as pool:
+        pool.map(_check, urls)
+
+    dead_count = sum(1 for ok in status_map.values() if not ok)
+    if len(urls) > 5 and dead_count > len(urls) * 0.5:
+        # Likely a network issue, not actual page removal — keep all
+        print(f"WARNING: {dead_count}/{len(urls)} URLs unreachable, likely network issue — keeping all cached URLs")
+        return list(urls), []
+
+    # Preserve original ordering
+    live = [u for u in urls if status_map.get(u, True)]
+    dead = [u for u in urls if not status_map.get(u, True)]
+    return live, dead
+
+
+def _discover_fresh(url: str, max_pages: int, skip_patterns: Optional[List[str]] = None) -> List[str]:
+    """Full crawl-based URL discovery (original method)."""
+    import re
     from markcrawl.core import crawl
+
+    crawl_pages = max_pages * 2 if skip_patterns else max_pages
 
     tmp_dir = tempfile.mkdtemp(prefix="mc_discover_")
     crawl(
         base_url=url,
         out_dir=tmp_dir,
         fmt="markdown",
-        max_pages=max_pages,
+        max_pages=crawl_pages,
         delay=0,
         timeout=15,
         show_progress=False,
         min_words=5,
     )
 
+    compiled = [re.compile(p) for p in (skip_patterns or [])]
     urls = []
     jsonl_path = os.path.join(tmp_dir, "pages.jsonl")
     if os.path.isfile(jsonl_path):
@@ -306,10 +424,84 @@ def discover_urls(url: str, max_pages: int) -> List[str]:
                 line = line.strip()
                 if line:
                     page = json.loads(line)
-                    if page.get("url"):
-                        urls.append(page["url"])
+                    page_url = page.get("url", "")
+                    if page_url and not any(p.search(page_url) for p in compiled):
+                        urls.append(page_url)
 
     shutil.rmtree(tmp_dir, ignore_errors=True)
+    return urls[:max_pages]
+
+
+def discover_urls(
+    site_name: str,
+    url: str,
+    max_pages: int,
+    skip_patterns: Optional[List[str]] = None,
+    force_refresh: bool = False,
+) -> List[str]:
+    """Discover URLs with caching, validation, and staleness detection.
+
+    1. If a fresh cache exists (< 7 days old) with matching settings,
+       validate cached URLs with HEAD requests, remove dead ones, and return.
+    2. If cache is stale, settings changed, or missing, do a full crawl
+       discovery and cache results.
+    3. --refresh-urls forces a full rediscovery.
+    """
+    from datetime import datetime, timezone
+
+    cache = _load_url_cache()
+    entry = cache.get(site_name)
+    now = datetime.now(timezone.utc)
+    current_patterns = skip_patterns or []
+
+    # Check if cache is usable
+    if entry and not force_refresh:
+        cached_at = datetime.fromisoformat(entry["discovered_at"])
+        age_days = (now - cached_at).total_seconds() / 86400
+
+        # Invalidate if settings changed
+        cached_patterns = entry.get("skip_patterns", [])
+        cached_max = entry.get("max_pages", 0)
+        settings_changed = (cached_patterns != current_patterns)
+        needs_more = (max_pages > len(entry.get("urls", [])) and max_pages > cached_max)
+
+        if settings_changed:
+            print(f"skip_patterns changed, rediscovering...", end=" ", flush=True)
+        elif needs_more:
+            print(f"max_pages increased ({cached_max}→{max_pages}), rediscovering...", end=" ", flush=True)
+        elif age_days >= _URL_CACHE_MAX_AGE_DAYS:
+            print(f"cache expired ({age_days:.0f} days old), rediscovering...", end=" ", flush=True)
+        else:
+            # Cache is usable — validate
+            cached_urls = entry["urls"]
+            print(f"validating {len(cached_urls)} cached URLs...", end=" ", flush=True)
+            live, dead = _validate_urls(cached_urls)
+            if dead:
+                print(f"{len(dead)} removed, {len(live)} live")
+            else:
+                print(f"all live")
+
+            # Update cache with only live URLs
+            if dead:
+                entry["urls"] = live
+                entry["validated_at"] = now.isoformat()
+                _save_url_cache(cache)
+
+            return live[:max_pages]
+
+    # Full discovery
+    urls = _discover_fresh(url, max_pages, skip_patterns)
+
+    # Cache the results with settings for future invalidation checks
+    cache[site_name] = {
+        "urls": urls,
+        "base_url": url,
+        "max_pages": max_pages,
+        "skip_patterns": current_patterns,
+        "discovered_at": now.isoformat(),
+    }
+    _save_url_cache(cache)
+
     return urls
 
 
@@ -813,9 +1005,23 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
     from markdownify import markdownify as md
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-gpu",
+                "--disable-extensions",
+                "--disable-background-networking",
+                "--disable-background-timer-throttling",
+                "--disable-dev-shm-usage",
+                "--no-first-run",
+            ],
+        )
 
         context = browser.new_context()
+        # Block images, CSS, fonts — we only need HTML text
+        context.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico}", lambda route: route.abort())
+        context.route("**/*.{css,less,scss}", lambda route: route.abort())
+        context.route("**/*.{woff,woff2,ttf,otf,eot}", lambda route: route.abort())
         page = context.new_page()
         for page_url in urls_to_fetch[:max_pages]:
             try:
@@ -1135,19 +1341,29 @@ def _get_tool_version(tool_name: str) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Head-to-head crawler comparison")
     parser.add_argument("--sites", default=None, help="Comma-separated sites to test")
-    parser.add_argument("--iterations", type=int, default=3, help="Iterations per tool per site (default: 3)")
+    parser.add_argument("--iterations", type=int, default=2, help="Iterations per tool per site (default: 2)")
     parser.add_argument("--skip-warmup", action="store_true", help="Skip warm-up run")
-    parser.add_argument("--concurrency", type=int, default=1, help="Concurrency level for tools that support it (default: 1)")
-    parser.add_argument("--parallel", action="store_true",
-                        help="Run tools on different sites in parallel (reduces wall time)")
-    parser.add_argument("--site-parallelism", type=int, default=1,
-                        help="Max tools hitting the same site simultaneously (default: 1, polite)")
+    parser.add_argument("--concurrency", type=int, default=5, help="Concurrency level for tools that support it (default: 5)")
+    parser.add_argument("--parallel", action="store_true", default=True,
+                        help="Run tools on different sites in parallel (default: on)")
+    parser.add_argument("--sequential", action="store_true",
+                        help="Run tools sequentially instead of in parallel")
+    parser.add_argument("--site-parallelism", type=int, default=2,
+                        help="Max tools hitting the same site simultaneously (default: 2)")
     parser.add_argument("--firecrawl-tier", choices=["free", "paid"], default=None,
                         help="FireCrawl account tier. 'free' skips warmup to save credits, "
                              "'paid' enables warmup. Auto-detected from FIRECRAWL_TIER env var, "
                              "defaults to 'free'.")
+    parser.add_argument("--no-resume", action="store_true",
+                        help="Ignore any saved checkpoint and start fresh")
+    parser.add_argument("--refresh-urls", action="store_true",
+                        help="Force full URL rediscovery (ignore URL cache)")
     parser.add_argument("--output", default="benchmarks/SPEED_COMPARISON.md", help="Output report path")
     args = parser.parse_args()
+
+    # --sequential overrides --parallel
+    if args.sequential:
+        args.parallel = False
 
     # Determine firecrawl tier: CLI flag > env var > default "free"
     firecrawl_tier = args.firecrawl_tier or os.environ.get("FIRECRAWL_TIER", "free").lower()
@@ -1188,6 +1404,26 @@ def main():
         print("\nNo tools available. Install at least: pip install markcrawl")
         sys.exit(1)
 
+    # --- Pre-flight: run the full preflight check before starting ---
+    print("\n--- Pre-flight check ---")
+    try:
+        from preflight import run_checks, print_ready_status
+        tool_results, _ = run_checks()
+        print_ready_status(tool_results)
+        if not tool_results.get("markcrawl"):
+            print("\nPre-flight FAILED: markcrawl is required (used for URL discovery).")
+            print("  Fix: pip install -e .  (from repo root)")
+            sys.exit(1)
+        ready = [t for t, ok in tool_results.items() if ok]
+        not_ready = [t for t, ok in tool_results.items() if not ok]
+        if not_ready:
+            print(f"\nPre-flight FAILED: {len(not_ready)} tool(s) not ready: {', '.join(not_ready)}")
+            print("  Fix: python benchmarks/preflight.py --install")
+            sys.exit(1)
+        print("Pre-flight passed — all tools ready.\n")
+    except ImportError:
+        print("  Warning: preflight.py not found, skipping pre-flight checks.\n")
+
     mode = "parallel" if args.parallel else "sequential"
     print(f"\nRunning comparison: {len(available)} tool(s) × {len(sites)} site(s) × {args.iterations} iteration(s) [{mode}]")
     if not args.skip_warmup:
@@ -1196,29 +1432,77 @@ def main():
         print(f"(max {args.site_parallelism} tool(s) per site simultaneously)")
     print("=" * 60)
 
+    # --- Checkpoint: attempt to resume a previous interrupted run ---
+    checkpoint_path = _DEFAULT_CHECKPOINT
+    args_dict = {
+        "iterations": args.iterations,
+        "skip_warmup": args.skip_warmup,
+        "concurrency": args.concurrency,
+        "sites": sorted(sites.keys()),
+        "tools": sorted(available),
+    }
+
+    cp = None if args.no_resume else _load_checkpoint(checkpoint_path, args_dict)
+    resumed_results: Dict[str, Dict[str, ToolSiteResult]] = {}
+    resumed_urls: Dict[str, List[str]] = {}
+    resumed_base_dir: Optional[str] = None
+    if cp:
+        resumed_results = _restore_results(cp)
+        resumed_urls = cp.get("site_urls", {})
+        resumed_base_dir = cp.get("base_dir")
+        completed = sum(len(s) for s in resumed_results.values())
+        total = len(available) * len(sites)
+        print(f"\n  Resuming from checkpoint: {completed}/{total} tool-site pairs already done.")
+    elif not args.no_resume:
+        # No valid checkpoint — clean start
+        pass
+
     # Phase 1: Discover URLs for each site (all tools get identical pages)
     phase1_start = time.time()
     print("\n--- Phase 1: URL Discovery ---")
     site_urls: dict[str, List[str]] = {}
     for site_name, site_config in sites.items():
-        print(f"  Discovering URLs for {site_name}...", end=" ", flush=True)
-        urls = discover_urls(site_config["url"], site_config["max_pages"])
-        site_urls[site_name] = urls
-        print(f"{len(urls)} URLs found")
+        if site_name in resumed_urls and resumed_urls[site_name]:
+            site_urls[site_name] = resumed_urls[site_name]
+            print(f"  {site_name}: {len(site_urls[site_name])} URLs (from checkpoint)")
+        else:
+            print(f"  {site_name}: ", end="", flush=True)
+            urls = discover_urls(
+                site_name=site_name,
+                url=site_config["url"],
+                max_pages=site_config["max_pages"],
+                skip_patterns=site_config.get("skip_patterns"),
+                force_refresh=args.refresh_urls,
+            )
+            site_urls[site_name] = urls
+            print(f"{len(urls)} URLs")
     phase1_end = time.time()
 
     # Phase 2: Benchmark all tools on identical URL lists
     phase2_start = time.time()
-    base_dir = tempfile.mkdtemp(prefix="markcrawl_comparison_")
+    if resumed_base_dir and os.path.isdir(resumed_base_dir):
+        base_dir = resumed_base_dir
+    else:
+        base_dir = tempfile.mkdtemp(prefix="markcrawl_comparison_")
     results: dict[str, dict[str, ToolSiteResult]] = {}
     tool_site_timing: dict[str, dict[str, dict]] = {}
 
     for tool_name in available:
-        results[tool_name] = {}
+        results[tool_name] = resumed_results.get(tool_name, {})
         tool_site_timing[tool_name] = {}
+
+    # Lock for thread-safe checkpoint writes in parallel mode
+    _checkpoint_lock = threading.Lock()
 
     def _bench_tool_site(tool_name: str, site_name: str) -> None:
         """Run warmup + iterations for one tool on one site."""
+        # Skip if already completed in a resumed checkpoint
+        if site_name in results.get(tool_name, {}):
+            r = results[tool_name][site_name]
+            status = f"error: {r.error[:40]}" if r.error else f"{r.pages_median:.0f} pages, {r.time_median:.1f}s"
+            print(f"\n  {tool_name} → {site_name}: skipped (checkpoint: {status})")
+            return
+
         run_fn = TOOLS[tool_name]["run"]
         site_config = sites[site_name]
         urls = site_urls[site_name]
@@ -1258,6 +1542,10 @@ def main():
             "pps_median": round(agg.pps_median, 3),
             "error": agg.error,
         }
+
+        # Save checkpoint after each tool-site pair completes
+        with _checkpoint_lock:
+            _save_checkpoint(checkpoint_path, site_urls, results, base_dir, args_dict)
 
     if args.parallel:
         # Parallel mode: tools on different sites run concurrently.
@@ -1301,6 +1589,10 @@ def main():
     print("\n" + "=" * 60)
     generate_comparison_report(results, available, args.output, concurrency=args.concurrency)
     print(f"Report saved to: {args.output}")
+
+    # All done — remove checkpoint file
+    _remove_checkpoint(checkpoint_path)
+    print("Checkpoint cleared (run completed successfully).")
     print(f"\nRun data saved to: {base_dir}")
     print(f"\nTo score extraction quality (preamble, repeat rate, precision/recall):")
     print(f"  python benchmarks/benchmark_quality.py")
@@ -1353,6 +1645,103 @@ def main():
 
     # Save run data (keep last 10 runs)
     _save_run_data(base_dir)
+
+
+# ---------------------------------------------------------------------------
+# Checkpoint support — resume after interruption
+# ---------------------------------------------------------------------------
+
+_DEFAULT_CHECKPOINT = os.path.join(os.path.dirname(__file__), ".benchmark_checkpoint.json")
+
+
+def _save_checkpoint(
+    path: str,
+    site_urls: Dict[str, List[str]],
+    results: Dict[str, Dict[str, ToolSiteResult]],
+    base_dir: str,
+    args_dict: dict,
+) -> None:
+    """Persist progress so the benchmark can resume after interruption."""
+    serialized_results: Dict[str, Dict[str, dict]] = {}
+    for tool, sites in results.items():
+        serialized_results[tool] = {}
+        for site, tsr in sites.items():
+            serialized_results[tool][site] = {
+                "tool": tsr.tool,
+                "site": tsr.site,
+                "description": tsr.description,
+                "pages_median": tsr.pages_median,
+                "time_median": tsr.time_median,
+                "time_stddev": tsr.time_stddev,
+                "pps_median": tsr.pps_median,
+                "output_kb": tsr.output_kb,
+                "peak_memory_mb": tsr.peak_memory_mb,
+                "avg_words": tsr.avg_words,
+                "error": tsr.error,
+            }
+
+    checkpoint = {
+        "version": 1,
+        "base_dir": base_dir,
+        "args": args_dict,
+        "site_urls": site_urls,
+        "results": serialized_results,
+    }
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(checkpoint, f, indent=2)
+    os.replace(tmp, path)
+
+
+def _load_checkpoint(path: str, args_dict: dict) -> Optional[dict]:
+    """Load a checkpoint if it exists and settings match the current run."""
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as f:
+            cp = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+    if cp.get("version") != 1:
+        return None
+
+    # Settings must match — different iterations/concurrency/sites means start fresh
+    if cp.get("args") != args_dict:
+        print("  Checkpoint found but settings differ — starting fresh.")
+        return None
+
+    return cp
+
+
+def _restore_results(cp: dict) -> Dict[str, Dict[str, ToolSiteResult]]:
+    """Rebuild ToolSiteResult objects from checkpoint data."""
+    results: Dict[str, Dict[str, ToolSiteResult]] = {}
+    for tool, sites in cp.get("results", {}).items():
+        results[tool] = {}
+        for site, data in sites.items():
+            results[tool][site] = ToolSiteResult(
+                tool=data["tool"],
+                site=data["site"],
+                description=data["description"],
+                pages_median=data["pages_median"],
+                time_median=data["time_median"],
+                time_stddev=data["time_stddev"],
+                pps_median=data["pps_median"],
+                output_kb=data["output_kb"],
+                peak_memory_mb=data["peak_memory_mb"],
+                avg_words=data["avg_words"],
+                error=data.get("error"),
+            )
+    return results
+
+
+def _remove_checkpoint(path: str) -> None:
+    """Remove checkpoint file after successful completion."""
+    try:
+        os.remove(path)
+    except OSError:
+        pass
 
 
 def _save_run_data(base_dir: str) -> None:

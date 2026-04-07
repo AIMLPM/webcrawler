@@ -15,3 +15,7 @@ build/
 *.egg-info
 .crawl_state.json
 .claude/
+benchmarks/runs/
+benchmarks/.benchmark_checkpoint.json
+benchmarks/.url_cache.json
+benchmarks/answer_quality_checkpoints/

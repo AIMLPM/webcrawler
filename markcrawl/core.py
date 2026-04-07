@@ -123,6 +123,10 @@ class CrawlEngine:
         if render_js:
             self.pw_instance, self.pw_browser = _get_playwright_browser(proxy=proxy)
             self._pw_context = self.pw_browser.new_context(user_agent=self.effective_ua)
+            # Block non-essential resources — we only need HTML for markdown
+            self._pw_context.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico}", lambda route: route.abort())
+            self._pw_context.route("**/*.{css,less,scss}", lambda route: route.abort())
+            self._pw_context.route("**/*.{woff,woff2,ttf,otf,eot}", lambda route: route.abort())
             self.progress("[info] Playwright browser launched for JS rendering")
 
         # Timestamps

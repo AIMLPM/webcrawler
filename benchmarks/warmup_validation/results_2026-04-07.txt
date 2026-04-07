@@ -1,0 +1,91 @@
+Warmup Impact Validation — 2026-04-07
+======================================
+
+Test: Does a warmup run before timed iterations produce more stable results?
+
+Setup:
+  Site: books-toscrape (60 pages)
+  Concurrency: 5
+  Runs per condition: 4 timed iterations
+  Tools tested: markcrawl (requests-based), crawl4ai (Playwright-based)
+  Machine: macOS Darwin 25.3.0
+
+Protocol:
+  WITHOUT warmup: 4 iterations run cold (no prior crawl of the site)
+  WITH warmup:    1 throwaway warmup run, then 4 timed iterations
+
+Raw Results
+-----------
+
+=== markcrawl: WITHOUT warmup ===
+  iter 1: 9.72s (60 pages, 6.2 p/s)
+  iter 2: 8.71s (60 pages, 6.9 p/s)
+  iter 3: 8.32s (60 pages, 7.2 p/s)
+  iter 4: 9.07s (60 pages, 6.6 p/s)
+
+=== markcrawl: WITH warmup ===
+  warmup: 8.32s (discarded)
+  iter 1: 7.72s (60 pages, 7.8 p/s)
+  iter 2: 7.64s (60 pages, 7.8 p/s)
+  iter 3: 7.96s (60 pages, 7.5 p/s)
+  iter 4: 8.36s (60 pages, 7.2 p/s)
+
+=== crawl4ai: WITHOUT warmup ===
+  iter 1: 6.95s (60 pages, 8.6 p/s)
+  iter 2: 5.86s (60 pages, 10.2 p/s)
+  iter 3: 5.48s (60 pages, 11.0 p/s)
+  iter 4: 5.34s (60 pages, 11.2 p/s)
+
+=== crawl4ai: WITH warmup ===
+  warmup: 5.60s (discarded)
+  iter 1: 6.09s (60 pages, 9.8 p/s)
+  iter 2: 5.98s (60 pages, 10.0 p/s)
+  iter 3: 5.43s (60 pages, 11.0 p/s)
+  iter 4: 5.28s (60 pages, 11.4 p/s)
+
+Summary
+-------
+
+                      | Median  | Std dev | 1st iter | Range
+  --------------------|---------|---------|----------|---------------
+  markcrawl (cold)    | 8.89s   | 0.59s   | 9.72s    | 8.32 - 9.72s
+  markcrawl (warm)    | 7.84s   | 0.32s   | 7.72s    | 7.64 - 8.36s
+  crawl4ai  (cold)    | 5.67s   | 0.73s   | 6.95s    | 5.34 - 6.95s
+  crawl4ai  (warm)    | 5.71s   | 0.40s   | 6.09s    | 5.28 - 6.09s
+
+Key Metrics
+-----------
+
+  markcrawl:
+    Median difference (cold vs warm):     13.3%  (warm is faster)
+    Variance reduction with warmup:       46%    (stddev 0.59 → 0.32)
+    Cold first iter vs warm median:       23.9%  (cold first is slower)
+
+  crawl4ai:
+    Median difference (cold vs warm):     0.7%   (negligible)
+    Variance reduction with warmup:       47%    (stddev 0.73 → 0.40)
+    Cold first iter vs warm median:       21.7%  (cold first is slower)
+
+Conclusion
+----------
+
+Warmup produces measurably more stable results for both tool types:
+
+1. Variance drops ~47% with warmup for both tools. Lower variance means
+   fewer iterations are needed to get a reliable median.
+
+2. The first cold iteration is 22-24% slower than the warmed median for
+   both tools, likely due to DNS resolution, TCP connection establishment,
+   server-side CDN cache warming, and Python import/JIT effects.
+
+3. For markcrawl specifically, warmup also improves the median by 13%,
+   suggesting connection reuse (HTTP keep-alive) plays a significant role.
+
+4. With only 2 timed iterations (our default), a cold first-run outlier
+   has outsized impact on the median. Warmup eliminates this bias.
+
+Decision: keep warmup enabled by default. The cost (1 extra run per
+tool-site pair) is justified by the ~47% reduction in measurement noise.
+
+Reproduce with:
+  python benchmarks/warmup_validation/test_warmup_impact.py

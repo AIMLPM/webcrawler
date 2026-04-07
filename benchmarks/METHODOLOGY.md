@@ -42,8 +42,50 @@ We expect MarkCrawl to lose on some metrics. Here's the pre-written narrative fo
 | Timeout | 15s per request | Consistent across all |
 | Output format | Markdown | Common denominator |
 | Iterations | 3 per site, report median + std dev | Network variance is real |
-| Warm-up | 1 throwaway run per site before timing | Exclude DNS/TLS cold start |
+| Warm-up | 1 throwaway run per site before timing | Exclude DNS/TLS cold start (see validation below) |
 | Tool order | Randomized per site per run | Eliminate CDN/DNS cache bias from fixed ordering |
+
+### Why we keep the warmup run
+
+We validated that the warmup run meaningfully improves benchmark stability.
+The experiment (`benchmarks/warmup_validation/test_warmup_impact.py`) runs
+each tool twice on the same site — once cold and once with a throwaway warmup
+— and compares medians, standard deviations, and first-iteration outliers.
+
+**Results (books-toscrape, 60 pages, concurrency=5, 4 iterations each):**
+
+|                   | Median | Std dev | 1st iter | Range        |
+|-------------------|--------|---------|----------|--------------|
+| markcrawl (cold)  | 8.89s  | 0.59s   | 9.72s    | 8.32 – 9.72s |
+| markcrawl (warm)  | 7.84s  | 0.32s   | 7.72s    | 7.64 – 8.36s |
+| crawl4ai (cold)   | 5.67s  | 0.73s   | 6.95s    | 5.34 – 6.95s |
+| crawl4ai (warm)   | 5.71s  | 0.40s   | 6.09s    | 5.28 – 6.09s |
+
+**Key findings:**
+
+1. **Variance drops ~47%** with warmup for both requests-based and
+   browser-based tools. Lower variance means fewer iterations are needed
+   to get a reliable median.
+
+2. **The first cold iteration is 22–24% slower** than the warmed median
+   for both tools, due to DNS resolution, TCP/TLS handshake, server-side
+   CDN cache warming, and Python import/JIT effects.
+
+3. **For markcrawl, warmup also shifts the median 13% faster**, likely
+   because HTTP keep-alive and connection pooling benefit subsequent
+   requests to the same host.
+
+4. **With only 2 timed iterations** (our default), a cold first-run
+   outlier has outsized impact on the median. Warmup eliminates this bias.
+
+**Decision:** warmup is enabled by default. The cost is 1 extra run per
+tool-site pair. The benefit is ~47% less measurement noise, which makes
+the difference between "noisy numbers that could go either way" and
+"stable numbers readers can trust."
+
+To reproduce: `python benchmarks/warmup_validation/test_warmup_impact.py`
+
+Full results: `benchmarks/warmup_validation/results_2026-04-07.txt`
 
 ### How each tool runs
 

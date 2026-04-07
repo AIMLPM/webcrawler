@@ -106,7 +106,16 @@ def _get_playwright_browser(proxy: Optional[str] = None) -> tuple:
             "Install it with:  pip install playwright && playwright install chromium"
         )
     pw = sync_playwright().start()
-    launch_args: Dict = {}
+    launch_args: Dict = {
+        "args": [
+            "--disable-gpu",
+            "--disable-extensions",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-dev-shm-usage",
+            "--no-first-run",
+        ],
+    }
     if proxy:
         launch_args["proxy"] = {"server": proxy}
     browser = pw.chromium.launch(headless=True, **launch_args)
@@ -131,7 +140,7 @@ def fetch_with_playwright(context, url: str, timeout: int) -> Optional[Playwrigh
     page = None
     try:
         page = context.new_page()
-        response = page.goto(url, timeout=timeout * 1000, wait_until="networkidle")
+        response = page.goto(url, timeout=timeout * 1000, wait_until="domcontentloaded")
         if response is None:
             return None
         html = page.content()
