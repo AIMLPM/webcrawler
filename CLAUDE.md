@@ -91,6 +91,13 @@ others can skip it. The summary must serve all three.
 
 ### Formatting
 
+- **Anchor cost tables to their assumptions.** Every table showing dollar amounts
+  must state (or link to) the pricing inputs used to calculate them — which
+  embedding model, which vector DB pricing, which LLM. A reader seeing "$17"
+  should never have to scroll to a different section to learn where that number
+  came from. A one-line parenthetical with a link to the methodology section
+  is sufficient (e.g., "using OpenAI text-embedding-3-small at $0.02/1M tokens
+  — see [formula](#storage-cost-formula))").
 - **Use consistent units within a sentence.** Don't mix "1.21x" and "1.3%" — pick
   one format. Prefer percentages ("21% more chunks, 1.3% lower quality").
 - **Use percentages in "vs markcrawl" columns**, not multipliers.

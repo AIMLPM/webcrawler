@@ -36,7 +36,7 @@ Markcrawl produces the fewest chunks and the highest answer quality. The closest
 
 ## Storage Costs (scale with pages)
 
-Every page gets chunked, embedded, and stored in a vector database. More chunks per page means higher cost. Storage includes a one-time embedding cost plus ongoing vector DB hosting.
+Every page gets chunked, embedded, and stored in a vector database. More chunks per page means higher cost. Storage includes a one-time embedding cost plus ongoing vector DB hosting. Costs use OpenAI `text-embedding-3-small` at $0.02/1M tokens for embedding and $0.10/1K vectors/month for vector DB hosting (mid-range across Pinecone, Qdrant, Weaviate — see [full pricing sources](#storage-cost-formula)).
 
 | Pages | markcrawl | scrapy+md | crawl4ai | colly+md | playwright | crawlee |
 |---|---|---|---|---|---|---|
@@ -66,7 +66,7 @@ Estimated K needed to match markcrawl's answer quality:
 | crawlee | 3.80 (-2.8%) | ~13 | 3,900 |
 | playwright | 3.74 (-4.3%) | ~15 | 4,500 |
 
-Annual LLM query cost (Claude Sonnet at $3.00/1M input tokens):
+Annual LLM query cost ([Claude Sonnet](https://www.anthropic.com/pricing) at $3.00/1M input tokens — see [full formula](#query-cost-formula)):
 
 | Queries/day | markcrawl | scrapy+md | crawl4ai | crawlee | playwright |
 |---|---|---|---|---|---|
