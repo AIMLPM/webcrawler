@@ -18,9 +18,9 @@ from __future__ import annotations
 
 import argparse
 import os
-import sys
 import shutil
 import statistics
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -34,7 +34,7 @@ if sys.prefix == sys.base_prefix and _VENV_PYTHON.exists():
 sys.path.insert(0, str(_REPO_ROOT))
 sys.path.insert(0, str(_REPO_ROOT / "benchmarks"))
 
-from benchmark_all_tools import (
+from benchmark_all_tools import (  # noqa: E402
     COMPARISON_SITES,
     TOOLS,
     discover_urls,

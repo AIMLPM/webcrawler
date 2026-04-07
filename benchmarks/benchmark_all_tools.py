@@ -34,18 +34,18 @@ _VENV_PYTHON = _REPO_ROOT / ".venv" / ("Scripts" if sys.platform == "win32" else
 if sys.prefix == sys.base_prefix and _VENV_PYTHON.exists():
     os.execv(str(_VENV_PYTHON), [str(_VENV_PYTHON)] + sys.argv)
 
-import argparse
-import json
-import random
-import shutil
-import statistics
-import subprocess
-import tempfile
-import threading
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+import argparse  # noqa: E402
+import json  # noqa: E402
+import random  # noqa: E402
+import shutil  # noqa: E402
+import statistics  # noqa: E402
+import subprocess  # noqa: E402
+import tempfile  # noqa: E402
+import threading  # noqa: E402
+import time  # noqa: E402
+from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: E402
+from dataclasses import dataclass, field  # noqa: E402
+from typing import Callable, Dict, List, Optional  # noqa: E402
 
 # Add parent dir to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -399,6 +399,7 @@ def _validate_urls(urls: List[str], concurrency: int = 20) -> tuple[List[str], L
 def _discover_fresh(url: str, max_pages: int, skip_patterns: Optional[List[str]] = None) -> List[str]:
     """Full crawl-based URL discovery (original method)."""
     import re
+
     from markcrawl.core import crawl
 
     crawl_pages = max_pages * 2 if skip_patterns else max_pages
@@ -466,7 +467,7 @@ def discover_urls(
         needs_more = (max_pages > len(entry.get("urls", [])) and max_pages > cached_max)
 
         if settings_changed:
-            print(f"skip_patterns changed, rediscovering...", end=" ", flush=True)
+            print("skip_patterns changed, rediscovering...", end=" ", flush=True)
         elif needs_more:
             print(f"max_pages increased ({cached_max}→{max_pages}), rediscovering...", end=" ", flush=True)
         elif age_days >= _URL_CACHE_MAX_AGE_DAYS:
@@ -479,7 +480,7 @@ def discover_urls(
             if dead:
                 print(f"{len(dead)} removed, {len(live)} live")
             else:
-                print(f"all live")
+                print("all live")
 
             # Update cache with only live URLs
             if dead:
@@ -1413,14 +1414,13 @@ def main():
     # --- Pre-flight: run the full preflight check before starting ---
     print("\n--- Pre-flight check ---")
     try:
-        from preflight import run_checks, print_ready_status
+        from preflight import print_ready_status, run_checks
         tool_results, _ = run_checks()
         print_ready_status(tool_results)
         if not tool_results.get("markcrawl"):
             print("\nPre-flight FAILED: markcrawl is required (used for URL discovery).")
             print("  Fix: pip install -e .  (from repo root)")
             sys.exit(1)
-        ready = [t for t, ok in tool_results.items() if ok]
         not_ready = [t for t, ok in tool_results.items() if not ok]
         if not_ready:
             print(f"\nPre-flight FAILED: {len(not_ready)} tool(s) not ready: {', '.join(not_ready)}")
@@ -1578,7 +1578,7 @@ def main():
 
         browser_avail = [t for t in available if t in BROWSER_TOOLS]
         http_avail = [t for t in available if t in HTTP_TOOLS]
-        print(f"\n--- Phase 2: Benchmarking (resource-aware parallel) ---")
+        print("\n--- Phase 2: Benchmarking (resource-aware parallel) ---")
         print(f"  Browser lane (max 1 concurrent): {', '.join(browser_avail) or 'none'}")
         print(f"  HTTP lane (unlimited): {', '.join(http_avail) or 'none'}")
 
@@ -1633,8 +1633,8 @@ def main():
     _remove_checkpoint(checkpoint_path)
     print("Checkpoint cleared (run completed successfully).")
     print(f"\nRun data saved to: {base_dir}")
-    print(f"\nTo score extraction quality (preamble, repeat rate, precision/recall):")
-    print(f"  python benchmarks/benchmark_quality.py")
+    print("\nTo score extraction quality (preamble, repeat rate, precision/recall):")
+    print("  python benchmarks/benchmark_quality.py")
 
     # Write run_metadata.json before saving
     metadata = {

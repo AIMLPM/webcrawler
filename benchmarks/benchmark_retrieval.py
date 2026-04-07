@@ -37,7 +37,7 @@ BENCH_DIR = Path(__file__).parent
 REPO_ROOT = BENCH_DIR.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from markcrawl.chunker import Chunk, chunk_markdown
+from markcrawl.chunker import chunk_markdown  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -1487,7 +1487,7 @@ def generate_retrieval_report(
                 f"**Q{qi+1}: {q['query']}**",
                 f"*(expects URL containing: `{q.get('url_match', '')}`)*",
                 "",
-                f"| Tool | Hit | Top-1 URL | Score | Top-2 URL | Score | Top-3 URL | Score |",
+                "| Tool | Hit | Top-1 URL | Score | Top-2 URL | Score | Top-3 URL | Score |",
                 "|---|---|---|---|---|---|---|---|",
             ])
 
@@ -1529,7 +1529,7 @@ def generate_retrieval_report(
         f"- **Retrieval:** Hit rate reported at K = {k_list}, plus MRR",
         f"- **Reranking:** Top-{TOP_K} candidates from hybrid search, reranked to top-{RERANK_TOP_N}",
         f"- **Chunk sensitivity:** Tested at {config_list}",
-        f"- **Confidence intervals:** Wilson score interval (95%)",
+        "- **Confidence intervals:** Wilson score interval (95%)",
         "- **Same chunking and embedding** for all tools — only extraction quality varies",
         "- **No fine-tuning or tool-specific optimization** — identical pipeline for all",
         "",
@@ -1751,7 +1751,7 @@ def _run_benchmark_for_config(
 
             if not chunks:
                 if verbose:
-                    print(f"    WARNING: no chunks created, skipping")
+                    print("    WARNING: no chunks created, skipping")
                 continue
 
             result = run_retrieval_test(client, chunks, queries, tool, site, config_label, query_vectors)

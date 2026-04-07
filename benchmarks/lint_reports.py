@@ -235,7 +235,7 @@ def main():
         print(f"\n{len(all_warnings)} issue(s) found:\n")
         for w in all_warnings:
             print(f"  - {w}")
-        print(f"\nRun with --fix-tags to add/update style version tags.")
+        print("\nRun with --fix-tags to add/update style version tags.")
         sys.exit(1)
     else:
         print(f"All {len(files)} reports pass lint checks.")

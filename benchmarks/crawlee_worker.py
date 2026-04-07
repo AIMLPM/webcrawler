@@ -11,7 +11,6 @@ import asyncio
 import json
 import os
 import sys
-from pathlib import Path
 
 url = sys.argv[1]
 out_dir = sys.argv[2]

@@ -436,7 +436,7 @@ def print_ready_status(tool_results: dict[str, bool]) -> None:
         print(green("  Ready. Run the benchmark with:"))
         print(f"    {bold('python benchmarks/benchmark_all_tools.py')}\n")
         print(dim("  Quick test (1 site, 1 iteration, skip warmup):"))
-        print(dim(f"    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
+        print(dim("    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
     else:
         print(red("  Not ready — fix blocking issues above, then re-run:"))
         print(f"    {bold('python benchmarks/preflight.py --install')}\n")
@@ -524,7 +524,7 @@ def _install_go_and_build_colly() -> bool:
     if result.returncode != 0:
         print(red("  ✗ go build failed"))
         return False
-    print(green(f"  ✓ colly_crawler binary built"))
+    print(green("  ✓ colly_crawler binary built"))
     return True
 
 
@@ -547,7 +547,7 @@ def install_missing(tool_results: dict[str, bool]) -> bool:
         if pip_args is None:
             if label in _PIP_INSTALL:
                 manual.append(detail)
-        elif label not in [l for l, _ in to_install]:
+        elif label not in [lbl for lbl, _ in to_install]:
             to_install.append((label, pip_args))
 
     install_pw_browsers = any(
@@ -628,12 +628,12 @@ def install_missing(tool_results: dict[str, bool]) -> bool:
             print(green("  ✓ Playwright chromium installed"))
         else:
             print(red("  ✗ Playwright chromium install failed"))
-            all_ok = False
+            all_ok = False  # noqa: F841 — tracks overall status for future use
         installed_any = True
 
     # Re-exec with the venv Python so re-check sees newly installed packages
     if installed_any and not _in_venv():
-        print(dim(f"\n  Re-running with venv Python to verify installs..."))
+        print(dim("\n  Re-running with venv Python to verify installs..."))
         env = os.environ.copy()
         env["PYTHONWARNINGS"] = "ignore"
         os.execve(venv_python, [venv_python, __file__, "--install"], env)
@@ -757,7 +757,7 @@ def print_smoke_status(
 
     print(f"\n  {bold('python benchmarks/benchmark_all_tools.py')}\n")
     print(dim("  Quick run (1 site, 1 iteration, skip warmup):"))
-    print(dim(f"    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
+    print(dim("    python benchmarks/benchmark_all_tools.py --sites quotes-toscrape --iterations 1 --skip-warmup\n"))
 
 
 # ---------------------------------------------------------------------------

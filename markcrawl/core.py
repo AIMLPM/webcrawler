@@ -33,17 +33,17 @@ from typing import Callable, Deque, Dict, List, Optional, Set, Tuple
 
 # Submodule imports — all public names are re-exported for backward compatibility
 from .extract_content import (
-    EXCLUDE_TAGS,
-    STRUCTURE_TAGS,
-    clean_dom_for_content,
-    compact_blank_lines,
+    EXCLUDE_TAGS,  # noqa: F401 — public re-export
+    STRUCTURE_TAGS,  # noqa: F401 — public re-export
+    clean_dom_for_content,  # noqa: F401 — public re-export
+    compact_blank_lines,  # noqa: F401 — public re-export
     default_progress,
     html_to_markdown,
     html_to_text,
 )
 from .fetch import (
     DEFAULT_UA,
-    PlaywrightResponse,
+    PlaywrightResponse,  # noqa: F401 — public re-export
     _get_playwright_browser,
     build_session,
     fetch,
@@ -52,7 +52,7 @@ from .fetch import (
 from .robots import discover_sitemaps, parse_robots_txt, parse_sitemap_xml
 from .state import STATE_FILENAME, load_state, save_state
 from .throttle import AdaptiveThrottle
-from .urls import extract_links, norm_url, safe_filename, same_scope
+from .urls import extract_links, norm_url, safe_filename, same_scope  # noqa: F401 — extract_links is a public re-export
 
 logger = logging.getLogger(__name__)
 
@@ -151,38 +151,10 @@ class CrawlEngine:
         self.jsonl_path = os.path.join(out_dir, "pages.jsonl")
         self.state_path = os.path.join(out_dir, STATE_FILENAME)
 
-    # Backward-compat properties for throttle state (used by tests)
     @property
-    def _base_delay(self):
-        return self._throttle.base_delay
-
-    @_base_delay.setter
-    def _base_delay(self, value):
-        self._throttle.base_delay = value
-
-    @property
-    def _active_delay(self):
-        return self._throttle.active_delay
-
-    @_active_delay.setter
-    def _active_delay(self, value):
-        self._throttle._active_delay = value
-
-    @property
-    def _backoff_count(self):
-        return self._throttle._backoff_count
-
-    @_backoff_count.setter
-    def _backoff_count(self, value):
-        self._throttle._backoff_count = value
-
-    @property
-    def _response_times(self):
-        return self._throttle._response_times
-
-    @_response_times.setter
-    def _response_times(self, value):
-        self._throttle._response_times = value
+    def throttle(self) -> "AdaptiveThrottle":
+        """Public access to the throttle instance."""
+        return self._throttle
 
     # -- Lifecycle ----------------------------------------------------------
 

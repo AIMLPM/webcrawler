@@ -78,6 +78,7 @@ include = ["markcrawl*"]
 [tool.ruff]
 target-version = "py310"
 line-length = 120
+exclude = [".claude"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
