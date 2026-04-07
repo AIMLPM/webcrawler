@@ -111,9 +111,12 @@ run_docker() {
     [[ -n "${FIRECRAWL_TIER:-}" ]]     && ENV_ARGS+=(-e FIRECRAWL_TIER)
     [[ -n "${OPENAI_API_KEY:-}" ]]     && ENV_ARGS+=(-e OPENAI_API_KEY)
 
-    # Load from .env if present
+    # Load from .env if present — strip "export " prefixes since Docker
+    # --env-file doesn't support them.
     if [[ -f "$REPO_ROOT/.env" ]]; then
-        ENV_ARGS+=(--env-file "$REPO_ROOT/.env")
+        _clean_env=$(mktemp)
+        sed 's/^export //' "$REPO_ROOT/.env" > "$_clean_env"
+        ENV_ARGS+=(--env-file "$_clean_env")
     fi
 
     echo "Running benchmarks in Docker..."
