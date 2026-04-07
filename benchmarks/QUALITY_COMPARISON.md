@@ -1,30 +1,28 @@
 # Extraction Quality Comparison
 
-markcrawl produces the least nav pollution of any tool tested — 4 words of preamble per page vs 275–398 for the next tier — but captures 13% less agreed content than crawlee and colly+md (84% recall vs 97%).
+markcrawl produces the cleanest crawler output tested -- 100% content signal with 4 words of preamble per page -- but trades 13% recall to get there (84% vs 97% for crawlee, colly+md, and playwright).
 
-## What "clean output" means for RAG — and why it's a trade-off
+## What the metrics mean
 
-When you crawl a documentation site or e-commerce store, every page comes with chrome: navigation menus, sidebar links, version pickers, language selectors, footer text, and breadcrumbs. These elements have nothing to do with the page's actual content, but most crawlers include them verbatim in their Markdown output.
+Before looking at the numbers, here is what each column measures and why it matters for a RAG pipeline (Retrieval-Augmented Generation, where you split crawled text into chunks, embed them as vectors, and retrieve the best-matching chunks to answer a query).
 
-**Why this matters for a RAG pipeline (Retrieval-Augmented Generation):** A RAG pipeline works by splitting page text into chunks, embedding each chunk as a vector, and retrieving the top-matching chunks to answer a query. Nav chrome degrades retrieval in two ways:
+- **Content signal** -- the percentage of a tool's output that is actual page content rather than navigation chrome (menus, footers, breadcrumbs). A tool scoring 75% means one word in four is boilerplate. Higher is better.
 
-1. **Noise in embeddings:** If a chunk contains 200 words of nav links followed by 50 words of real content, the embedding is pulled toward the nav keywords. Queries about the actual topic match less strongly.
-2. **False positives everywhere:** The same nav sentences — "Next", "Previous", "Login", the full sidebar menu — appear on every page. They match queries on every page, flooding retrieval results with junk.
+- **Preamble** -- the average number of words that appear *before* the first heading on each page. This is where nav chrome lives: version selectors, language pickers, sidebar menus, skip-to-content links. If a tool has preamble = 398, it is injecting nearly 400 words of navigation into the top of every page's Markdown output. Those 400 words end up in your first chunk, pulling its embedding away from the page's actual topic and toward generic nav keywords. A preamble of 4 means almost nothing precedes the real content.
 
-The key tension is that aggressively stripping nav also removes some real content. A tool that produces very clean output may omit sentences that would have matched a genuine query. This is a genuine trade-off: **lower noise vs. higher recall**.
+- **Repeat rate** -- the fraction of sentences that appear on more than 50% of crawled pages. Real content shows up on one or two pages; nav text ("Home", "Next", the full sidebar menu) repeats on every page. A 5% repeat rate means 1 in 20 sentences in your vector index is duplicated boilerplate that will match irrelevant queries.
 
-The [retrieval benchmark](RETRIEVAL_COMPARISON.md) shows this playing out directly: crawl4ai gets 75% hit rate vs markcrawl's 69%, despite producing much noisier output. The extra text that inflates preamble scores also contains keywords that help embeddings match queries. **The right choice depends on whether your pipeline is more sensitive to noise (favors markcrawl) or to missing content (favors higher-recall tools).**
+- **Junk/page** -- count of known boilerplate phrases detected per page (nav links, footer text, breadcrumbs, etc.), matched against a fixed pattern list.
 
-## Summary: RAG readiness at a glance
+- **Precision** -- of the sentences this tool outputs, what fraction do other tools also agree is real content? A tool with 10% precision is producing mostly text that no other tool considers real content.
 
-> **How to read this table:**
->
-> - **Content signal** — the percentage of output that is actual page content, not nav/header chrome. 100% means zero nav pollution; 75% means one word in four is boilerplate.
-> - **Preamble** — average words per page that appear *before* the first heading. This is where nav chrome lives: version selectors, language pickers, sidebar menus, skip-to-content links. A tool with preamble = 398 is injecting nearly 400 words of nav into every chunk, before a single word of real content. ⚠ = preamble >50 words, indicating likely nav pollution at scale.
-> - **Repeat rate** — fraction of sentences that appear on more than 50% of pages. Real content appears on at most a few pages; nav text repeats everywhere. A 5% repeat rate means 1 in 20 sentences is boilerplate that will pollute every chunk in your index.
-> - **Junk/page** — count of known boilerplate phrases detected per page (nav, footer, breadcrumbs, etc.).
-> - **Precision** — of the sentences this tool outputs, what fraction do other tools also agree is real content? A tool with 10% precision is producing mostly output that no other tool considers real content.
-> - **Recall** — of the sentences that the majority of tools agree is real content, what fraction did this tool capture? 84% recall means the tool missed 16% of agreed-upon content.
+- **Recall** -- of the sentences that the majority of tools agree is real content, what fraction did this tool capture? 84% recall means the tool missed 16% of agreed-upon content. 97% recall means almost nothing was dropped.
+
+These metrics matter because nav chrome degrades RAG in two ways. First, chunks containing 200 words of nav links followed by 50 words of real content produce embeddings skewed toward nav keywords, so queries about the actual topic match less strongly. Second, the same nav sentences repeat on every page, flooding retrieval results with false positives.
+
+## Summary table
+
+All tools sorted by content signal (primary metric), descending. The table below covers all four test sites combined.
 
 | Tool | Content signal | Preamble [1] | Repeat rate | Junk/page | Precision | Recall |
 |---|---|---|---|---|---|---|
@@ -39,11 +37,23 @@ The [retrieval benchmark](RETRIEVAL_COMPARISON.md) shows this playing out direct
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 words).
 
-**The key insight:** markcrawl's 4-word average preamble is 69x lower than crawl4ai's 398 words and 69x lower than crawlee's 275 words. However, this aggressive stripping comes with a real cost: 84% recall vs 97% for crawlee, colly+md, and playwright. markcrawl's conservative filtering removes some real content along with the boilerplate.
+## The noise vs recall trade-off
 
-**Where the preamble numbers come from:** crawl4ai's 398-word average is dominated by fastapi-docs (1,438 words of nav chrome per page — version selectors, language pickers, full sidebar navigation). On simpler sites like quotes-toscrape, all tools produce near-zero preamble. See the per-site breakdowns below.
+The central finding is a genuine tension between clean output and complete output.
 
-**Firecrawl anomaly:** Firecrawl appears clean on preamble (10 words) and content signal (99%), but has only 10% precision and 10% recall. This means it's capturing a mostly different set of content than every other tool — not a noise problem but a coverage problem. Treat firecrawl results with caution for these test sites.
+**markcrawl is the cleanest tool by a wide margin.** Its 4-word average preamble is 69x lower than crawlee's 275 words and 99x lower than crawl4ai's 398 words. Its 0% repeat rate and 100% content signal mean that virtually every word in its output is real page content. For a RAG pipeline, this means smaller chunks, tighter embeddings, and fewer false-positive retrievals.
+
+**That cleanliness comes at a real cost: 84% recall vs 97% for crawlee.** markcrawl's aggressive filtering removes some genuine content along with the boilerplate. Of the sentences that the majority of tools agree is real content, markcrawl misses 16%. crawlee, colly+md, and playwright capture 97% -- but they pay for it with 267-275 words of nav chrome prepended to every page and a 2% cross-page repeat rate.
+
+**crawl4ai sits in a different spot on the curve.** It has the highest preamble (398 words) but only 88% recall -- worse than crawlee on both noise and completeness. Its preamble is dominated by fastapi-docs, where it injects 1,438 words of nav chrome per page (version selectors, language pickers, full sidebar navigation). On simpler sites like quotes-toscrape, all tools produce near-zero preamble.
+
+**Firecrawl is an outlier for a different reason.** It appears clean on preamble (10 words) and content signal (99%), but has only 10% precision and 10% recall. It is capturing a mostly different set of content than every other tool -- not a noise problem but a coverage problem. Treat firecrawl results with caution for these test sites.
+
+**What this means in practice:**
+
+- If your RAG pipeline is sensitive to noise -- small chunk sizes, precision-oriented retrieval, or domains where nav keywords overlap with real queries -- markcrawl's clean output will produce better embeddings and fewer junk results, even with 13% less recall.
+- If your pipeline is sensitive to missing content -- broad recall matters more than chunk purity, or you have post-processing to strip boilerplate -- crawlee or colly+md will capture more at the cost of noisier chunks.
+- The [retrieval benchmark](RETRIEVAL_COMPARISON.md) shows this trade-off playing out directly: crawl4ai gets a 75% hit rate vs markcrawl's 69%, because the extra text that inflates preamble scores also contains keywords that help embeddings match queries. Retrieval mode (embedding vs hybrid vs reranked) matters more than crawler choice -- see that report for details.
 
 ---
 
@@ -130,7 +140,7 @@ Tags: [aliteracy](https://quotes.toscrape.com/tag/aliteracy/page/1/) [books](htt
 Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
 "Try not to become a man of success. Rather become a man of value." by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
 Tags: [adulthood](https://quotes.toscrape.com/tag/adulthood/page/1/) [success](https://quotes.toscrape.com/tag/success/page/1/) [value](https://quotes.toscrape.com/tag/value/page/1/)
-"It is better to be hated for what you are than to be loved for what you are not." by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
+"It is better to be hated for what you are than to be loved for what you are not." by Andre Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
 Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
 "I have not failed. I've just found 10,000 ways that won't work." by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
 Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
@@ -163,7 +173,7 @@ Tags: [aliteracy](https://quotes.toscrape.com/tag/aliteracy/page/1/) [books](htt
 Tags: [be-yourself](https://quotes.toscrape.com/tag/be-yourself/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/)
 "Try not to become a man of success. Rather become a man of value." by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
 Tags: [adulthood](https://quotes.toscrape.com/tag/adulthood/page/1/) [success](https://quotes.toscrape.com/tag/success/page/1/) [value](https://quotes.toscrape.com/tag/value/page/1/)
-"It is better to be hated for what you are than to be loved for what you are not." by André Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
+"It is better to be hated for what you are than to be loved for what you are not." by Andre Gide [(about)](https://quotes.toscrape.com/author/Andre-Gide)
 Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/)
 "I have not failed. I've just found 10,000 ways that won't work." by Thomas A. Edison [(about)](https://quotes.toscrape.com/author/Thomas-A-Edison)
 Tags: [edison](https://quotes.toscrape.com/tag/edison/page/1/) [failure](https://quotes.toscrape.com/tag/failure/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [paraphrased](https://quotes.toscrape.com/tag/paraphrased/page/1/)
@@ -456,9 +466,6 @@ Tags:
 | firecrawl | 513 | 18 | 0% | 0 | 9.1 | 0.0 | 2% | 3% |
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
-
-**Reading the numbers:**
-**markcrawl** produces the cleanest output with 8 words of preamble per page, while **crawl4ai** injects 177 words of nav chrome before content begins.
 
 <details>
 <summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books_1/index.html</code></summary>
@@ -953,8 +960,7 @@ Books to Scrape - Sandbox
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
-**Reading the numbers:**
-**markcrawl** produces the cleanest output with 0 words of preamble per page, while **crawl4ai** injects 1,438 words of nav chrome before content begins. The word count gap (2,460 vs 3,991 avg words) is largely explained by preamble: 1,438 words of nav chrome account for ~36% of crawl4ai's output on this site. markcrawl's lower recall (67% vs 99%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
+This is the site where preamble differences are largest. crawl4ai's 1,438-word preamble comes from version selectors, language pickers, sponsor banners, and full sidebar navigation repeated on every page -- accounting for approximately 36% of crawl4ai's total output. markcrawl strips all of it (0 words preamble) but captures only 67% of the agreed-upon content vs 99% for crawlee. scrapy+md matches markcrawl's 67% recall despite having 781 words of preamble, suggesting its content filtering is inconsistent rather than aggressive.
 
 <details>
 <summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/external-links</code></summary>
@@ -1367,8 +1373,7 @@ Most starred [GitHub repositories with the topic `fastapi`](https://github.com/t
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
-**Reading the numbers:**
-**markcrawl** produces the cleanest output with 0 words of preamble per page, while **crawl4ai** injects 59 words of nav chrome before content begins. markcrawl's lower recall (68% vs 100% for scrapy+md) reflects stricter content filtering — the "missed" sentences are predominantly navigation and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision. Note that crawl4ai actually has lower recall (59%) than markcrawl here, despite higher preamble — meaning crawl4ai injects more noise *and* misses more content on this site.
+markcrawl's 68% recall is higher than crawl4ai's 59% on this site, despite markcrawl having zero preamble vs crawl4ai's 59 words. crawl4ai injects more noise *and* misses more content here. scrapy+md achieves 100% recall with only 4 words of preamble, making it the strongest tool on this particular site.
 
 <details>
 <summary>Sample output — first 40 lines of <code>docs.python.org/3.15</code></summary>
@@ -1621,7 +1626,7 @@ Dark
 [Download these documents](download.html)
 ```
 
-**firecrawl** — no output for this URL
+**firecrawl** -- no output for this URL
 
 </details>
 
@@ -1681,28 +1686,28 @@ Dark
 
 ### What was measured
 
-Four automated metrics — no LLM or human review required:
+Four automated metrics -- no LLM or human review required:
 
-1. **Junk phrases** — known boilerplate strings (nav, footer, breadcrumbs) found in output. Detected via a fixed list of common site chrome patterns.
-2. **Preamble** — average words per page appearing *before* the first heading. Nav chrome (version selectors, language pickers, prev/next links) lives here. A tool with a high preamble count is injecting site chrome into every chunk.
-3. **Cross-page repeat rate** — fraction of sentences that appear on more than 50% of pages. Real content appears on at most a few pages; nav text repeats everywhere. High repeat rate = nav boilerplate polluting every chunk in the RAG index.
-4. **Precision and recall** — each tool's output is compared against the majority-agreement set across all tools. Precision measures what fraction of a tool's output the other tools also agree is real content. Recall measures what fraction of the majority-agreed content this tool captured.
+1. **Junk phrases** -- known boilerplate strings (nav, footer, breadcrumbs) found in output. Detected via a fixed list of common site chrome patterns.
+2. **Preamble** -- average words per page appearing *before* the first heading. Nav chrome (version selectors, language pickers, prev/next links) lives here. A tool with a high preamble count is injecting site chrome into every chunk.
+3. **Cross-page repeat rate** -- fraction of sentences that appear on more than 50% of pages. Real content appears on at most a few pages; nav text repeats everywhere. High repeat rate = nav boilerplate polluting every chunk in the RAG index.
+4. **Precision and recall** -- each tool's output is compared against the majority-agreement set across all tools. Precision measures what fraction of a tool's output the other tools also agree is real content. Recall measures what fraction of the majority-agreed content this tool captured.
 
 Note on the consensus approach: "precision" and "recall" here are relative to inter-tool agreement, not to a gold-standard human annotation. A tool that systematically misses content that every other tool captures will show low recall. A tool that outputs content no other tool considers real will show low precision. This is a practical proxy, not a ground truth measurement.
 
 ### Test sites
 
-- **quotes-toscrape** — simple static site, minimal nav chrome. Good baseline.
-- **books-toscrape** — e-commerce catalog, moderate nav (category sidebar, breadcrumbs).
-- **fastapi-docs** — heavily navved documentation site (MkDocs). Sponsor banners, language pickers, version selectors. This is where preamble differences are largest.
-- **python-docs** — official Python documentation, similar nav structure to fastapi-docs but different rendering.
+- **quotes-toscrape** -- simple static site, minimal nav chrome. Good baseline.
+- **books-toscrape** -- e-commerce catalog, moderate nav (category sidebar, breadcrumbs).
+- **fastapi-docs** -- heavily navved documentation site (MkDocs). Sponsor banners, language pickers, version selectors. This is where preamble differences are largest.
+- **python-docs** -- official Python documentation, similar nav structure to fastapi-docs but different rendering.
 
 ### What was NOT measured
 
-- **Retrieval quality** — whether output quality translates to better search hit rates. See [RETRIEVAL_COMPARISON.md](RETRIEVAL_COMPARISON.md).
-- **Answer quality** — whether retrieved chunks produce better LLM answers. See [ANSWER_QUALITY.md](ANSWER_QUALITY.md).
-- **Speed** — how long each tool takes to crawl. See [SPEED_COMPARISON.md](SPEED_COMPARISON.md).
-- **Cost** — API and infrastructure costs at scale. See [COST_AT_SCALE.md](COST_AT_SCALE.md).
-- **Human-labeled ground truth** — all quality metrics use automated or consensus-based methods. A human editorial review of sampled output would be needed to validate these measurements.
+- **Retrieval quality** -- whether output quality translates to better search hit rates. See [RETRIEVAL_COMPARISON.md](RETRIEVAL_COMPARISON.md).
+- **Answer quality** -- whether retrieved chunks produce better LLM answers. See [ANSWER_QUALITY.md](ANSWER_QUALITY.md).
+- **Speed** -- how long each tool takes to crawl. See [SPEED_COMPARISON.md](SPEED_COMPARISON.md).
+- **Cost** -- API and infrastructure costs at scale. See [COST_AT_SCALE.md](COST_AT_SCALE.md).
+- **Human-labeled ground truth** -- all quality metrics use automated or consensus-based methods. A human editorial review of sampled output would be needed to validate these measurements.
 
 See [METHODOLOGY.md](METHODOLOGY.md) for full test setup, tool configurations, and fairness decisions.

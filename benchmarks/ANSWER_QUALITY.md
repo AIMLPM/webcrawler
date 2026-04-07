@@ -2,33 +2,55 @@
 
 Does cleaner crawler output produce better LLM answers?
 
-Yes — but only modestly. Across 92 queries on 8 sites, markcrawl produces the
+Yes — but modestly. Across 92 queries on 8 sites, markcrawl produces the
 highest-scoring answers of all 7 tools tested, with an overall score of 3.91/5.
-The next-best tool (scrapy+md) scores 3.86, and the weakest (playwright) scores
-3.74. The gap between first and last is 0.17 points — real, but not dramatic.
-Cleaner output helps most on completeness (the dimension where markcrawl's lead
-is widest) and least on correctness (where all tools cluster between 4.08–4.20).
+The closest competitor (scrapy+md) scores 3.86, and the weakest (playwright)
+scores 3.74. The gap between first and last is 0.17 points — real, but not
+dramatic. Cleaner output helps most on completeness (where markcrawl's lead is
+widest) and least on correctness (where all tools cluster between 4.08–4.20).
 
 **What the scores mean.** Each answer is graded on four dimensions —
 correctness, relevance, completeness, and usefulness — by `gpt-4o-mini` on a
-1–5 scale. A score of 5 means the answer is fully correct, directly relevant,
-covers everything the question asks, and is presented clearly. A score of 3
-means the answer is partially correct or incomplete — usable but unreliable. A
-score below 2 typically means the model said it couldn't answer based on the
-retrieved context. All tools in this benchmark score between 3.74 and 3.91,
-which lands in the "good but not perfect" range: answers are usually correct
-and relevant, but completeness is the weak point across the board (all tools
-score between 3.35–3.57 on that dimension).
+1–5 scale:
+
+- **5** — the answer is fully correct, directly relevant, covers everything the
+  question asks, and is presented clearly. Nothing missing.
+- **3** — the answer is partially correct or incomplete. Usable, but you
+  wouldn't trust it without double-checking. Important details are missing or
+  the response hedges significantly.
+- **1** — the answer is wrong, off-topic, or the model declined to answer based
+  on the retrieved context.
+
+All tools in this benchmark score between 3.74 and 3.91, which lands in the
+"good but not perfect" range: answers are usually correct and relevant, but
+completeness is the weak point across the board (all tools score between
+3.35–3.57 on that dimension). A score of 3.91 means the average answer is
+closer to "solid" than "unreliable" — most answers work, but a meaningful
+fraction are incomplete.
+
+**For the senior engineer wondering about rigor:** the judge model is
+`gpt-4o-mini`, scores are averaged across 92 queries spanning 8 sites of
+varying difficulty, and each query is answered independently per tool using the
+same retrieval pipeline (hybrid retrieval with reranking). The sample size is
+modest — 92 queries is enough to see consistent patterns but too small for
+tight confidence intervals on a 0.05-point gap. See
+[METHODOLOGY.md](METHODOLOGY.md) for full test setup, tool configurations, and
+reproducibility instructions.
 
 **What this means in practice.** For most RAG applications, any of these
-crawlers will produce acceptable answer quality. The choice of crawler is
-unlikely to be the deciding factor in whether your LLM answers are good enough.
-Where markcrawl's cleaner output shows up most clearly is on harder sites —
-those with heavy navigation chrome, repetitive boilerplate, or structured data
-(like API docs or e-commerce listings) — where noise in the retrieved context
-visibly degrades completeness. If your use case involves crawling messy or
-content-rich sites at scale, the quality gap is worth factoring in alongside
-speed and cost differences.
+crawlers will produce acceptable answer quality. The choice of crawler alone is
+unlikely to make or break whether your LLM answers are good enough. Where
+markcrawl's cleaner output shows up most clearly is on harder sites — those
+with heavy navigation chrome, repetitive boilerplate, or structured data (like
+API docs or e-commerce listings) — where noise in the retrieved context visibly
+degrades completeness. If your use case involves crawling messy or content-rich
+sites at scale, the 0.17-point quality gap compounds: see
+[COST_AT_SCALE.md](COST_AT_SCALE.md) for how cleaner output also reduces chunk
+counts and embedding costs at scale. Interestingly, retrieval accuracy itself
+is similar across tools (see
+[RETRIEVAL_COMPARISON.md](RETRIEVAL_COMPARISON.md)) — the quality difference
+shows up downstream, in the LLM's ability to synthesize cleaner context into
+better answers.
 
 ## Summary (92 queries across 8 sites)
 
@@ -37,8 +59,8 @@ speed and cost differences.
 | **markcrawl** | **4.20** | **4.01** | **3.57** | **3.87** | **3.91** | **2,385** |
 | scrapy+md | 4.12 | 3.96 | 3.52 | 3.84 | **3.86** | 2,347 |
 | crawl4ai-raw | 4.14 | 3.96 | 3.46 | 3.80 | **3.84** | 2,264 |
-| crawl4ai | 4.13 | 3.92 | 3.46 | 3.76 | **3.82** | 2,272 |
 | colly+md | 4.11 | 3.93 | 3.49 | 3.79 | **3.83** | 2,360 |
+| crawl4ai | 4.13 | 3.92 | 3.46 | 3.76 | **3.82** | 2,272 |
 | crawlee | 4.13 | 3.88 | 3.45 | 3.76 | **3.80** | 2,376 |
 | playwright | 4.08 | 3.84 | 3.35 | 3.70 | **3.74** | 2,372 |
 

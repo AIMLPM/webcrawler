@@ -1,47 +1,26 @@
 # Retrieval Quality Comparison
 
-**Does your choice of crawler affect how well your RAG pipeline answers questions?**
-Mostly no. Every tool tested lands between 42–43% at Hit@1 and converges to 51% at Hit@20.
-The crawler you pick matters far less for retrieval quality than the retrieval mode you use —
-and even that gap shrinks once you allow the search to look beyond the first result.
+Does crawler choice affect retrieval quality? Mostly no. All seven tools land between 42–43% at Hit@1 and converge to 51% at Hit@20 — differences that fall within confidence intervals. Your retrieval mode (embedding vs. BM25 vs. hybrid vs. reranked) matters far more than which crawler fetched the pages.
 
-This report measures 92 real queries across 8 sites using four retrieval strategies.
-The short version: **use embedding search or reranking; avoid BM25-only; pick your crawler
-based on speed, cost, or output cleanliness — not retrieval numbers.**
+## How to read this report
 
-## What these numbers mean
+This report tests 92 real queries across 8 sites using four retrieval strategies and seven crawlers. Before diving into the tables, here is what the metrics mean.
 
-**Hit@K** — "did the right page appear in the top K results?" Hit@1 means the correct
-page was the very first result. Hit@5 means it appeared somewhere in the top 5.
-Higher K gives the system more chances to find the right page. All hits are averaged
-over 92 queries, so "42% (39/92)" means 39 queries returned the correct page at position 1.
+**Hit@K** -- "did the correct page appear in the top K results?" Hit@1 means the correct page was the very first result returned. Hit@5 means it appeared somewhere in the top 5. Higher K gives the system more chances to surface the right page. All numbers are averaged over 92 queries, so "42% (39/92)" means 39 of 92 queries returned the correct page at that position or better.
 
-**MRR (Mean Reciprocal Rank)** — a single score that captures not just whether the right
-page appeared, but how high it ranked. If the correct page is always rank 1, MRR = 1.0.
-If it's always rank 2, MRR = 0.5. An MRR of 0.45 means the correct page tends to land
-near the top when it is found at all. For everyday purposes: higher MRR = fewer results
-the user has to scroll past.
+**MRR (Mean Reciprocal Rank)** -- a single score that captures not just whether the right page appeared, but how high it ranked. If the correct page is always rank 1, MRR = 1.0. If it is always rank 2, MRR = 0.5. An MRR of 0.45 means the correct page tends to land near the top when it is found at all. Higher MRR = fewer results a user has to scroll past.
 
-**Confidence intervals** — all Hit@K figures carry ±10% at 95% confidence (Wilson interval,
-n=92). Differences smaller than ~5 percentage points between tools are within the noise.
+**Confidence intervals** -- all Hit@K figures carry approximately ±10% at 95% confidence (Wilson interval, n=92). Differences smaller than ~5 percentage points between tools are within the noise and should not be treated as meaningful wins.
 
-## Why the tools perform so similarly
+Three readers should be able to use this report without reading end-to-end:
 
-All seven crawlers retrieve the same underlying URLs from the same sites. The embedding
-model (`text-embedding-3-small`) sees essentially the same content regardless of which
-tool fetched it. The small differences that do exist — crawl4ai slightly lower at Hit@1,
-crawlee/colly/playwright a point or two higher — are within confidence intervals and
-disappear entirely by Hit@20, where every tool converges to 51% (47/92).
+- **Junior developer choosing a crawler for a first RAG project:** read the best-mode-per-tool table below and the takeaway after it. Short answer: pick any of the top five tools and use embedding search.
+- **Senior/principal engineer evaluating rigor:** check the full 28-row table, the confidence intervals, and the [methodology](METHODOLOGY.md). Sample size is 92 queries; tool-to-tool differences at Hit@1 are 1 percentage point among the top five and within the ±10% confidence band.
+- **Engineering manager or executive deciding whether to pay for reranking:** reranking adds cross-encoder inference cost but does not consistently beat plain embedding search on Hit@1. The benefit shows up in MRR and at Hit@3+, which matters if your pipeline uses multiple retrieved chunks. See [COST_AT_SCALE.md](COST_AT_SCALE.md) for dollar estimates.
 
-The real variable is **retrieval mode**, not the crawler. Embedding search and reranking
-both outperform BM25 by 15–20 percentage points at Hit@1. If you are choosing a crawler
-primarily because you think it will produce better retrieval, the data says that time is
-better spent upgrading your search strategy.
+## Best mode per tool
 
-## Best mode per tool (embedding vs. best non-embedding)
-
-This table shows the recommended mode for each tool. For all tools, embedding search
-or reranking is the best or near-best choice at Hit@1.
+This digest shows each tool's strongest retrieval mode so most readers can stop here. For all tools, embedding search or reranking is the best or near-best choice at Hit@1.
 
 | Tool | Best mode | Hit@1 | MRR | Notes |
 |---|---|---|---|---|
@@ -50,16 +29,22 @@ or reranking is the best or near-best choice at Hit@1.
 | playwright | embedding | 43% (40/92) ±10% | 0.452 | Tied top Hit@1 |
 | **markcrawl** | **reranked** | **42% (39/92) ±10%** | **0.457** | **Highest MRR of all 28 rows** |
 | scrapy+md | embedding | 42% (39/92) ±10% | 0.446 | Tied with markcrawl at Hit@1 |
-| crawl4ai | reranked | 36% (33/92) ±10% | 0.419 | 4–7 pt lower at Hit@1; converges by Hit@10 |
+| crawl4ai | reranked | 36% (33/92) ±10% | 0.419 | 4-7 pt lower at Hit@1; converges by Hit@10 |
 | crawl4ai-raw | reranked | 36% (33/92) ±10% | 0.415 | Same as crawl4ai (identical crawl output) |
 
 > Sorted by Hit@1 descending, then MRR. Differences between the top five tools are within confidence intervals.
 
-## Summary: all tools × all modes (28 rows)
+## Why the tools perform so similarly
 
-The table below shows all 4 retrieval modes for all 7 tools. It is the complete picture
-for engineers who want to compare a specific tool-mode combination. For most readers,
-the "best mode" table above is sufficient.
+All seven crawlers retrieve the same underlying URLs from the same sites. The embedding model (`text-embedding-3-small`) sees essentially the same content regardless of which tool fetched it. The small differences that do exist -- crawl4ai slightly lower at Hit@1, crawlee/colly/playwright a point or two higher -- are within confidence intervals and disappear entirely by Hit@20, where every tool converges to 51% (47/92).
+
+The real variable is **retrieval mode**, not the crawler. Embedding search and reranking both outperform BM25 by 15-20 percentage points at Hit@1. If you are choosing a crawler primarily because you think it will produce better retrieval, the data says that time is better spent upgrading your search strategy.
+
+Although retrieval quality is similar across tools, answer quality is not. Cleaner Markdown with less navigation chrome produces better LLM answers even when the same pages are retrieved. See [ANSWER_QUALITY.md](ANSWER_QUALITY.md) for that comparison and [METHODOLOGY.md](METHODOLOGY.md) for the full test setup.
+
+## All tools x all modes (28 rows)
+
+The table below shows all 4 retrieval modes for all 7 tools. It is the complete picture for engineers who want to compare a specific tool-mode combination. For most readers, the best-mode table above is sufficient.
 
 | Tool | Mode | Hit@1 | Hit@3 | Hit@5 | Hit@10 | Hit@20 | MRR |
 |---|---|---|---|---|---|---|---|
@@ -90,34 +75,36 @@ the "best mode" table above is sufficient.
 | crawl4ai-raw | bm25 | 23% (21/92) ±8% | 28% (26/92) ±9% | 33% (30/92) ±9% | 38% (35/92) ±10% | 42% (39/92) ±10% | 0.274 |
 | crawl4ai | bm25 | 22% (20/92) ±8% | 28% (26/92) ±9% | 33% (30/92) ±9% | 38% (35/92) ±10% | 42% (39/92) ±10% | 0.269 |
 
-> Sorted by Hit@1 descending, then MRR. BM25 alone performs 15–20 percentage points worse than embedding search at Hit@1 across all tools.
+> Sorted by Hit@1 descending, then MRR. BM25 alone performs 15-20 percentage points worse than embedding search at Hit@1 across all tools.
 
 ## Retrieval modes explained
 
 The four modes tested represent a spectrum from simple to sophisticated:
 
-- **Embedding** — each page chunk is converted to a vector by `text-embedding-3-small`, and
+- **Embedding** -- each page chunk is converted to a vector by `text-embedding-3-small`, and
   the query is matched by cosine similarity. Fast, general-purpose, language-aware. This is
   the default for most RAG pipelines.
 
-- **BM25** — keyword search based on term frequency (the algorithm behind classic search
+- **BM25** -- keyword search based on term frequency (the algorithm behind classic search
   engines). No semantic understanding: "car" and "automobile" are different terms. Works well
   when queries use the same vocabulary as the source text; poorly when they don't. BM25 stands
   for Best Match 25, a probabilistic ranking function.
 
-- **Hybrid** — runs both embedding and BM25, then merges their ranked lists using Reciprocal
+- **Hybrid** -- runs both embedding and BM25, then merges their ranked lists using Reciprocal
   Rank Fusion (RRF). RRF combines rankings by giving each document a score of 1/(rank+60) and
-  summing across lists — so a document ranked 1st in both gets a much higher score than one
+  summing across lists -- so a document ranked 1st in both gets a much higher score than one
   ranked 1st in only one. Hybrid typically outperforms either method alone on diverse query
   types.
 
-- **Reranked** — starts with hybrid candidates, then runs a cross-encoder model
+- **Reranked** -- starts with hybrid candidates, then runs a cross-encoder model
   (`cross-encoder/ms-marco-MiniLM-L-6-v2`) that scores each query-document pair directly.
   Unlike the embedding model, which encodes query and document separately, a cross-encoder
-  reads them together and is more accurate — but too slow to rank millions of documents, so
+  reads them together and is more accurate -- but too slow to rank millions of documents, so
   it is only applied to the top candidates from hybrid.
 
-## Summary: embedding-only (hit rate at multiple K values)
+## Embedding-only summary (chunks and efficiency)
+
+This table isolates embedding mode to show how chunk counts and average word lengths vary across tools. Tools with fewer, more focused chunks achieve comparable retrieval with a more compact index.
 
 | Tool | Hit@1 | Hit@3 | Hit@5 | Hit@10 | Hit@20 | MRR | Chunks | Avg words |
 |---|---|---|---|---|---|---|---|---|
@@ -129,7 +116,7 @@ The four modes tested represent a spectrum from simple to sophisticated:
 | crawl4ai | 38% (35/92) ±10% | 43% (40/92) ±10% | 47% (43/92) ±10% | 51% (47/92) ±10% | 51% (47/92) ±10% | 0.417 | 3539 | 126 |
 | crawl4ai-raw | 38% (35/92) ±10% | 43% (40/92) ±10% | 47% (43/92) ±10% | 51% (47/92) ±10% | 51% (47/92) ±10% | 0.417 | 3540 | 126 |
 
-> Sorted by MRR descending. markcrawl achieves comparable Hit@1 to the top tools with 40–50% fewer chunks, meaning its retrieval index is more compact.
+> Sorted by MRR descending. markcrawl achieves comparable Hit@1 to the top tools with 40-50% fewer chunks, meaning its retrieval index is more compact.
 
 ## quotes-toscrape
 
