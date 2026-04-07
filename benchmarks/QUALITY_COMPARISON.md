@@ -1,5 +1,7 @@
 # Extraction Quality Comparison
 
+<!-- style: v2, 2026-04-07 -->
+
 markcrawl produces the cleanest crawler output tested -- 100% content signal with 4 words of preamble per page -- but trades 13% recall to get there (84% vs 97% for crawlee, colly+md, and playwright).
 
 ## What the metrics mean

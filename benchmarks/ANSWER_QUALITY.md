@@ -1,5 +1,7 @@
 # End-to-End RAG Answer Quality
 
+<!-- style: v2, 2026-04-07 -->
+
 Does cleaner crawler output produce better LLM answers?
 
 Yes — but modestly. Across 92 queries on 8 sites, markcrawl produces the

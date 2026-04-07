@@ -11,7 +11,28 @@ and cost at scale. Each benchmark script generates a corresponding `.md` report.
 
 ## Benchmark report style guide
 
+**Style guide version: v2 (2026-04-07)**
+
+Every benchmark report must include a style guide version comment on the line
+immediately after the title. Format: `<!-- style: v2, YYYY-MM-DD -->` where the
+date is when the report was last reviewed against this version of the guide.
+The lint script (`benchmarks/lint_reports.py`) validates this.
+
 Follow these rules when generating or regenerating any benchmark report.
+
+### Enforcing this style guide
+
+Run `python benchmarks/lint_reports.py` before committing any benchmark report
+changes. The linter checks: style version tag, one-line answer, cross-references,
+all-tool inclusion, bold markcrawl row, no emojis, and methodology link.
+
+When updating the style guide itself:
+1. Increment the version (e.g., `v2` to `v3`) and update the date in the
+   version line above.
+2. Update `STYLE_VERSION` in `benchmarks/lint_reports.py` to match.
+3. Run `python benchmarks/lint_reports.py --fix-tags` to stamp all reports
+   with the new version.
+4. Review each report against the new rules and update as needed.
 
 ### Maintaining this style guide
 

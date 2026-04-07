@@ -1,5 +1,7 @@
 # Retrieval Quality Comparison
 
+<!-- style: v2, 2026-04-07 -->
+
 Does each tool's output produce embeddings that answer real questions?
 This benchmark chunks each tool's crawl output, embeds it with
 `text-embedding-3-small`, and measures retrieval across four modes:

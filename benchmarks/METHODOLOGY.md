@@ -1,5 +1,7 @@
 # Head-to-Head Benchmark Plan: MarkCrawl vs Other Crawlers
 
+<!-- style: v2, 2026-04-07 -->
+
 ## Goal
 
 Compare MarkCrawl against Crawl4AI, FireCrawl (self-hosted), and Scrapy on the same sites with equivalent settings, measuring what matters for the "crawl a documentation site for RAG" use case.

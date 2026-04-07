@@ -1,5 +1,7 @@
 # Speed Comparison
 
+<!-- style: v2, 2026-04-07 -->
+
 Generated: 2026-04-06 18:47:09 UTC
 
 **colly+md is the fastest crawler at 5.8 pages/sec. markcrawl ranks third at 3.0 pages/sec — slower than the two plain-HTTP tools, but faster than every Playwright-based alternative and the only tool that fetched all 210 pages without missing any.**
@@ -183,7 +185,7 @@ These benchmarks fetch pages from live public websites. Network conditions, serv
 Settings:
 - **Delay:** 0 (no politeness throttle)
 - **Concurrency:** 1 (one in-flight request at a time for HTTP tools; one browser page at a time for Playwright tools)
-- **Iterations:** 3 per tool per site (reporting median + std dev)
+- **Iterations:** 2 per tool per site (reporting median + std dev)
 - **Warm-up:** 1 throwaway run per site before timing
 - **Output:** Markdown files + JSONL index
 - **URL list:** Identical for all tools (discovered in Phase 1)

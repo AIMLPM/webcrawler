@@ -1,5 +1,7 @@
 # Retrieval Quality Comparison
 
+<!-- style: v2, 2026-04-07 -->
+
 Does crawler choice affect retrieval quality? Mostly no. All seven tools land between 42–43% at Hit@1 and converge to 51% at Hit@20 — differences that fall within confidence intervals. Your retrieval mode (embedding vs. BM25 vs. hybrid vs. reranked) matters far more than which crawler fetched the pages.
 
 ## How to read this report

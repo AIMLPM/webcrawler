@@ -1,6 +1,8 @@
 # RAG Cost Analysis at Scale
 
-Switching to markcrawl saves 17-40% on RAG infrastructure costs depending on which tool you're replacing, driven by producing fewer chunks per page (less storage) and cleaner chunks (fewer tokens per query).
+<!-- style: v2, 2026-04-07 -->
+
+Switching to markcrawl saves 17-40% on RAG infrastructure costs depending on which tool you're replacing, driven by producing fewer chunks per page (less storage) and cleaner chunks (fewer tokens per query). Solo developers with an AI subscription can run the entire pipeline at $0 marginal cost for up to ~2,250 pages (see [Solo Developer Costs](#solo-developer-costs)).
 
 ## What drives RAG costs
 
@@ -247,6 +249,117 @@ At 1M pages:
 ```
 
 This effect is not captured in our benchmark (which tests ~150 pages) but would widen quality gaps at production scale.
+
+---
+
+## Solo Developer Costs
+
+Most solo developers don't pay per-token — they have a flat-rate AI subscription. With the right stack, a solo dev can run a full RAG pipeline at **$0 marginal cost** for up to ~9,250 pages. The only variable cost is vector database hosting, and free tiers are generous enough to cover most documentation sites.
+
+The [API-priced scenarios above](#named-scenarios) model enterprise workloads. This section covers a different reality: a developer with Claude Code Max ($200/mo), ChatGPT Plus ($20/mo), or similar, who wants to build a RAG app without additional API bills. The crawler choice still matters — markcrawl's lower chunk count means more pages fit in the same free-tier storage.
+
+### What changes with a subscription
+
+| Cost item | API pricing | With subscription | How |
+|---|---|---|---|
+| Embeddings | ~$0.50-0.75/run | **$0** | Use local [`sentence-transformers`](https://huggingface.co/docs/sentence-transformers) instead of OpenAI API |
+| LLM answer scoring | ~$0.15-0.25/run | **$0** | Route through Claude Code / ChatGPT |
+| LLM queries at runtime | $3.00/1M input tokens | **$0** | Within subscription limits |
+| Vector database | $0-25/mo | **$0-25/mo** | Free tiers cover most solo projects |
+
+The only hard cost is vector database hosting — and free tiers cover a surprising number of pages.
+
+### How many pages fit in free tiers
+
+Storage per chunk uses this formula:
+
+```
+raw_bytes    = dimensions × 4 bytes            (1536-dim → 6,144 bytes)
+metadata     = ~2 KB per chunk                  (text, source URL, chunk index)
+with_indexes = raw_bytes × ~2                   (pgvector HNSW index overhead)
+total        = (6,144 + 2,048) × 2 ≈ 16 KB     per chunk with indexes
+
+max_chunks   = free_storage_bytes / 16,384
+max_pages    = max_chunks / chunks_per_page     (14.2 for markcrawl)
+```
+
+Using markcrawl (14.2 chunks/page, the most efficient). Sorted by max pages descending:
+
+| Service | Type | Free storage | Max chunks | Max pages | Notes |
+|---|---|---|---|---|---|
+| **Zilliz** | Vector-only | 5 GB | ~327,000 | **~23,100** | Most free storage |
+| **Qdrant** | Vector-only | 4 GB disk | ~262,000 | **~18,500** | 0.5 vCPU, 1 GB RAM |
+| **Pinecone** | Vector-only | 2 GB | ~131,000 | **~9,250** | 1M reads/mo included |
+| **Supabase** | DB + vectors | 500 MB | ~32,000 | **~2,250** | Pauses after 7 days inactivity |
+| **Neon** | DB + vectors | 500 MB | ~32,000 | **~2,300** | No pause, 100 compute-hrs/mo |
+| **Railway** | DB + vectors | $5/mo credits | ~2,000+ | **~2,000** | Typical actual cost ~$0.55/mo |
+
+Crawler choice matters here: a noisier tool like crawlee (29.5 chunks/page) cuts these numbers roughly in half — ~1,085 pages on Supabase Free instead of ~2,250. This is the same chunk efficiency gap from the [main comparison](#all-tools-compared), but now it translates directly into free-tier capacity.
+
+For context, 2,250 pages covers most documentation sites entirely (FastAPI docs: 275 pages, Python stdlib: 500 pages, Stripe docs: 500 pages). A solo dev building a RAG app over 1-3 documentation sites fits comfortably in a free tier.
+
+### Database + vector storage (full-stack)
+
+These services give you a SQL database, auth, storage, AND vector search — everything you need for a RAG app backend. No separate vector service needed. Sorted by cheapest paid tier ascending:
+
+| Service | Free tier | Cheapest paid | Per-query cost? | Best for |
+|---|---|---|---|---|
+| **[Railway](https://railway.app/pricing)** | $5/mo in credits | ~$0.55/mo actual | No | Simple deploy-anything platform |
+| **[Neon](https://neon.tech/pricing)** | 500 MB, no pause | Usage-based (~$1-5/mo) | No | Serverless Postgres, DB branching for dev/staging |
+| **[PlanetScale](https://planetscale.com/pricing)** | Dev tier | $5/mo | Yes ($1/B reads) | MySQL-native teams, native vector columns |
+| **[CockroachDB](https://www.cockroachlabs.com/pricing/)** | $15/mo in credits | Usage-based | Yes (request units) | Multi-region, distributed SQL |
+| **[Supabase](https://supabase.com/pricing)** | 500 MB, pauses after 7d | $25/mo (8 GB, ~37K pages) | No | Full-stack apps (auth, storage, realtime, edge functions) |
+
+### Vector-only services (embedding storage + search)
+
+These only store and query embeddings — no SQL, no auth, no file storage. Use these when you already have a separate database and just need fast vector search. Sorted by cheapest paid tier ascending:
+
+| Service | Free tier | Cheapest paid | Per-query cost? | Best for |
+|---|---|---|---|---|
+| **[Weaviate](https://weaviate.io/pricing)** | 14-day trial only | $45/mo | Indirect | GraphQL API, module ecosystem |
+| **[Pinecone](https://www.pinecone.io/pricing/)** | 2 GB, 1M reads/mo | $50/mo | Yes ($16/M reads) | Simplest API, widest RAG adoption |
+| **[Turbopuffer](https://turbopuffer.com/pricing)** | None | $64/mo | Yes (~$4/M queries) | Extreme scale (used by Cursor for 100B+ vectors) |
+| **[Qdrant](https://qdrant.tech/pricing/)** | 0.5 vCPU, 4 GB disk | ~$150/mo | No | Self-host friendly, no per-query fees |
+| **[Chroma](https://www.trychroma.com/pricing)** | $5 in credits | $250/mo | Yes ($0.0075/TiB queried) | Python-native, local-first development |
+| **[Zilliz](https://zilliz.com/pricing)** | 5 GB | Serverless ($4/M compute units) | Yes | Most free storage, Milvus ecosystem |
+
+### Solo dev named scenarios
+
+Three scenarios matching different project sizes. The key insight: for most solo projects, the entire RAG pipeline is free beyond your existing AI subscription. The breakpoint is vector DB storage, and crawler efficiency determines where you hit it.
+
+**Scenario: Side project (1 documentation site, <500 pages)**
+
+| Item | Cost |
+|---|---|
+| Crawler | $0 (markcrawl, open source) |
+| Embeddings | $0 (local sentence-transformers) |
+| Vector DB | $0 (Supabase Free or Neon Free) |
+| LLM queries | $0 (within Claude Code / ChatGPT subscription) |
+| **Total** | **$0/mo** (beyond your existing AI subscription) |
+
+**Scenario: Serious side project (3-5 sites, ~2,000 pages)**
+
+| Item | Cost |
+|---|---|
+| Crawler | $0 |
+| Embeddings | $0 (local) |
+| Vector DB | $0 (fits in Supabase Free / Neon Free / Pinecone Free) |
+| LLM queries | $0 (within subscription) |
+| **Total** | **$0/mo** |
+
+**Scenario: Production app (10+ sites, ~10,000 pages)**
+
+| Item | Cost |
+|---|---|
+| Crawler | $0 |
+| Embeddings | $0 (local) or ~$0.06 one-time (OpenAI API) |
+| Vector DB | $25/mo (Supabase Pro) or $0 (Pinecone Free covers ~9,250 pages) |
+| LLM queries | $0 (within subscription) or $10-30/mo (API at 1K queries/day) |
+| **Total** | **$0-25/mo** |
+
+**What this means in practice:** If you're already paying for an AI subscription and building a RAG app over documentation sites, you likely won't pay anything extra. The marginal cost of adding markcrawl to your stack is $0. The only question is whether your corpus fits in a free-tier vector DB — and with markcrawl's 14.2 chunks/page, you get roughly 2x the capacity of noisier crawlers like crawlee before you need to upgrade. See [ANSWER_QUALITY.md](ANSWER_QUALITY.md) for whether that quality difference matters for your use case.
+
+---
 
 ### What this analysis does NOT include
 
