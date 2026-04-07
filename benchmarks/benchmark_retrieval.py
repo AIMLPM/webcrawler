@@ -723,18 +723,30 @@ def _get_openai_client():
     return OpenAI(api_key=api_key)
 
 
-MAX_EMBED_TOKENS = 8000  # OpenAI limit is 8192; leave margin
+MAX_EMBED_TOKENS = 8100  # OpenAI limit is 8192; leave margin
 EMBED_TIMEOUT = 30  # seconds per API call
-EMBED_RETRIES = 3  # retry on timeout/network error
+EMBED_RETRIES = 3  # retry on timeout/network error (not retried for 400 errors)
 EMBED_CACHE_DIR = BENCH_DIR / "embed_cache"
+
+# Lazy-loaded tiktoken encoder
+_tokenizer = None
+
+
+def _get_tokenizer():
+    global _tokenizer
+    if _tokenizer is None:
+        import tiktoken
+        _tokenizer = tiktoken.encoding_for_model("text-embedding-3-small")
+    return _tokenizer
 
 
 def _truncate_to_tokens(text: str, max_tokens: int = MAX_EMBED_TOKENS) -> str:
-    """Rough truncation to stay under token limit (~4 chars per token)."""
-    max_chars = max_tokens * 4
-    if len(text) <= max_chars:
+    """Truncate text to stay under token limit using tiktoken for accuracy."""
+    enc = _get_tokenizer()
+    tokens = enc.encode(text)
+    if len(tokens) <= max_tokens:
         return text
-    return text[:max_chars]
+    return enc.decode(tokens[:max_tokens])
 
 
 def _embed_cache_key(texts: List[str], model: str) -> str:
@@ -779,13 +791,13 @@ def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[
         return cached
 
     all_vectors = []
-    batch_size = 100
+    batch_size = 20  # Conservative: 20 texts × up to ~8k tokens = ~160k (under 300k limit)
 
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
         batch = [_truncate_to_tokens(t) if t.strip() else " " for t in batch]
 
-        # Retry loop with timeout
+        # Retry loop with timeout (only retries transient errors)
         for attempt in range(EMBED_RETRIES):
             try:
                 response = client.embeddings.create(
@@ -794,6 +806,11 @@ def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[
                 all_vectors.extend([d.embedding for d in response.data])
                 break
             except Exception as exc:
+                # Don't retry client errors (400) — they'll always fail
+                exc_str = str(exc)
+                is_client_error = "400" in exc_str or "BadRequest" in type(exc).__name__
+                if is_client_error:
+                    raise
                 if attempt < EMBED_RETRIES - 1:
                     wait = 2 ** attempt * 2  # 2s, 4s, 8s
                     print(f"    Embed API error (attempt {attempt+1}/{EMBED_RETRIES}): {exc}")
@@ -1075,8 +1092,12 @@ def run_retrieval_test(
     tool: str,
     site: str,
     chunk_config_label: str = "",
+    query_vectors: Optional[List[List[float]]] = None,
 ) -> ToolSiteRetrievalResult:
-    """Embed chunks, run queries across all retrieval modes, compute hit rates + MRR."""
+    """Embed chunks, run queries across all retrieval modes, compute hit rates + MRR.
+
+    If query_vectors is provided, skip embedding queries (reuse from prior tool).
+    """
     # Embed all chunks
     chunk_texts = [c.text for c in chunks]
     print(f"    Embedding {len(chunk_texts)} chunks for {tool}/{site}...")
@@ -1093,12 +1114,18 @@ def run_retrieval_test(
     # Build BM25 index
     bm25_index = _build_bm25_index(chunk_texts)
 
+    # Embed queries if not provided (batch all at once)
+    if query_vectors is None:
+        query_texts = [q["query"] for q in queries]
+        print(f"    Embedding {len(query_texts)} queries...")
+        query_vectors = embed_texts(client, query_texts)
+
     # Run queries across all modes
     search_start = time.time()
     mode_query_results: Dict[str, List[QueryResult]] = {m: [] for m in RETRIEVAL_MODES}
 
-    for q in queries:
-        query_vec = embed_texts(client, [q["query"]])[0]
+    for qi, q in enumerate(queries):
+        query_vec = query_vectors[qi]
         url_match = q.get("url_match", "")
         page_match = q.get("page_match", "")
 
@@ -1611,6 +1638,19 @@ def _run_benchmark_for_config(
 
         site_results: Dict[str, ToolSiteRetrievalResult] = {}
 
+        # Pre-embed queries once per site (reused across all tools)
+        query_vectors: Optional[List[List[float]]] = None
+        needs_embedding = any(
+            _load_checkpoint(run_name, t, site, config_label) is None
+            and (run_dir / t / site / "pages.jsonl").is_file()
+            for t in available_tools
+        )
+        if needs_embedding:
+            query_texts = [q["query"] for q in queries]
+            if verbose:
+                print(f"\n  Embedding {len(query_texts)} queries for {site} (shared across tools)...")
+            query_vectors = embed_texts(client, query_texts)
+
         for tool in available_tools:
             # Check for checkpoint first
             cached_result = _load_checkpoint(run_name, tool, site, config_label)
@@ -1643,7 +1683,7 @@ def _run_benchmark_for_config(
                     print(f"    WARNING: no chunks created, skipping")
                 continue
 
-            result = run_retrieval_test(client, chunks, queries, tool, site, config_label)
+            result = run_retrieval_test(client, chunks, queries, tool, site, config_label, query_vectors)
             site_results[tool] = result
 
             # Checkpoint immediately after each tool/site completes
