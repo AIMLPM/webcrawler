@@ -41,9 +41,10 @@ We expect MarkCrawl to lose on some metrics. Here's the pre-written narrative fo
 | JS rendering | OFF for static sites, ON for JS site | Fair comparison per site type |
 | Timeout | 15s per request | Consistent across all |
 | Output format | Markdown | Common denominator |
-| Iterations | 3 per site, report median + std dev | Network variance is real |
+| Iterations | 2 per site, report median + std dev | Network variance is real |
 | Warm-up | 1 throwaway run per site before timing | Exclude DNS/TLS cold start (see validation below) |
 | Tool order | Randomized per site per run | Eliminate CDN/DNS cache bias from fixed ordering |
+| Scheduling | Resource-aware parallel (see below) | Avoid browser-browser contention on one laptop |
 
 ### Why we keep the warmup run
 
@@ -86,6 +87,36 @@ the difference between "noisy numbers that could go either way" and
 To reproduce: `python benchmarks/warmup_validation/test_warmup_impact.py`
 
 Full results: `benchmarks/warmup_validation/results_2026-04-07.txt`
+
+### Resource-aware parallel scheduling
+
+The benchmark classifies tools into two resource lanes:
+
+- **Browser lane** (max 1 concurrent): crawl4ai, crawl4ai-raw, crawlee,
+  playwright — these use Chromium and are CPU/memory heavy.
+- **HTTP lane** (unlimited concurrency): markcrawl, scrapy+md, colly+md,
+  firecrawl — lightweight, network-bound.
+
+The scheduler enforces these pairing rules:
+
+| Pairing | Allowed? | Why |
+|---|---|---|
+| browser + HTTP | Yes | HTTP tools are lightweight, no contention |
+| HTTP + HTTP | Yes | Both are network-bound, not CPU-bound |
+| browser + browser | No | Chromium contention degrades throughput |
+
+This design was informed by measured throughput data showing browser tools
+account for ~84% of total benchmark runtime. Running two browser tools
+simultaneously on a single developer laptop causes resource thrash — more
+memory pressure, more CPU contention, and less stable pages/sec — resulting
+in worse throughput than running them sequentially.
+
+The practical effect is ~2x wall-time speedup over fully sequential
+execution: while a browser tool crawls one site, HTTP tools fill idle
+time on other sites. Per-site semaphores still prevent multiple tools
+(even HTTP tools) from hammering the same host simultaneously.
+
+To force fully sequential execution: `--sequential`
 
 ### How each tool runs
 

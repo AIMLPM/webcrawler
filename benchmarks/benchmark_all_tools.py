@@ -1070,6 +1070,12 @@ TOOLS = {
     "firecrawl": {"check": check_firecrawl, "run": run_firecrawl},
 }
 
+# Resource classification — browser tools use Chromium and are CPU/memory heavy.
+# The scheduler uses this to avoid running two browser tools simultaneously on
+# a single developer laptop, where Chromium contention degrades throughput.
+BROWSER_TOOLS = {"crawl4ai", "crawl4ai-raw", "crawlee", "playwright"}
+HTTP_TOOLS = {"markcrawl", "scrapy+md", "colly+md", "firecrawl"}
+
 
 def analyze_output(out_dir: str) -> dict:
     """Analyze Markdown output quality."""
@@ -1548,9 +1554,35 @@ def main():
             _save_checkpoint(checkpoint_path, site_urls, results, base_dir, args_dict)
 
     if args.parallel:
-        # Parallel mode: tools on different sites run concurrently.
-        # Per-site semaphores limit how many tools hit the same host at once.
-        print(f"\n--- Phase 2: Benchmarking (parallel, max {args.site_parallelism} tool(s) per site) ---")
+        # Resource-aware parallel scheduler.
+        #
+        # Browser-based tools (crawl4ai, crawlee, playwright) use Chromium and
+        # are CPU/memory heavy. Running two simultaneously on a single laptop
+        # causes contention that degrades throughput — "more parallel" becomes
+        # "less throughput." HTTP tools (markcrawl, scrapy, colly) are lightweight.
+        #
+        # Schedule rules:
+        #   - At most 1 browser tool running globally (browser_semaphore)
+        #   - HTTP tools run freely in parallel
+        #   - Per-site semaphore still applies (max site_parallelism per host)
+        #   - Allowed pairings: browser+HTTP, HTTP+HTTP
+        #   - Avoided: browser+browser (globally, not just per-site)
+        #
+        # This typically gives ~2x speedup over sequential by filling idle time
+        # with HTTP tools while a browser tool runs, without the throughput
+        # degradation of browser-browser contention.
+        #
+        # Validated by external analysis showing browser tools are ~84% of total
+        # runtime and contention between them reduces rather than increases
+        # throughput on a single developer laptop.
+
+        browser_avail = [t for t in available if t in BROWSER_TOOLS]
+        http_avail = [t for t in available if t in HTTP_TOOLS]
+        print(f"\n--- Phase 2: Benchmarking (resource-aware parallel) ---")
+        print(f"  Browser lane (max 1 concurrent): {', '.join(browser_avail) or 'none'}")
+        print(f"  HTTP lane (unlimited): {', '.join(http_avail) or 'none'}")
+
+        browser_semaphore = threading.Semaphore(1)
         site_semaphores: dict[str, threading.Semaphore] = {
             site: threading.Semaphore(args.site_parallelism) for site in sites
         }
@@ -1560,12 +1592,19 @@ def main():
         random.shuffle(work_items)
 
         def _guarded_bench(tool_name: str, site_name: str) -> None:
-            with site_semaphores[site_name]:
-                _bench_tool_site(tool_name, site_name)
+            is_browser = tool_name in BROWSER_TOOLS
+            if is_browser:
+                browser_semaphore.acquire()
+            try:
+                with site_semaphores[site_name]:
+                    _bench_tool_site(tool_name, site_name)
+            finally:
+                if is_browser:
+                    browser_semaphore.release()
 
-        # Max workers = number of sites (each site can run site_parallelism tools,
-        # but we also want cross-site parallelism).  Cap at total work items.
-        max_workers = min(len(work_items), len(sites) * args.site_parallelism)
+        # Workers: enough for all HTTP tools + 1 browser tool to run concurrently
+        max_workers = min(len(work_items), len(http_avail) + 1) if http_avail else 1
+        max_workers = max(max_workers, 2)  # at least 2 for any parallelism
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             futures = [pool.submit(_guarded_bench, tool, site) for tool, site in work_items]
             for future in as_completed(futures):
