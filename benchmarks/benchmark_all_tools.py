@@ -475,7 +475,7 @@ def run_crawl4ai_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[
     return pages_saved
 
 
-def run_scrapy_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
+def run_scrapy_markdownify(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, concurrency: int = 1, **kwargs) -> int:
     """Run Scrapy with markdownify pipeline via subprocess."""
     os.makedirs(out_dir, exist_ok=True)
 
@@ -495,7 +495,7 @@ class BenchSpider(scrapy.Spider):
     custom_settings = {{
         "LOG_LEVEL": "ERROR",
         "ROBOTSTXT_OBEY": True,
-        "CONCURRENT_REQUESTS": 1,
+        "CONCURRENT_REQUESTS": {concurrency},
         "DOWNLOAD_DELAY": 0,
     }}
 
@@ -537,7 +537,7 @@ class BenchSpider(scrapy.Spider):
     custom_settings = {{
         "LOG_LEVEL": "ERROR",
         "ROBOTSTXT_OBEY": True,
-        "CONCURRENT_REQUESTS": 1,
+        "CONCURRENT_REQUESTS": {concurrency},
         "DOWNLOAD_DELAY": 0,
         "CLOSESPIDER_PAGECOUNT": {max_pages},
     }}
@@ -815,14 +815,13 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
 
+        context = browser.new_context()
+        page = context.new_page()
         for page_url in urls_to_fetch[:max_pages]:
             try:
-                context = browser.new_context()
-                page = context.new_page()
                 page.goto(page_url, timeout=15000, wait_until="domcontentloaded")
                 html = page.content()
                 title = page.title()
-                context.close()
             except Exception:
                 continue
 
@@ -844,6 +843,7 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
 
             pages_saved += 1
 
+        context.close()
         browser.close()
 
     return pages_saved
