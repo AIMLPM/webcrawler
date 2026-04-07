@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import os
-from collections import deque
 from typing import Deque, Dict, List, Optional, Set
 
 STATE_FILENAME = ".crawl_state.json"

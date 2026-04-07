@@ -7,8 +7,6 @@ from urllib import robotparser
 
 import requests
 
-from .urls import norm_url
-
 
 def parse_robots_txt(session: requests.Session, robots_url: str) -> Tuple[robotparser.RobotFileParser, str]:
     """Fetch and parse robots.txt, returning both the parser and raw text."""

@@ -23,7 +23,6 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-
 # ---------------------------------------------------------------------------
 # Known junk signals (template chrome, not content)
 # ---------------------------------------------------------------------------

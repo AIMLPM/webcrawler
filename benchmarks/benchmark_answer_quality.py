@@ -21,33 +21,31 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 BENCH_DIR = Path(__file__).parent
 REPO_ROOT = BENCH_DIR.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from markcrawl.chunker import chunk_markdown
-
 # Import shared config from retrieval benchmark
-from benchmarks.benchmark_retrieval import (
-    TEST_QUERIES,
-    TOOLS,
-    EMBEDDING_MODEL,
+from benchmarks.benchmark_retrieval import (  # noqa: E402
     CHUNK_MAX_WORDS,
     CHUNK_OVERLAP,
-    embed_texts,
-    cosine_similarity,
-    load_pages,
+    EMBEDDING_MODEL,
+    TEST_QUERIES,
+    TOOLS,
     _get_openai_client,
+    cosine_similarity,
+    embed_texts,
     find_latest_run,
+    load_pages,
 )
+from markcrawl.chunker import chunk_markdown  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Configuration

@@ -457,7 +457,7 @@ class TestAdaptiveThrottle:
         resp.elapsed = None
 
         engine._update_throttle(resp)
-        assert engine._backoff_count == 1
+        assert engine.throttle._backoff_count == 1
         # With base_delay=0 and doubling, active_delay should be > 0
         # (max(0, 0 * 2) = 0, but the backoff triggers)
 
@@ -469,8 +469,8 @@ class TestAdaptiveThrottle:
         resp_429.status_code = 429
         resp_429.elapsed = None
         engine._update_throttle(resp_429)
-        assert engine._backoff_count == 1
-        assert engine._active_delay >= engine._base_delay
+        assert engine.throttle._backoff_count == 1
+        assert engine.throttle.active_delay >= engine.throttle.base_delay
 
         # Simulate success
         resp_200 = MagicMock()
@@ -478,13 +478,13 @@ class TestAdaptiveThrottle:
         resp_200.ok = True
         resp_200.elapsed = None
         engine._update_throttle(resp_200)
-        assert engine._backoff_count == 0
-        assert engine._active_delay == engine._base_delay
+        assert engine.throttle._backoff_count == 0
+        assert engine.throttle.active_delay == engine.throttle.base_delay
 
     def test_update_throttle_none_response_safe(self):
         engine = self._make_engine(delay=0)
         engine._update_throttle(None)  # Should not raise
-        assert engine._active_delay == 0
+        assert engine.throttle.active_delay == 0
 
     def test_update_throttle_slow_server_adds_delay(self):
         engine = self._make_engine(delay=0)
@@ -500,7 +500,7 @@ class TestAdaptiveThrottle:
             engine._update_throttle(resp)
 
         # Average response time is 0.8s > 0.5s threshold → should add delay
-        assert engine._active_delay > 0
+        assert engine.throttle.active_delay > 0
 
     def test_update_throttle_fast_server_no_delay(self):
         engine = self._make_engine(delay=0)
@@ -515,7 +515,7 @@ class TestAdaptiveThrottle:
             resp.elapsed = mock_elapsed
             engine._update_throttle(resp)
 
-        assert engine._active_delay == 0
+        assert engine.throttle.active_delay == 0
 
     def test_update_throttle_mock_elapsed_no_crash(self):
         """MagicMock elapsed (no real total_seconds) should not crash."""

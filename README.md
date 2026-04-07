@@ -416,6 +416,7 @@ source .env
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── Dockerfile
+├── Makefile
 ├── glama.json
 ├── pyproject.toml
 ├── requirements.txt
@@ -428,20 +429,47 @@ source .env
 │   ├── ARCHITECTURE.md
 │   ├── LLM_PROMPT.md
 │   ├── MCP_SUBMISSION.md
+│   ├── RAG_RETRIEVAL_RESEARCH.md
 │   └── SUPABASE.md
 ├── tests/
-│   ├── test_core.py
+│   ├── __init__.py
 │   ├── test_chunker.py
+│   ├── test_core.py
 │   ├── test_extract.py
 │   └── test_upload.py
+├── benchmarks/
+│   ├── Dockerfile
+│   ├── run_benchmarks.sh
+│   ├── preflight.py
+│   ├── benchmark_all_tools.py
+│   ├── benchmark_markcrawl.py
+│   ├── benchmark_quality.py
+│   ├── benchmark_retrieval.py
+│   ├── benchmark_answer_quality.py
+│   ├── quality_scorer.py
+│   ├── crawlee_worker.py
+│   ├── lint_reports.py
+│   ├── METHODOLOGY.md
+│   ├── SPEED_COMPARISON.md
+│   ├── QUALITY_COMPARISON.md
+│   ├── RETRIEVAL_COMPARISON.md
+│   ├── ANSWER_QUALITY.md
+│   ├── COST_AT_SCALE.md
+│   └── MARKCRAWL_RESULTS.md
 └── markcrawl/
     ├── __init__.py
     ├── cli.py
-    ├── core.py
+    ├── core.py               # orchestrator
+    ├── fetch.py              # HTTP/Playwright fetching
+    ├── robots.py             # robots.txt parsing
+    ├── throttle.py           # adaptive rate limiting
+    ├── state.py              # crawl state & resume
+    ├── urls.py               # URL normalization & filtering
+    ├── extract_content.py    # HTML → Markdown conversion
     ├── chunker.py
     ├── exceptions.py
     ├── utils.py
-    ├── extract.py
+    ├── extract.py            # LLM field extraction
     ├── extract_cli.py
     ├── upload.py
     ├── upload_cli.py

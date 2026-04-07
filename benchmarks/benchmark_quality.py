@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -29,7 +28,7 @@ REPO_ROOT = BENCH_DIR.parent
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(BENCH_DIR))
 
-from quality_scorer import (
+from quality_scorer import (  # noqa: E402
     PageQuality,
     generate_quality_report,
     score_consensus,
