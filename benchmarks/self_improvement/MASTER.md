@@ -57,7 +57,8 @@ consume API credits:
 read-only inspection commands.
 
 If a review identifies stale data or a re-run is needed, **flag it as a
-finding** — do not execute the re-run.
+finding** using the format in [Pending Findings](#pending-findings) below.
+Do not execute the re-run.
 
 ## Safeguards (MUST READ)
 
@@ -123,3 +124,73 @@ for full persona definitions and per-spec checklists.
 | Embeddings | `embed_cache/` | SHA256 of text batch | `--fresh` |
 | Retrieval results | `retrieval_checkpoints/` | `run__tool__site__config` | `--fresh` or manual delete |
 | Answer quality | `answer_quality_checkpoints/` | `run__tool__site` | `--fresh` or manual delete |
+
+---
+
+## Pending Findings
+
+Actionable items identified during self-improvement reviews that cannot be
+resolved in a read-only review (e.g., benchmark re-runs needed, user
+decisions required). Remove items from this list when resolved — the
+resolution goes into a git commit.
+
+**Currently: no pending findings.**
+
+<!--
+When adding findings, replace the "no pending findings" line with entries
+using the format below. When the last finding is resolved, restore the
+"no pending findings" line.
+
+### PF-NNN: Short title
+
+- **Filed:** YYYY-MM-DD
+- **Found by:** Spec NN review
+- **Type:** BENCHMARK-RERUN / USER-DECISION / EXTERNAL-DEPENDENCY
+- **What:** Description of what was found
+- **Why it matters:** Impact if not addressed
+- **Action needed:** What the user should do
+- **Estimated effort:** e.g., "2-3 hours + ~$0.50 OpenAI costs"
+- **Resolved:** _(fill in when done: date, commit hash, or "won't fix" + reason)_
+-->
+
+### Reporting format: benchmark re-run needed
+
+When a review determines that benchmark data is stale and a re-run is
+required, use this specific format so the user can quickly assess scope
+and cost:
+
+```markdown
+### PF-NNN: Benchmark re-run needed — [short reason]
+
+- **Filed:** YYYY-MM-DD
+- **Found by:** Spec NN review
+- **Type:** BENCHMARK-RERUN
+- **Scripts to re-run:**
+  - [ ] `benchmark_all_tools.py` (~3-5 hours, no API cost)
+  - [ ] `benchmark_retrieval.py` (~1-2 hours, ~$2 OpenAI embedding cost)
+  - [ ] `benchmark_answer_quality.py` (~30 min, ~$0.50 OpenAI cost)
+  - [ ] `benchmark_quality.py` (~10 min, no API cost)
+  _(check only the scripts that need re-running)_
+- **What triggered this:** [e.g., "colly page counts changed after async
+  fix but retrieval checkpoints still reflect old 25-page data"]
+- **Stale files:** [list specific checkpoints or reports affected]
+- **Reports that will change:** [which .md files will be regenerated]
+- **Estimated effort:** [time + cost]
+- **Resolved:** _pending_
+```
+
+### Reporting format: user decision needed
+
+```markdown
+### PF-NNN: [decision title]
+
+- **Filed:** YYYY-MM-DD
+- **Found by:** Spec NN review
+- **Type:** USER-DECISION
+- **Question:** [the specific decision the user needs to make]
+- **Options:**
+  - A: [option and trade-off]
+  - B: [option and trade-off]
+- **Recommendation:** [which option and why, or "no recommendation"]
+- **Resolved:** _pending_
+```
