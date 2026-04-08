@@ -212,6 +212,21 @@ reports. When any benchmark report changes in a way that affects headline number
   completeness"). Don't only show metrics where markcrawl wins.
 - Link to each detailed report so readers can drill in.
 
+## Self-improvement safeguards
+
+Before removing, simplifying, or reorganizing any content in the README or
+benchmark reports, check `benchmarks/self_improvement/feedback_registry.md`.
+It records user and reviewer feedback that drove specific changes. If a
+registry entry protects the content you're about to modify, keep it unless
+you can document why the feedback no longer applies.
+
+After any self-improvement change, run:
+```bash
+python benchmarks/self_improvement/check_invariants.py
+```
+
+See `benchmarks/self_improvement/09_safeguards.md` for the full process.
+
 ## Git commits
 
 - Do NOT add `Co-Authored-By` lines to commit messages.

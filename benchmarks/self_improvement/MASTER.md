@@ -34,6 +34,20 @@ Each spec contains:
 | 06 | [Resilience & Restart](06_resilience_restart.md) | Checkpointing, crash recovery, data integrity | All benchmark scripts, checkpoint dirs |
 | 07 | [Report Data Quality](07_report_data_quality.md) | Fishy data detection, page count gaps, early warnings | All reports + source data + benchmark scripts |
 | 08 | [Persona Reviews](08_persona_reviews.md) | Persona definitions, assignments, review guides | README, all reports, all specs |
+| 09 | [Safeguards](09_safeguards.md) | Pre-commit validation, feedback preservation, invariant checks | All changes |
+| -- | [Feedback Registry](feedback_registry.md) | Protected content from user/reviewer feedback | All files |
+| -- | [check_invariants.py](check_invariants.py) | Automated invariant checker (run before committing) | README, reports, code |
+
+---
+
+## Safeguards (MUST READ)
+
+Every self-improvement change must pass through [Spec 09](09_safeguards.md):
+
+1. Check the [Feedback Registry](feedback_registry.md) — don't undo documented feedback
+2. Run `python benchmarks/self_improvement/check_invariants.py` — verify invariants
+3. Run `python benchmarks/lint_reports.py` — verify report style
+4. Review the diff — no unintended removals
 
 ---
 
