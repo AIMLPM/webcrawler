@@ -1,5 +1,5 @@
 # MarkCrawl by iD8 🕷️📝
-### Turn any website into clean Markdown for LLM pipelines — in one command.
+### Turn any webpage or website into clean Markdown for LLM pipelines — in one command.
 
 [![CI](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AIMLPM/markcrawl/actions/workflows/ci.yml)
 ![PyPI Version](https://img.shields.io/pypi/v/markcrawl)
@@ -11,7 +11,7 @@ pip install markcrawl
 markcrawl --base https://docs.example.com --out ./output --show-progress
 ```
 
-MarkCrawl is a crawl-and-structure engine. It crawls a website, strips navigation/scripts/boilerplate, and writes clean Markdown files with a structured JSONL index. Every page includes a citation with the access date. No API keys needed.
+MarkCrawl is a crawl-and-structure engine. It fetches one page or crawls an entire website, strips navigation/scripts/boilerplate, and writes clean Markdown files with a structured JSONL index. Every page includes a citation with the access date. No API keys needed.
 
 Everything else — LLM extraction, Supabase upload, MCP server, LangChain tools — is optional and installed separately.
 
@@ -41,6 +41,50 @@ Each line in `pages.jsonl`:
   "tool": "markcrawl",
   "text": "# httpbin.org\n\nA simple HTTP Request & Response Service..."
 }
+```
+
+## Common Recipes
+
+**Scrape a single page:**
+
+```bash
+markcrawl --base https://example.com/pricing --no-sitemap --max-pages 1
+```
+
+**Scrape a single JS-rendered page** (React, Vue, YouTube, etc.):
+
+```bash
+markcrawl --base "https://www.youtube.com/@channel/videos" \
+  --no-sitemap --max-pages 1 --render-js
+```
+
+**Crawl a docs site:**
+
+```bash
+markcrawl --base https://docs.example.com --max-pages 500 --concurrency 5 --show-progress
+```
+
+**Crawl a subsection without sitemap wandering:**
+
+Large sites (YouTube, GitHub, etc.) have sitemaps with thousands of unrelated pages.
+Use `--no-sitemap` to crawl only from your target URL:
+
+```bash
+markcrawl --base https://docs.example.com/guides \
+  --no-sitemap --max-pages 50 --show-progress
+```
+
+**Crawl and feed into a RAG pipeline:**
+
+```bash
+markcrawl --base https://docs.example.com --out ./docs --show-progress
+markcrawl-upload --jsonl ./docs/pages.jsonl --show-progress
+```
+
+**Resume an interrupted crawl:**
+
+```bash
+markcrawl --base https://docs.example.com --out ./docs --resume --show-progress
 ```
 
 <details>
@@ -177,7 +221,7 @@ Navigation, footer, cookie banners, and scripts are stripped. Only the main cont
 | `--timeout` | Per-request timeout in seconds (default: `15`) |
 | `--min-words` | Skip pages with fewer words (default: `20`) |
 | `--user-agent` | Override the default user agent |
-| `--use-sitemap` / `--no-sitemap` | Enable/disable sitemap discovery |
+| `--use-sitemap` / `--no-sitemap` | Enable/disable sitemap discovery. Use `--no-sitemap` when you want to scrape a specific page or subsection — without it, large sites (YouTube, GitHub) may discover thousands of unrelated pages via their sitemap |
 </details>
 
 ## Optional: structured extraction
@@ -333,7 +377,8 @@ Copy the system prompt from **[docs/LLM_PROMPT.md](docs/LLM_PROMPT.md)** into an
 - **Aggressive bot protection** (Cloudflare, Akamai) — no anti-bot evasion
 - **Millions of pages** — designed for hundreds to low thousands; use Scrapy for scale
 - **PDF content** — HTML only (PDF support is on the roadmap)
-- **JavaScript SPAs without `--render-js`** — add `markcrawl[js]` for React/Vue/Angular
+- **JavaScript SPAs** — add `markcrawl[js]` and use `--render-js` for React/Vue/Angular
+- **Infinite-scroll pages** — `--render-js` renders the initial page load but does not scroll; you'll get the first screenful of content (e.g., ~28 of 82 YouTube videos)
 
 ## Architecture
 
