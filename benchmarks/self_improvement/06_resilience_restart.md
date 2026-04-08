@@ -143,12 +143,17 @@ grep -n "signal\|SIGINT\|KeyboardInterrupt" benchmarks/benchmark_*.py
 
 ### 7. Restart correctness
 
-After an interrupted run, verify that resuming produces correct results:
+**Note:** These are code-review checks — verify by reading the source code,
+not by running the benchmark scripts. Do NOT execute benchmarks during a
+self-improvement review.
 
-- [ ] `benchmark_all_tools.py --resume` picks up where it left off
-- [ ] `benchmark_retrieval.py` skips completed tool-site pairs
-- [ ] `benchmark_answer_quality.py` skips completed tool-site pairs
-- [ ] No duplicate entries in output (e.g., same query answered twice)
+Verify (by reading the code) that resuming after an interrupt produces
+correct results:
+
+- [ ] `benchmark_all_tools.py --resume` logic picks up where it left off
+- [ ] `benchmark_retrieval.py` checkpoint logic skips completed tool-site pairs
+- [ ] `benchmark_answer_quality.py` checkpoint logic skips completed tool-site pairs
+- [ ] No duplicate entries possible in output (e.g., same query answered twice)
 
 ```bash
 # Check for duplicate checkpoint entries

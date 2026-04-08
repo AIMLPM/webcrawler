@@ -118,7 +118,9 @@ ls -lt benchmarks/answer_quality_checkpoints/ | head -10
 ```
 
 **Rule:** If any checkpoint file is older than its source `pages.jsonl`,
-delete it and re-run the corresponding benchmark script.
+flag it as a finding. Do NOT re-run benchmark scripts during a review —
+they take hours and consume API credits. Instead, note which checkpoints
+are stale so the user can schedule a re-run.
 
 ### 7. Generation timestamps
 

@@ -40,6 +40,25 @@ Each spec contains:
 
 ---
 
+## DO NOT run benchmarks
+
+Self-improvement reviews are **read-only analysis + documentation/code fixes**.
+Do NOT execute any of the following during a review — they take hours and
+consume API credits:
+
+- `benchmark_all_tools.py` (crawls 8 sites with 8 tools — several hours)
+- `benchmark_retrieval.py` (embeds all pages, runs 92 queries — 1-2 hours + OpenAI costs)
+- `benchmark_answer_quality.py` (LLM-judges 92 answers — 30+ min + OpenAI costs)
+- `benchmark_quality.py` (scores all pages — 10-30 min)
+- `benchmark_markcrawl.py` (live crawl — 10-30 min)
+
+**You MAY run:** `check_invariants.py`, `lint_reports.py`, `preflight.py`,
+`grep`, `cat`, `wc`, `python -c` one-liners for data validation, and any
+read-only inspection commands.
+
+If a review identifies stale data or a re-run is needed, **flag it as a
+finding** — do not execute the re-run.
+
 ## Safeguards (MUST READ)
 
 Every self-improvement change must pass through [Spec 09](09_safeguards.md):
