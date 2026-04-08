@@ -245,8 +245,10 @@ def check_firecrawl() -> bool:
         check_firecrawl.status = "FIRECRAWL_API_KEY not set"
         return False
 
-    # Self-hosted — we can't verify credits, just trust it
-    if api_url and not api_key:
+    # Self-hosted — we can't verify credits, just trust it.
+    # api_url takes priority: if set, treat as self-hosted even if api_key
+    # is also present (common when .env has a stale SaaS key).
+    if api_url:
         check_firecrawl.status = f"self-hosted ({api_url})"
         return True
 
@@ -813,10 +815,11 @@ def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
     api_url = os.environ.get("FIRECRAWL_API_URL")
 
     fc_kwargs = {}
-    if api_key:
-        fc_kwargs["api_key"] = api_key
     if api_url:
+        # Self-hosted: use URL, skip API key (self-hosted bypasses auth)
         fc_kwargs["api_url"] = api_url
+    elif api_key:
+        fc_kwargs["api_key"] = api_key
     app = FirecrawlApp(**fc_kwargs)
 
     os.makedirs(out_dir, exist_ok=True)
@@ -1383,6 +1386,9 @@ def _get_tool_version(tool_name: str) -> str:
 def main():
     parser = argparse.ArgumentParser(description="Head-to-head crawler comparison")
     parser.add_argument("--sites", default=None, help="Comma-separated sites to test")
+    parser.add_argument("--tools", default=None,
+                        help="Comma-separated tools to run (e.g. --tools firecrawl,markcrawl). "
+                             "Default: all available tools.")
     parser.add_argument("--iterations", type=int, default=2, help="Iterations per tool per site (default: 2)")
     parser.add_argument("--skip-warmup", action="store_true", help="Skip warm-up run")
     parser.add_argument("--concurrency", type=int, default=5, help="Concurrency level for tools that support it (default: 5)")
@@ -1420,11 +1426,23 @@ def main():
     else:
         sites = COMPARISON_SITES
 
+    # Filter tools if --tools was specified
+    tool_filter = None
+    if args.tools:
+        tool_filter = set(t.strip() for t in args.tools.split(","))
+        unknown = tool_filter - set(TOOLS.keys())
+        if unknown:
+            print(f"Unknown tool(s): {', '.join(unknown)}")
+            print(f"Available: {', '.join(TOOLS.keys())}")
+            sys.exit(1)
+
     # Check available tools
     available = []
     skipped = {}
     print("Checking tools...")
     for name, tool in TOOLS.items():
+        if tool_filter and name not in tool_filter:
+            continue
         check_fn = tool["check"]
         ok = check_fn()
         extra = ""

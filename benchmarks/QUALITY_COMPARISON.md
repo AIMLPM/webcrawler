@@ -34,7 +34,7 @@ chunk in the vector index, degrading retrieval for every query.
 | crawlee | 90% | 331 ⚠ | 1% | 4.9 | 100% | 98% |
 | colly+md | 90% | 309 ⚠ | 1% | 4.9 | 100% | 98% |
 | playwright | 90% | 329 ⚠ | 1% | 4.9 | 100% | 98% |
-| firecrawl | — | — | — | — | — | — |
+| firecrawl | 92% | 188 ⚠ | 0% | 3.4 | 29% | 33% |
 
 **[1]** Avg words per page before the first heading (nav chrome).
 
@@ -57,12 +57,12 @@ chunk in the vector index, degrading retrieval for every query.
 | crawlee | 292 | 3 | 2% | 2 | 2.7 | 0.0 | 100% | 100% |
 | colly+md | 292 | 3 | 2% | 2 | 2.7 | 0.0 | 100% | 100% |
 | playwright | 292 | 3 | 2% | 2 | 2.7 | 0.0 | 100% | 100% |
-| firecrawl | — | — | — | — | — | — | — | — |
+| firecrawl | 203 | 23 | 1% | 1 | 0.9 | 0.0 | 33% | 33% |
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 <details>
-<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/page/2</code></summary>
+<summary>Sample output — first 40 lines of <code>quotes.toscrape.com/tag/world/page/1</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -73,72 +73,48 @@ Nav boilerplate appears here before the real content starts.
 
 [Login](/login)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+### Viewing tag: [world](/tag/world/page/1/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
-
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”
-by J.K. Rowling
-[(about)](/author/J-K-Rowling)
-
-Tags:
-[courage](/tag/courage/page/1/)
-[friends](/tag/friends/page/1/)
-
-“If you can't explain it to a six year old, you don't understand it yourself.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[simplicity](/tag/simplicity/page/1/)
-[understand](/tag/understand/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”
-by Bob Marley
-[(about)](/author/Bob-Marley)
+## Top Ten tags
 
-Tags:
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.”
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
 ```
 
 **crawl4ai**
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
-Tags: [courage](https://quotes.toscrape.com/tag/courage/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/)
-“If you can't explain it to a six year old, you don't understand it yourself.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [simplicity](https://quotes.toscrape.com/tag/simplicity/page/1/) [understand](https://quotes.toscrape.com/tag/understand/page/1/)
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.” by Bob Marley [(about)](https://quotes.toscrape.com/author/Bob-Marley)
-Tags: [love](https://quotes.toscrape.com/tag/love/page/1/)
-“I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [fantasy](https://quotes.toscrape.com/tag/fantasy/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
-Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
-“It is not a lack of love, but a lack of friendship that makes unhappy marriages.” by Friedrich Nietzsche [(about)](https://quotes.toscrape.com/author/Friedrich-Nietzsche)
-Tags: [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [lack-of-friendship](https://quotes.toscrape.com/tag/lack-of-friendship/page/1/) [lack-of-love](https://quotes.toscrape.com/tag/lack-of-love/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [marriage](https://quotes.toscrape.com/tag/marriage/page/1/) [unhappy-marriage](https://quotes.toscrape.com/tag/unhappy-marriage/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-  * [← Previous](https://quotes.toscrape.com/page/1/)
-  * [Next →](https://quotes.toscrape.com/page/3/)
-
-
+### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -149,30 +125,9 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 ```
 #  [Quotes to Scrape](https://quotes.toscrape.com/)
 [Login](https://quotes.toscrape.com/login)
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.” by Marilyn Monroe [(about)](https://quotes.toscrape.com/author/Marilyn-Monroe)
-Tags: [friends](https://quotes.toscrape.com/tag/friends/page/1/) [heartbreak](https://quotes.toscrape.com/tag/heartbreak/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [sisters](https://quotes.toscrape.com/tag/sisters/page/1/)
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.” by J.K. Rowling [(about)](https://quotes.toscrape.com/author/J-K-Rowling)
-Tags: [courage](https://quotes.toscrape.com/tag/courage/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/)
-“If you can't explain it to a six year old, you don't understand it yourself.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
-Tags: [simplicity](https://quotes.toscrape.com/tag/simplicity/page/1/) [understand](https://quotes.toscrape.com/tag/understand/page/1/)
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.” by Bob Marley [(about)](https://quotes.toscrape.com/author/Bob-Marley)
-Tags: [love](https://quotes.toscrape.com/tag/love/page/1/)
-“I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.” by Dr. Seuss [(about)](https://quotes.toscrape.com/author/Dr-Seuss)
-Tags: [fantasy](https://quotes.toscrape.com/tag/fantasy/page/1/)
-“I may not have gone where I intended to go, but I think I have ended up where I needed to be.” by Douglas Adams [(about)](https://quotes.toscrape.com/author/Douglas-Adams)
-Tags: [life](https://quotes.toscrape.com/tag/life/page/1/) [navigation](https://quotes.toscrape.com/tag/navigation/page/1/)
-“The opposite of love is not hate, it's indifference. The opposite of art is not ugliness, it's indifference. The opposite of faith is not heresy, it's indifference. And the opposite of life is not death, it's indifference.” by Elie Wiesel [(about)](https://quotes.toscrape.com/author/Elie-Wiesel)
-Tags: [activism](https://quotes.toscrape.com/tag/activism/page/1/) [apathy](https://quotes.toscrape.com/tag/apathy/page/1/) [hate](https://quotes.toscrape.com/tag/hate/page/1/) [indifference](https://quotes.toscrape.com/tag/indifference/page/1/) [inspirational](https://quotes.toscrape.com/tag/inspirational/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [opposite](https://quotes.toscrape.com/tag/opposite/page/1/) [philosophy](https://quotes.toscrape.com/tag/philosophy/page/1/)
-“It is not a lack of love, but a lack of friendship that makes unhappy marriages.” by Friedrich Nietzsche [(about)](https://quotes.toscrape.com/author/Friedrich-Nietzsche)
-Tags: [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [lack-of-friendship](https://quotes.toscrape.com/tag/lack-of-friendship/page/1/) [lack-of-love](https://quotes.toscrape.com/tag/lack-of-love/page/1/) [love](https://quotes.toscrape.com/tag/love/page/1/) [marriage](https://quotes.toscrape.com/tag/marriage/page/1/) [unhappy-marriage](https://quotes.toscrape.com/tag/unhappy-marriage/page/1/)
-“Good friends, good books, and a sleepy conscience: this is the ideal life.” by Mark Twain [(about)](https://quotes.toscrape.com/author/Mark-Twain)
-Tags: [books](https://quotes.toscrape.com/tag/books/page/1/) [contentment](https://quotes.toscrape.com/tag/contentment/page/1/) [friends](https://quotes.toscrape.com/tag/friends/page/1/) [friendship](https://quotes.toscrape.com/tag/friendship/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/)
-“Life is what happens to us while we are making other plans.” by Allen Saunders [(about)](https://quotes.toscrape.com/author/Allen-Saunders)
-Tags: [fate](https://quotes.toscrape.com/tag/fate/page/1/) [life](https://quotes.toscrape.com/tag/life/page/1/) [misattributed-john-lennon](https://quotes.toscrape.com/tag/misattributed-john-lennon/page/1/) [planning](https://quotes.toscrape.com/tag/planning/page/1/) [plans](https://quotes.toscrape.com/tag/plans/page/1/)
-  * [← Previous](https://quotes.toscrape.com/page/1/)
-  * [Next →](https://quotes.toscrape.com/page/3/)
-
-
+### Viewing tag: [world](https://quotes.toscrape.com/tag/world/page/1/)
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](https://quotes.toscrape.com/author/Albert-Einstein)
+Tags: [change](https://quotes.toscrape.com/tag/change/page/1/) [deep-thoughts](https://quotes.toscrape.com/tag/deep-thoughts/page/1/) [thinking](https://quotes.toscrape.com/tag/thinking/page/1/) [world](https://quotes.toscrape.com/tag/world/page/1/)
 ## Top Ten tags
 [love](https://quotes.toscrape.com/tag/love/) [inspirational](https://quotes.toscrape.com/tag/inspirational/) [life](https://quotes.toscrape.com/tag/life/) [humor](https://quotes.toscrape.com/tag/humor/) [books](https://quotes.toscrape.com/tag/books/) [reading](https://quotes.toscrape.com/tag/reading/) [friendship](https://quotes.toscrape.com/tag/friendship/) [friends](https://quotes.toscrape.com/tag/friends/) [truth](https://quotes.toscrape.com/tag/truth/) [simile](https://quotes.toscrape.com/tag/simile/)
 Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
@@ -185,42 +140,41 @@ Made with ❤ by [Zyte](https://www.zyte.com)
 
 [Login](/login)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+### Viewing tag: [world](/tag/world/page/1/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
-
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”
-by J.K. Rowling
-[(about)](/author/J-K-Rowling)
-
-Tags:
-[courage](/tag/courage/page/1/)
-[friends](/tag/friends/page/1/)
-
-“If you can't explain it to a six year old, you don't understand it yourself.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[simplicity](/tag/simplicity/page/1/)
-[understand](/tag/understand/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”
-by Bob Marley
-[(about)](/author/Bob-Marley)
+## Top Ten tags
 
-Tags:
-[love](/tag/love/page/1/)
+[love](/tag/love/)
 
-“I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.”
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
+
+[simile](/tag/simile/)
+
+Quotes by: [GoodReads.com](https://www.goodreads.com/quotes)
 ```
 
 **crawlee**
@@ -233,37 +187,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+### Viewing tag: [world](/tag/world/page/1/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
-
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”
-by J.K. Rowling
-[(about)](/author/J-K-Rowling)
-
-Tags:
-[courage](/tag/courage/page/1/)
-[friends](/tag/friends/page/1/)
-
-“If you can't explain it to a six year old, you don't understand it yourself.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[simplicity](/tag/simplicity/page/1/)
-[understand](/tag/understand/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”
-by Bob Marley
-[(about)](/author/Bob-Marley)
+## Top Ten tags
+
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
 **colly+md**
@@ -276,37 +230,37 @@ Quotes to Scrape
 
 [Login](/login)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+### Viewing tag: [world](/tag/world/page/1/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
-
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”
-by J.K. Rowling
-[(about)](/author/J-K-Rowling)
-
-Tags:
-[courage](/tag/courage/page/1/)
-[friends](/tag/friends/page/1/)
-
-“If you can't explain it to a six year old, you don't understand it yourself.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[simplicity](/tag/simplicity/page/1/)
-[understand](/tag/understand/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”
-by Bob Marley
-[(about)](/author/Bob-Marley)
+## Top Ten tags
+
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
 **playwright**
@@ -319,40 +273,61 @@ Quotes to Scrape
 
 [Login](/login)
 
-“This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up. Girls will be your friends - they'll act like it anyway. But just remember, some come, some go. The ones that stay with you through everything - they're your true best friends. Don't let go of them. Also remember, sisters make the best friends in the world. As for lovers, well, they'll come and go too. And baby, I hate to say it, most of them - actually pretty much all of them are going to break your heart, but you can't give up because if you give up, you'll never find your soulmate. You'll never find that half who makes you whole and that goes for everything. Just because you fail once, doesn't mean you're gonna fail at everything. Keep trying, hold on, and always, always, always believe in yourself, because if you don't, then who will, sweetie? So keep your head high, keep your chin up, and most importantly, keep smiling, because life's a beautiful thing and there's so much to smile about.”
-by Marilyn Monroe
-[(about)](/author/Marilyn-Monroe)
+### Viewing tag: [world](/tag/world/page/1/)
 
-Tags:
-[friends](/tag/friends/page/1/)
-[heartbreak](/tag/heartbreak/page/1/)
-[inspirational](/tag/inspirational/page/1/)
-[life](/tag/life/page/1/)
-[love](/tag/love/page/1/)
-[sisters](/tag/sisters/page/1/)
-
-“It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.”
-by J.K. Rowling
-[(about)](/author/J-K-Rowling)
-
-Tags:
-[courage](/tag/courage/page/1/)
-[friends](/tag/friends/page/1/)
-
-“If you can't explain it to a six year old, you don't understand it yourself.”
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.”
 by Albert Einstein
 [(about)](/author/Albert-Einstein)
 
 Tags:
-[simplicity](/tag/simplicity/page/1/)
-[understand](/tag/understand/page/1/)
+[change](/tag/change/page/1/)
+[deep-thoughts](/tag/deep-thoughts/page/1/)
+[thinking](/tag/thinking/page/1/)
+[world](/tag/world/page/1/)
 
-“You may not be her first, her last, or her only. She loved before she may love again. But if she loves you now, what else matters? She's not perfect—you aren't either, and the two of you may never be perfect together but if she can make you laugh, cause you to think twice, and admit to being human and making mistakes, hold onto her and give her the most you can. She may not be thinking about you every second of the day, but she will give you a part of her that she knows you can break—her heart. So don't hurt her, don't change her, don't analyze and don't expect more than she can give. Smile when she makes you happy, let her know when she makes you mad, and miss her when she's not there.”
-by Bob Marley
-[(about)](/author/Bob-Marley)
+## Top Ten tags
+
+[love](/tag/love/)
+
+[inspirational](/tag/inspirational/)
+
+[life](/tag/life/)
+
+[humor](/tag/humor/)
+
+[books](/tag/books/)
+
+[reading](/tag/reading/)
+
+[friendship](/tag/friendship/)
+
+[friends](/tag/friends/)
+
+[truth](/tag/truth/)
 ```
 
-**firecrawl** — no output for this URL
+**firecrawl**
+```
+[Quotes to Scrape](http://quotes.toscrape.com/)
+
+================================================
+
+[Login](http://quotes.toscrape.com/login)
+
+### Viewing tag: [world](http://quotes.toscrape.com/tag/world/page/1/)
+
+“The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.” by Albert Einstein [(about)](http://quotes.toscrape.com/author/Albert-Einstein)
+
+Tags: [change](http://quotes.toscrape.com/tag/change/page/1/)
+ [deep-thoughts](http://quotes.toscrape.com/tag/deep-thoughts/page/1/)
+ [thinking](http://quotes.toscrape.com/tag/thinking/page/1/)
+ [world](http://quotes.toscrape.com/tag/world/page/1/)
+
+Top Ten tags
+------------
+
+[love](http://quotes.toscrape.com/tag/love/) [inspirational](http://quotes.toscrape.com/tag/inspirational/) [life](http://quotes.toscrape.com/tag/life/) [humor](http://quotes.toscrape.com/tag/humor/) [books](http://quotes.toscrape.com/tag/books/) [reading](http://quotes.toscrape.com/tag/reading/) [friendship](http://quotes.toscrape.com/tag/friendship/) [friends](http://quotes.toscrape.com/tag/friends/) [truth](http://quotes.toscrape.com/tag/truth/) [simile](http://quotes.toscrape.com/tag/simile/)
+```
 
 </details>
 
@@ -361,21 +336,30 @@ by Bob Marley
 
 | URL | markcrawl words / preamble [1] | crawl4ai words / preamble [1] | crawl4ai-raw words / preamble [1] | scrapy+md words / preamble [1] | crawlee words / preamble [1] | colly+md words / preamble [1] | playwright words / preamble [1] | firecrawl words / preamble [1] |
 |---|---|---|---|---|---|---|---|---|
-| quotes.toscrape.com | 271 / 0 | 282 / 0 | 282 / 0 | 282 / 0 | 285 / 3 | 285 / 3 | 285 / 3 | — |
+| quotes.toscrape.com | 271 / 0 | 282 / 0 | 282 / 0 | 282 / 0 | 285 / 3 | 285 / 3 | 285 / 3 | 271 / 271 |
+| quotes.toscrape.com/author/Albert-Einstein | — | — | — | — | — | — | — | 621 / 5 |
 | quotes.toscrape.com/author/Eleanor-Roosevelt | 242 / 0 | 250 / 0 | 250 / 0 | 250 / 0 | 253 / 3 | 253 / 3 | 253 / 3 | — |
-| quotes.toscrape.com/author/J-K-Rowling | 650 / 0 | 658 / 0 | 658 / 0 | 658 / 0 | 661 / 3 | 661 / 3 | 661 / 3 | — |
+| quotes.toscrape.com/author/J-K-Rowling | 650 / 0 | 658 / 0 | 658 / 0 | 658 / 0 | 661 / 3 | 661 / 3 | 661 / 3 | 650 / 5 |
 | quotes.toscrape.com/author/Jane-Austen | 333 / 0 | 341 / 0 | 341 / 0 | 341 / 0 | 344 / 3 | 344 / 3 | 344 / 3 | — |
+| quotes.toscrape.com/login | — | — | — | — | — | — | — | 7 / 7 |
 | quotes.toscrape.com/page/2 | 600 / 0 | 614 / 0 | 614 / 0 | 614 / 0 | 617 / 3 | 617 / 3 | 617 / 3 | — |
+| quotes.toscrape.com/tag/abilities/page/1 | — | — | — | — | — | — | — | 46 / 5 |
 | quotes.toscrape.com/tag/be-yourself/page/1 | 46 / 0 | 54 / 0 | 54 / 0 | 54 / 0 | 57 / 3 | 57 / 3 | 57 / 3 | — |
-| quotes.toscrape.com/tag/change/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | — |
-| quotes.toscrape.com/tag/deep-thoughts/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | — |
+| quotes.toscrape.com/tag/change/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | 53 / 5 |
+| quotes.toscrape.com/tag/choices/page/1 | — | — | — | — | — | — | — | 46 / 5 |
+| quotes.toscrape.com/tag/deep-thoughts/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | 53 / 5 |
 | quotes.toscrape.com/tag/friends | 305 / 0 | 313 / 0 | 313 / 0 | 313 / 0 | 316 / 3 | 316 / 3 | 316 / 3 | — |
 | quotes.toscrape.com/tag/humor | 284 / 0 | 295 / 0 | 295 / 0 | 295 / 0 | 298 / 3 | 298 / 3 | 298 / 3 | — |
+| quotes.toscrape.com/tag/inspirational/page/1 | — | — | — | — | — | — | — | 484 / 5 |
 | quotes.toscrape.com/tag/life | 498 / 0 | 509 / 0 | 509 / 0 | 509 / 0 | 512 / 3 | 512 / 3 | 512 / 3 | — |
+| quotes.toscrape.com/tag/life/page/1 | — | — | — | — | — | — | — | 498 / 5 |
+| quotes.toscrape.com/tag/live/page/1 | — | — | — | — | — | — | — | 59 / 5 |
 | quotes.toscrape.com/tag/love | 673 / 0 | 684 / 0 | 684 / 0 | 684 / 0 | 687 / 3 | 687 / 3 | 687 / 3 | — |
-| quotes.toscrape.com/tag/miracles/page/1 | 59 / 0 | 67 / 0 | 67 / 0 | 67 / 0 | 70 / 3 | 70 / 3 | 70 / 3 | — |
+| quotes.toscrape.com/tag/miracle/page/1 | — | — | — | — | — | — | — | 59 / 5 |
+| quotes.toscrape.com/tag/miracles/page/1 | 59 / 0 | 67 / 0 | 67 / 0 | 67 / 0 | 70 / 3 | 70 / 3 | 70 / 3 | 59 / 5 |
 | quotes.toscrape.com/tag/simile/page/1 | 76 / 0 | 84 / 0 | 84 / 0 | 84 / 0 | 87 / 3 | 87 / 3 | 87 / 3 | — |
-| quotes.toscrape.com/tag/world/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | — |
+| quotes.toscrape.com/tag/thinking/page/1 | — | — | — | — | — | — | — | 85 / 5 |
+| quotes.toscrape.com/tag/world/page/1 | 53 / 0 | 61 / 0 | 61 / 0 | 61 / 0 | 64 / 3 | 64 / 3 | 64 / 3 | 53 / 5 |
 
 </details>
 
@@ -383,22 +367,22 @@ by Bob Marley
 
 | Tool | Avg words | Preamble [1] | Repeat rate | Junk found | Headings | Code blocks | Precision | Recall |
 |---|---|---|---|---|---|---|---|---|
-| markcrawl | 291 | 8 | 0% | 0 | 1.7 | 0.0 | 100% | 99% |
+| markcrawl | 291 | 8 | 0% | 0 | 1.7 | 0.0 | 100% | 98% |
 | crawl4ai | 508 | 181 ⚠ | 1% | 0 | 11.1 | 0.0 | 100% | 99% |
 | crawl4ai-raw | 508 | 181 ⚠ | 1% | 0 | 11.1 | 0.0 | 100% | 99% |
-| scrapy+md | 395 | 103 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 99% |
-| crawlee | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 100% |
-| colly+md | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 100% |
-| playwright | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 100% |
-| firecrawl | — | — | — | — | — | — | — | — |
+| scrapy+md | 395 | 103 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 98% |
+| crawlee | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 98% |
+| colly+md | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 98% |
+| playwright | 403 | 111 ⚠ | 1% | 0 | 1.7 | 0.0 | 100% | 98% |
+| firecrawl | 328 | 328 ⚠ | 0% | 0 | 0.0 | 0.0 | 60% | 84% |
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 **Reading the numbers:**
-**markcrawl** produces the cleanest output with 8 words of preamble per page, while **crawl4ai** injects 181 words of nav chrome before content begins. The word count gap (291 vs 508 avg words) is largely explained by preamble: 181 words of nav chrome account for ~36% of crawl4ai's output on this site.
+**markcrawl** produces the cleanest output with 8 words of preamble per page, while **firecrawl** injects 328 words of nav chrome before content begins. The word count gap (291 vs 508 avg words) is largely explained by preamble: 181 words of nav chrome account for ~36% of crawl4ai's output on this site.
 
 <details>
-<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/health_47/index.html</code></summary>
+<summary>Sample output — first 40 lines of <code>books.toscrape.com/catalogue/category/books/self-help_41/index.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
@@ -407,42 +391,43 @@ Nav boilerplate appears here before the real content starts.
 ```
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Health
+* Self Help
 
-# Health
+# Self Help
 
-**4** results.
+**5** results.
 
 **Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
 
-1. ### [The Bulletproof Diet: Lose ...](../../../the-bulletproof-diet-lose-up-to-a-pound-a-day-reclaim-energy-and-focus-upgrade-your-life_931/index.html "The Bulletproof Diet: Lose up to a Pound a Day, Reclaim Energy and Focus, Upgrade Your Life")
+1. ### [Online Marketing for Busy ...](../../../online-marketing-for-busy-authors-a-step-by-step-guide_913/index.html "Online Marketing for Busy Authors: A Step-By-Step Guide")
 
-   £49.05
-
-   In stock
-
-   Add to basket
-2. ### [Eat Fat, Get Thin](../../../eat-fat-get-thin_688/index.html "Eat Fat, Get Thin")
-
-   £54.07
+   £46.35
 
    In stock
 
    Add to basket
-3. ### [10-Day Green Smoothie Cleanse: ...](../../../10-day-green-smoothie-cleanse-lose-up-to-15-pounds-in-10-days_581/index.html "10-Day Green Smoothie Cleanse: Lose Up to 15 Pounds in 10 Days!")
+2. ### [How to Be Miserable: ...](../../../how-to-be-miserable-40-strategies-you-already-use_897/index.html "How to Be Miserable: 40 Strategies You Already Use")
 
-   £49.71
-
-   In stock
-
-   Add to basket
-4. ### [The Art and Science ...](../../../the-art-and-science-of-low-carbohydrate-living_570/index.html "The Art and Science of Low Carbohydrate Living")
-
-   £52.98
+   £46.03
 
    In stock
 
    Add to basket
+3. ### [Overload: How to Unplug, ...](../../../overload-how-to-unplug-unwind-and-unleash-yourself-from-the-pressure-of-stress_725/index.html "Overload: How to Unplug, Unwind, and Unleash Yourself from the Pressure of Stress")
+
+   £52.15
+
+   In stock
+
+   Add to basket
+4. ### [You Are a Badass: ...](../../../you-are-a-badass-how-to-stop-doubting-your-greatness-and-start-living-an-awesome-life_508/index.html "You Are a Badass: How to Stop Doubting Your Greatness and Start Living an Awesome Life")
+
+   £12.08
+
+   In stock
+
+   Add to basket
+5. ### [How to Stop Worrying ...](../../../how-to-stop-worrying-and-start-living_431/index.html "How to Stop Worrying and Start Living")
 ```
 
 **crawl4ai**
@@ -450,7 +435,7 @@ Nav boilerplate appears here before the real content starts.
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * Health
+  * Self Help
 
 
   * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
@@ -494,7 +479,7 @@ Nav boilerplate appears here before the real content starts.
 [Books to Scrape](https://books.toscrape.com/index.html) We love being scraped!
   * [Home](https://books.toscrape.com/index.html)
   * [Books](https://books.toscrape.com/catalogue/category/books_1/index.html)
-  * Health
+  * Self Help
 
 
   * [ Books ](https://books.toscrape.com/catalogue/category/books_1/index.html)
@@ -539,7 +524,7 @@ Nav boilerplate appears here before the real content starts.
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Health
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -579,7 +564,7 @@ Nav boilerplate appears here before the real content starts.
 
 **crawlee**
 ```
-Health |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -589,7 +574,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Health
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -626,7 +611,7 @@ Books to Scrape - Sandbox
   
 
 
-Health |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -636,7 +621,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Health
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -667,7 +652,7 @@ Books to Scrape - Sandbox
 
 **playwright**
 ```
-Health |
+Self Help |
 Books to Scrape - Sandbox
 
 
@@ -677,7 +662,7 @@ Books to Scrape - Sandbox
 
 * [Home](../../../../index.html)
 * [Books](../../books_1/index.html)
-* Health
+* Self Help
 
 * [Books](../../books_1/index.html)
   + [Travel](../travel_2/index.html)
@@ -709,7 +694,49 @@ Books to Scrape - Sandbox
   + [Parenting](../parenting_28/index.html)
 ```
 
-**firecrawl** — no output for this URL
+**firecrawl**
+```
+*   [Home](http://books.toscrape.com/index.html)
+    
+*   [Books](http://books.toscrape.com/catalogue/category/books_1/index.html)
+    
+*   Self Help
+
+Self Help
+=========
+
+**5** results.
+
+**Warning!** This is a demo website for web scraping purposes. Prices and ratings here were randomly assigned and have no real meaning.
+
+1.  [![Online Marketing for Busy Authors: A Step-By-Step Guide](http://books.toscrape.com/media/cache/ea/9b/ea9b2cb8abbb317402e618445bade1e1.jpg)](http://books.toscrape.com/catalogue/online-marketing-for-busy-authors-a-step-by-step-guide_913/index.html)
+    
+    ### [Online Marketing for Busy ...](http://books.toscrape.com/catalogue/online-marketing-for-busy-authors-a-step-by-step-guide_913/index.html "Online Marketing for Busy Authors: A Step-By-Step Guide")
+    
+    £46.35
+    
+    In stock
+    
+    Add to basket
+    
+2.  [![How to Be Miserable: 40 Strategies You Already Use](http://books.toscrape.com/media/cache/da/8b/da8bc9b824dd3f446ef63e438ddbfc85.jpg)](http://books.toscrape.com/catalogue/how-to-be-miserable-40-strategies-you-already-use_897/index.html)
+    
+    ### [How to Be Miserable: ...](http://books.toscrape.com/catalogue/how-to-be-miserable-40-strategies-you-already-use_897/index.html "How to Be Miserable: 40 Strategies You Already Use")
+    
+    £46.03
+    
+    In stock
+    
+    Add to basket
+    
+3.  [![Overload: How to Unplug, Unwind, and Unleash Yourself from the Pressure of Stress](http://books.toscrape.com/media/cache/9c/da/9cda4893c7fce0c1c8eaa34fb092aa04.jpg)](http://books.toscrape.com/catalogue/overload-how-to-unplug-unwind-and-unleash-yourself-from-the-pressure-of-stress_725/index.html)
+    
+    ### [Overload: How to Unplug, ...](http://books.toscrape.com/catalogue/overload-how-to-unplug-unwind-and-unleash-yourself-from-the-pressure-of-stress_725/index.html "Overload: How to Unplug, Unwind, and Unleash Yourself from the Pressure of Stress")
+    
+    £52.15
+    
+    In stock
+```
 
 </details>
 
@@ -718,66 +745,76 @@ Books to Scrape - Sandbox
 
 | URL | markcrawl words / preamble [1] | crawl4ai words / preamble [1] | crawl4ai-raw words / preamble [1] | scrapy+md words / preamble [1] | crawlee words / preamble [1] | colly+md words / preamble [1] | playwright words / preamble [1] | firecrawl words / preamble [1] |
 |---|---|---|---|---|---|---|---|---|
-| books.toscrape.com | 397 / 5 | 702 / 232 | 702 / 232 | 531 / 130 | 539 / 138 | 539 / 138 | 539 / 138 | — |
-| books.toscrape.com/catalogue/a-light-in-the-attic_1000/ | 269 / 12 | 276 / 24 | 276 / 24 | 284 / 19 | 295 / 30 | 295 / 30 | 295 / 30 | — |
-| books.toscrape.com/catalogue/category/books/add-a-comme | 424 / 8 | 745 / 235 | 745 / 235 | 558 / 133 | 567 / 142 | 567 / 142 | 567 / 142 | — |
-| books.toscrape.com/catalogue/category/books/adult-ficti | 53 / 7 | 284 / 234 | 284 / 234 | 187 / 132 | 195 / 140 | 195 / 140 | 195 / 140 | — |
-| books.toscrape.com/catalogue/category/books/art_25/inde | 169 / 6 | 422 / 233 | 422 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
-| books.toscrape.com/catalogue/category/books/autobiograp | 169 / 6 | 412 / 233 | 412 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | — |
-| books.toscrape.com/catalogue/category/books/biography_3 | 145 / 6 | 410 / 233 | 410 / 233 | 279 / 131 | 286 / 138 | 286 / 138 | 286 / 138 | — |
-| books.toscrape.com/catalogue/category/books/childrens_1 | 366 / 6 | 642 / 233 | 642 / 233 | 500 / 131 | 507 / 138 | 507 / 138 | 507 / 138 | — |
-| books.toscrape.com/catalogue/category/books/christian-f | 140 / 7 | 388 / 234 | 388 / 234 | 274 / 132 | 282 / 140 | 282 / 140 | 282 / 140 | — |
-| books.toscrape.com/catalogue/category/books/christian_4 | 96 / 6 | 342 / 233 | 342 / 233 | 230 / 131 | 237 / 138 | 237 / 138 | 237 / 138 | — |
-| books.toscrape.com/catalogue/category/books/contemporar | 84 / 6 | 320 / 233 | 320 / 233 | 218 / 131 | 225 / 138 | 225 / 138 | 225 / 138 | — |
-| books.toscrape.com/catalogue/category/books/crime_51/in | 58 / 6 | 296 / 233 | 296 / 233 | 192 / 131 | 199 / 138 | 199 / 138 | 199 / 138 | — |
-| books.toscrape.com/catalogue/category/books/cultural_49 | 46 / 6 | 274 / 233 | 274 / 233 | 180 / 131 | 187 / 138 | 187 / 138 | 187 / 138 | — |
-| books.toscrape.com/catalogue/category/books/default_15/ | 439 / 6 | 777 / 233 | 777 / 233 | 573 / 131 | 580 / 138 | 580 / 138 | 580 / 138 | — |
-| books.toscrape.com/catalogue/category/books/erotica_50/ | 44 / 6 | 271 / 233 | 271 / 233 | 178 / 131 | 185 / 138 | 185 / 138 | 185 / 138 | — |
-| books.toscrape.com/catalogue/category/books/fantasy_19/ | 436 / 6 | 764 / 233 | 764 / 233 | 570 / 131 | 577 / 138 | 577 / 138 | 577 / 138 | — |
-| books.toscrape.com/catalogue/category/books/fiction_10/ | 365 / 6 | 636 / 233 | 636 / 233 | 499 / 131 | 506 / 138 | 506 / 138 | 506 / 138 | — |
-| books.toscrape.com/catalogue/category/books/food-and-dr | 548 / 8 | 978 / 235 | 978 / 235 | 682 / 133 | 691 / 142 | 691 / 142 | 691 / 142 | — |
-| books.toscrape.com/catalogue/category/books/health_47/i | 124 / 6 | 384 / 233 | 384 / 233 | 258 / 131 | 265 / 138 | 265 / 138 | 265 / 138 | — |
-| books.toscrape.com/catalogue/category/books/historical- | 391 / 7 | 681 / 234 | 681 / 234 | 525 / 132 | 533 / 140 | 533 / 140 | 533 / 140 | — |
-| books.toscrape.com/catalogue/category/books/history_32/ | 447 / 6 | 822 / 233 | 822 / 233 | 581 / 131 | 588 / 138 | 588 / 138 | 588 / 138 | — |
-| books.toscrape.com/catalogue/category/books/horror_31/i | 275 / 6 | 524 / 233 | 524 / 233 | 409 / 131 | 416 / 138 | 416 / 138 | 416 / 138 | — |
-| books.toscrape.com/catalogue/category/books/humor_30/in | 239 / 6 | 529 / 233 | 529 / 233 | 373 / 131 | 380 / 138 | 380 / 138 | 380 / 138 | — |
-| books.toscrape.com/catalogue/category/books/music_14/in | 304 / 6 | 616 / 233 | 616 / 233 | 438 / 131 | 445 / 138 | 445 / 138 | 445 / 138 | — |
-| books.toscrape.com/catalogue/category/books/mystery_3/i | 407 / 6 | 710 / 233 | 710 / 233 | 541 / 131 | 548 / 138 | 548 / 138 | 548 / 138 | — |
-| books.toscrape.com/catalogue/category/books/new-adult_2 | 130 / 7 | 370 / 234 | 370 / 234 | 264 / 132 | 272 / 140 | 272 / 140 | 272 / 140 | — |
-| books.toscrape.com/catalogue/category/books/nonfiction_ | 501 / 6 | 887 / 233 | 887 / 233 | 635 / 131 | 642 / 138 | 642 / 138 | 642 / 138 | — |
-| books.toscrape.com/catalogue/category/books/novels_46/i | 53 / 6 | 286 / 233 | 286 / 233 | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | — |
-| books.toscrape.com/catalogue/category/books/paranormal_ | 52 / 6 | 284 / 233 | 284 / 233 | 186 / 131 | 193 / 138 | 193 / 138 | 193 / 138 | — |
-| books.toscrape.com/catalogue/category/books/parenting_2 | 53 / 6 | 286 / 233 | 286 / 233 | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | — |
-| books.toscrape.com/catalogue/category/books/philosophy_ | 236 / 6 | 516 / 233 | 516 / 233 | 370 / 131 | 377 / 138 | 377 / 138 | 377 / 138 | — |
-| books.toscrape.com/catalogue/category/books/poetry_23/i | 355 / 6 | 642 / 233 | 642 / 233 | 489 / 131 | 496 / 138 | 496 / 138 | 496 / 138 | — |
-| books.toscrape.com/catalogue/category/books/politics_48 | 94 / 6 | 340 / 233 | 340 / 233 | 228 / 131 | 235 / 138 | 235 / 138 | 235 / 138 | — |
-| books.toscrape.com/catalogue/category/books/psychology_ | 184 / 6 | 460 / 233 | 460 / 233 | 318 / 131 | 325 / 138 | 325 / 138 | 325 / 138 | — |
-| books.toscrape.com/catalogue/category/books/religion_12 | 180 / 6 | 453 / 233 | 453 / 233 | 314 / 131 | 321 / 138 | 321 / 138 | 321 / 138 | — |
-| books.toscrape.com/catalogue/category/books/science-fic | 322 / 7 | 615 / 234 | 615 / 234 | 456 / 132 | 464 / 140 | 464 / 140 | 464 / 140 | — |
-| books.toscrape.com/catalogue/category/books/science_22/ | 350 / 6 | 690 / 233 | 690 / 233 | 484 / 131 | 491 / 138 | 491 / 138 | 491 / 138 | — |
-| books.toscrape.com/catalogue/category/books/self-help_4 | 152 / 7 | 422 / 234 | 422 / 234 | 286 / 132 | 294 / 140 | 294 / 140 | 294 / 140 | — |
-| books.toscrape.com/catalogue/category/books/short-stori | 46 / 7 | 273 / 234 | 273 / 234 | 180 / 132 | 188 / 140 | 188 / 140 | 188 / 140 | — |
-| books.toscrape.com/catalogue/category/books/spiritualit | 171 / 6 | 447 / 233 | 447 / 233 | 305 / 131 | 312 / 138 | 312 / 138 | 312 / 138 | — |
-| books.toscrape.com/catalogue/category/books/sports-and- | 137 / 8 | 391 / 235 | 391 / 235 | 271 / 133 | 280 / 142 | 280 / 142 | 280 / 142 | — |
-| books.toscrape.com/catalogue/category/books/travel_2/in | 258 / 6 | 550 / 233 | 550 / 233 | 392 / 131 | 399 / 138 | 399 / 138 | 399 / 138 | — |
-| books.toscrape.com/catalogue/category/books/womens-fict | 330 / 7 | 614 / 234 | 614 / 234 | 464 / 132 | 472 / 140 | 472 / 140 | 472 / 140 | — |
-| books.toscrape.com/catalogue/category/books/young-adult | 386 / 7 | 676 / 234 | 676 / 234 | 520 / 132 | 528 / 140 | 528 / 140 | 528 / 140 | — |
-| books.toscrape.com/catalogue/category/books_1/index.htm | 395 / 4 | 700 / 231 | 700 / 231 | 529 / 129 | 536 / 136 | 536 / 136 | 536 / 136 | — |
+| books.toscrape.com | 397 / 5 | 702 / 232 | 702 / 232 | 531 / 130 | 539 / 138 | 539 / 138 | 539 / 138 | 515 / 515 |
+| books.toscrape.com/catalogue/a-light-in-the-attic_1000/ | 269 / 12 | 276 / 24 | 276 / 24 | 284 / 19 | 295 / 30 | 295 / 30 | 295 / 30 | 276 / 276 |
+| books.toscrape.com/catalogue/category/books/academic_40 | — | — | — | — | — | — | — | 57 / 57 |
+| books.toscrape.com/catalogue/category/books/add-a-comme | 424 / 8 | 745 / 235 | 745 / 235 | 558 / 133 | 567 / 142 | 567 / 142 | 567 / 142 | 558 / 558 |
+| books.toscrape.com/catalogue/category/books/adult-ficti | 53 / 7 | 284 / 234 | 284 / 234 | 187 / 132 | 195 / 140 | 195 / 140 | 195 / 140 | 59 / 59 |
+| books.toscrape.com/catalogue/category/books/art_25/inde | 169 / 6 | 422 / 233 | 422 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | 211 / 211 |
+| books.toscrape.com/catalogue/category/books/autobiograp | 169 / 6 | 412 / 233 | 412 / 233 | 303 / 131 | 310 / 138 | 310 / 138 | 310 / 138 | 203 / 203 |
+| books.toscrape.com/catalogue/category/books/biography_3 | 145 / 6 | 410 / 233 | 410 / 233 | 279 / 131 | 286 / 138 | 286 / 138 | 286 / 138 | 193 / 193 |
+| books.toscrape.com/catalogue/category/books/business_35 | — | — | — | — | — | — | — | 409 / 409 |
+| books.toscrape.com/catalogue/category/books/childrens_1 | 366 / 6 | 642 / 233 | 642 / 233 | 500 / 131 | 507 / 138 | 507 / 138 | 507 / 138 | 455 / 455 |
+| books.toscrape.com/catalogue/category/books/christian-f | 140 / 7 | 388 / 234 | 388 / 234 | 274 / 132 | 282 / 140 | 282 / 140 | 282 / 140 | 173 / 173 |
+| books.toscrape.com/catalogue/category/books/christian_4 | 96 / 6 | 342 / 233 | 342 / 233 | 230 / 131 | 237 / 138 | 237 / 138 | 237 / 138 | 121 / 121 |
+| books.toscrape.com/catalogue/category/books/classics_6/ | — | — | — | — | — | — | — | 404 / 404 |
+| books.toscrape.com/catalogue/category/books/contemporar | 84 / 6 | 320 / 233 | 320 / 233 | 218 / 131 | 225 / 138 | 225 / 138 | 225 / 138 | 99 / 99 |
+| books.toscrape.com/catalogue/category/books/crime_51/in | 58 / 6 | 296 / 233 | 296 / 233 | 192 / 131 | 199 / 138 | 199 / 138 | 199 / 138 | 71 / 71 |
+| books.toscrape.com/catalogue/category/books/cultural_49 | 46 / 6 | 274 / 233 | 274 / 233 | 180 / 131 | 187 / 138 | 187 / 138 | 187 / 138 | 49 / 49 |
+| books.toscrape.com/catalogue/category/books/default_15/ | 439 / 6 | 777 / 233 | 777 / 233 | 573 / 131 | 580 / 138 | 580 / 138 | 580 / 138 | 590 / 590 |
+| books.toscrape.com/catalogue/category/books/erotica_50/ | 44 / 6 | 271 / 233 | 271 / 233 | 178 / 131 | 185 / 138 | 185 / 138 | 185 / 138 | 46 / 46 |
+| books.toscrape.com/catalogue/category/books/fantasy_19/ | 436 / 6 | 764 / 233 | 764 / 233 | 570 / 131 | 577 / 138 | 577 / 138 | 577 / 138 | 577 / 577 |
+| books.toscrape.com/catalogue/category/books/fiction_10/ | 365 / 6 | 636 / 233 | 636 / 233 | 499 / 131 | 506 / 138 | 506 / 138 | 506 / 138 | 449 / 449 |
+| books.toscrape.com/catalogue/category/books/food-and-dr | 548 / 8 | 978 / 235 | 978 / 235 | 682 / 133 | 691 / 142 | 691 / 142 | 691 / 142 | 791 / 791 |
+| books.toscrape.com/catalogue/category/books/health_47/i | 124 / 6 | 384 / 233 | 384 / 233 | 258 / 131 | 265 / 138 | 265 / 138 | 265 / 138 | 165 / 165 |
+| books.toscrape.com/catalogue/category/books/historical- | 391 / 7 | 681 / 234 | 681 / 234 | 525 / 132 | 533 / 140 | 533 / 140 | 533 / 140 | 494 / 494 |
+| books.toscrape.com/catalogue/category/books/historical_ | — | — | — | — | — | — | — | 92 / 92 |
+| books.toscrape.com/catalogue/category/books/history_32/ | 447 / 6 | 822 / 233 | 822 / 233 | 581 / 131 | 588 / 138 | 588 / 138 | 588 / 138 | 631 / 631 |
+| books.toscrape.com/catalogue/category/books/horror_31/i | 275 / 6 | 524 / 233 | 524 / 233 | 409 / 131 | 416 / 138 | 416 / 138 | 416 / 138 | 331 / 331 |
+| books.toscrape.com/catalogue/category/books/humor_30/in | 239 / 6 | 529 / 233 | 529 / 233 | 373 / 131 | 380 / 138 | 380 / 138 | 380 / 138 | 322 / 322 |
+| books.toscrape.com/catalogue/category/books/music_14/in | 304 / 6 | 616 / 233 | 616 / 233 | 438 / 131 | 445 / 138 | 445 / 138 | 445 / 138 | 415 / 415 |
+| books.toscrape.com/catalogue/category/books/mystery_3/i | 407 / 6 | 710 / 233 | 710 / 233 | 541 / 131 | 548 / 138 | 548 / 138 | 548 / 138 | 523 / 523 |
+| books.toscrape.com/catalogue/category/books/new-adult_2 | 130 / 7 | 370 / 234 | 370 / 234 | 264 / 132 | 272 / 140 | 272 / 140 | 272 / 140 | 155 / 155 |
+| books.toscrape.com/catalogue/category/books/nonfiction_ | 501 / 6 | 887 / 233 | 887 / 233 | 635 / 131 | 642 / 138 | 642 / 138 | 642 / 138 | 700 / 700 |
+| books.toscrape.com/catalogue/category/books/novels_46/i | 53 / 6 | 286 / 233 | 286 / 233 | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | 61 / 61 |
+| books.toscrape.com/catalogue/category/books/paranormal_ | 52 / 6 | 284 / 233 | 284 / 233 | 186 / 131 | 193 / 138 | 193 / 138 | 193 / 138 | 59 / 59 |
+| books.toscrape.com/catalogue/category/books/parenting_2 | 53 / 6 | 286 / 233 | 286 / 233 | 187 / 131 | 194 / 138 | 194 / 138 | 194 / 138 | 61 / 61 |
+| books.toscrape.com/catalogue/category/books/philosophy_ | 236 / 6 | 516 / 233 | 516 / 233 | 370 / 131 | 377 / 138 | 377 / 138 | 377 / 138 | 311 / 311 |
+| books.toscrape.com/catalogue/category/books/poetry_23/i | 355 / 6 | 642 / 233 | 642 / 233 | 489 / 131 | 496 / 138 | 496 / 138 | 496 / 138 | 453 / 453 |
+| books.toscrape.com/catalogue/category/books/politics_48 | 94 / 6 | 340 / 233 | 340 / 233 | 228 / 131 | 235 / 138 | 235 / 138 | 235 / 138 | 119 / 119 |
+| books.toscrape.com/catalogue/category/books/psychology_ | 184 / 6 | 460 / 233 | 460 / 233 | 318 / 131 | 325 / 138 | 325 / 138 | 325 / 138 | 247 / 247 |
+| books.toscrape.com/catalogue/category/books/religion_12 | 180 / 6 | 453 / 233 | 453 / 233 | 314 / 131 | 321 / 138 | 321 / 138 | 321 / 138 | 240 / 240 |
+| books.toscrape.com/catalogue/category/books/romance_8/i | — | — | — | — | — | — | — | 529 / 529 |
+| books.toscrape.com/catalogue/category/books/science-fic | 322 / 7 | 615 / 234 | 615 / 234 | 456 / 132 | 464 / 140 | 464 / 140 | 464 / 140 | 420 / 420 |
+| books.toscrape.com/catalogue/category/books/science_22/ | 350 / 6 | 690 / 233 | 690 / 233 | 484 / 131 | 491 / 138 | 491 / 138 | 491 / 138 | 491 / 491 |
+| books.toscrape.com/catalogue/category/books/self-help_4 | 152 / 7 | 422 / 234 | 422 / 234 | 286 / 132 | 294 / 140 | 294 / 140 | 294 / 140 | 205 / 205 |
+| books.toscrape.com/catalogue/category/books/sequential- | — | — | — | — | — | — | — | 587 / 587 |
+| books.toscrape.com/catalogue/category/books/short-stori | 46 / 7 | 273 / 234 | 273 / 234 | 180 / 132 | 188 / 140 | 188 / 140 | 188 / 140 | 48 / 48 |
+| books.toscrape.com/catalogue/category/books/spiritualit | 171 / 6 | 447 / 233 | 447 / 233 | 305 / 131 | 312 / 138 | 312 / 138 | 312 / 138 | 232 / 232 |
+| books.toscrape.com/catalogue/category/books/sports-and- | 137 / 8 | 391 / 235 | 391 / 235 | 271 / 133 | 280 / 142 | 280 / 142 | 280 / 142 | 174 / 174 |
+| books.toscrape.com/catalogue/category/books/suspense_44 | — | — | — | — | — | — | — | 59 / 59 |
+| books.toscrape.com/catalogue/category/books/thriller_37 | — | — | — | — | — | — | — | 260 / 260 |
+| books.toscrape.com/catalogue/category/books/travel_2/in | 258 / 6 | 550 / 233 | 550 / 233 | 392 / 131 | 399 / 138 | 399 / 138 | 399 / 138 | 345 / 345 |
+| books.toscrape.com/catalogue/category/books/womens-fict | 330 / 7 | 614 / 234 | 614 / 234 | 464 / 132 | 472 / 140 | 472 / 140 | 472 / 140 | 421 / 421 |
+| books.toscrape.com/catalogue/category/books/young-adult | 386 / 7 | 676 / 234 | 676 / 234 | 520 / 132 | 528 / 140 | 528 / 140 | 528 / 140 | 489 / 489 |
+| books.toscrape.com/catalogue/category/books_1/index.htm | 395 / 4 | 700 / 231 | 700 / 231 | 529 / 129 | 536 / 136 | 536 / 136 | 536 / 136 | 513 / 513 |
 | books.toscrape.com/catalogue/its-only-the-himalayas_981 | 448 / 11 | 480 / 22 | 480 / 22 | 463 / 18 | 473 / 28 | 473 / 28 | 473 / 28 | — |
 | books.toscrape.com/catalogue/libertarianism-for-beginne | 411 / 10 | 442 / 20 | 442 / 20 | 426 / 17 | 435 / 26 | 435 / 26 | 435 / 26 | — |
 | books.toscrape.com/catalogue/mesaerion-the-best-science | 500 / 15 | 530 / 29 | 530 / 29 | 515 / 22 | 528 / 35 | 528 / 35 | 528 / 35 | — |
 | books.toscrape.com/catalogue/olio_984/index.html | 462 / 8 | 491 / 16 | 491 / 16 | 477 / 15 | 484 / 22 | 484 / 22 | 484 / 22 | — |
 | books.toscrape.com/catalogue/our-band-could-be-your-lif | 388 / 20 | 419 / 40 | 419 / 40 | 403 / 27 | 422 / 46 | 422 / 46 | 422 / 46 | — |
 | books.toscrape.com/catalogue/page-2.html | 413 / 5 | 726 / 232 | 726 / 232 | 547 / 130 | 555 / 138 | 555 / 138 | 555 / 138 | — |
+| books.toscrape.com/catalogue/sapiens-a-brief-history-of | — | — | — | — | — | — | — | 489 / 489 |
 | books.toscrape.com/catalogue/set-me-free_988/index.html | 365 / 11 | 411 / 21 | 411 / 21 | 380 / 18 | 389 / 27 | 389 / 27 | 389 / 27 | — |
 | books.toscrape.com/catalogue/shakespeares-sonnets_989/i | 375 / 9 | 421 / 18 | 421 / 18 | 390 / 16 | 398 / 24 | 398 / 24 | 398 / 24 | — |
-| books.toscrape.com/catalogue/sharp-objects_997/index.ht | 420 / 9 | 427 / 18 | 427 / 18 | 435 / 16 | 443 / 24 | 443 / 24 | 443 / 24 | — |
-| books.toscrape.com/catalogue/soumission_998/index.html | 297 / 8 | 304 / 16 | 304 / 16 | 312 / 15 | 319 / 22 | 319 / 22 | 319 / 22 | — |
+| books.toscrape.com/catalogue/sharp-objects_997/index.ht | 420 / 9 | 427 / 18 | 427 / 18 | 435 / 16 | 443 / 24 | 443 / 24 | 443 / 24 | 433 / 433 |
+| books.toscrape.com/catalogue/soumission_998/index.html | 297 / 8 | 304 / 16 | 304 / 16 | 312 / 15 | 319 / 22 | 319 / 22 | 319 / 22 | 308 / 308 |
 | books.toscrape.com/catalogue/starving-hearts-triangular | 436 / 13 | 486 / 26 | 486 / 26 | 451 / 20 | 463 / 32 | 463 / 32 | 463 / 32 | — |
 | books.toscrape.com/catalogue/the-black-maria_991/index. | 696 / 10 | 742 / 20 | 742 / 20 | 711 / 17 | 720 / 26 | 720 / 26 | 720 / 26 | — |
-| books.toscrape.com/catalogue/the-coming-woman-a-novel-b | 789 / 22 | 818 / 44 | 818 / 44 | 804 / 29 | 825 / 50 | 825 / 50 | 825 / 50 | — |
-| books.toscrape.com/catalogue/the-requiem-red_995/index. | 350 / 11 | 362 / 21 | 362 / 21 | 365 / 18 | 374 / 27 | 374 / 27 | 374 / 27 | — |
-| books.toscrape.com/catalogue/tipping-the-velvet_999/ind | 290 / 11 | 298 / 21 | 298 / 21 | 305 / 18 | 314 / 27 | 314 / 27 | 314 / 27 | — |
+| books.toscrape.com/catalogue/the-coming-woman-a-novel-b | 789 / 22 | 818 / 44 | 818 / 44 | 804 / 29 | 825 / 50 | 825 / 50 | 825 / 50 | 830 / 830 |
+| books.toscrape.com/catalogue/the-dirty-little-secrets-o | — | — | — | — | — | — | — | 520 / 520 |
+| books.toscrape.com/catalogue/the-requiem-red_995/index. | 350 / 11 | 362 / 21 | 362 / 21 | 365 / 18 | 374 / 27 | 374 / 27 | 374 / 27 | 372 / 372 |
+| books.toscrape.com/catalogue/tipping-the-velvet_999/ind | 290 / 11 | 298 / 21 | 298 / 21 | 305 / 18 | 314 / 27 | 314 / 27 | 314 / 27 | 300 / 300 |
 
 </details>
 
@@ -789,10 +826,10 @@ Books to Scrape - Sandbox
 | crawl4ai | 2815 | 1312 ⚠ | 1% | 330 | 15.8 | 11.6 | 100% | 88% |
 | crawl4ai-raw | 2814 | 1311 ⚠ | 1% | 327 | 15.8 | 11.6 | 100% | 88% |
 | scrapy+md | 2158 | 668 ⚠ | 0% | 588 | 15.9 | 11.7 | 100% | 58% |
-| crawlee | 2462 | 905 ⚠ | 1% | 1128 | 15.8 | 11.6 | 100% | 97% |
+| crawlee | 2462 | 905 ⚠ | 1% | 1128 | 15.8 | 11.6 | 100% | 96% |
 | colly+md | 2480 | 888 ⚠ | 1% | 1135 | 15.9 | 11.7 | 100% | 98% |
 | playwright | 2468 | 900 ⚠ | 1% | 1135 | 15.8 | 11.7 | 100% | 97% |
-| firecrawl | — | — | — | — | — | — | — | — |
+| firecrawl | 1811 | 455 ⚠ | 0% | 206 | 10.1 | 0.0 | 21% | 16% |
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
@@ -800,27 +837,58 @@ Books to Scrape - Sandbox
 **markcrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai** injects 1312 words of nav chrome before content begins. The word count gap (1475 vs 2815 avg words) is largely explained by preamble: 1312 words of nav chrome account for ~47% of crawl4ai's output on this site. markcrawl's lower recall (58% vs 98%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/how-to/testing-database</code></summary>
+<summary>Sample output — first 40 lines of <code>fastapi.tiangolo.com/advanced/json-base64-bytes</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# Testing a Database[¶](#testing-a-database "Permanent link")
+# JSON with Bytes as Base64[¶](#json-with-bytes-as-base64 "Permanent link")
 
-You can study about databases, SQL, and SQLModel in the [SQLModel docs](https://sqlmodel.tiangolo.com/). 🤓
+If your app needs to receive and send JSON data, but you need to include binary data in it, you can encode it as base64.
 
-There's a mini [tutorial on using SQLModel with FastAPI](https://sqlmodel.tiangolo.com/tutorial/fastapi/). ✨
+## Base64 vs Files[¶](#base64-vs-files "Permanent link")
 
-That tutorial includes a section about [testing SQL databases](https://sqlmodel.tiangolo.com/tutorial/fastapi/tests/). 😎
+Consider first if you can use [Request Files](../../tutorial/request-files/) for uploading binary data and [Custom Response - FileResponse](../custom-response/#fileresponse--fileresponse-) for sending binary data, instead of encoding it in JSON.
 
-Back to top
+JSON can only contain UTF-8 encoded strings, so it can't contain raw bytes.
+
+Base64 can encode binary data in strings, but to do it, it needs to use more characters than the original binary data, so it would normally be less efficient than regular files.
+
+Use base64 only if you definitely need to include binary data in JSON, and you can't use files for that.
+
+## Pydantic `bytes`[¶](#pydantic-bytes "Permanent link")
+
+You can declare a Pydantic model with `bytes` fields, and then use `val_json_bytes` in the model config to tell it to use base64 to *validate* input JSON data, as part of that validation it will decode the base64 string into bytes.
+
+Python 3.10+
+
+```False
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+
+class DataInput(BaseModel):
+    description: str
+    data: bytes
+
+    model_config = {"val_json_bytes": "base64"}
+
+# Code here omitted 👈
+
+app = FastAPI()
+
+
+@app.post("/data")
+def post_data(body: DataInput):
+    content = body.data.decode("utf-8")
+    return {"description": body.description, "content": content}
 ```
 
 **crawl4ai**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/how-to/testing-database/#testing-a-database)
+[ Skip to content ](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -838,7 +906,7 @@ Back to top
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Testing a Database 
+JSON with Bytes as Base64 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -853,7 +921,7 @@ Testing a Database
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/how-to/testing-database/?q= "Share")
+[ ](https://fastapi.tiangolo.com/advanced/json-base64-bytes/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -863,7 +931,7 @@ Initializing search
 
 **crawl4ai-raw**
 ```
-[ Skip to content ](https://fastapi.tiangolo.com/how-to/testing-database/#testing-a-database)
+[ Skip to content ](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
 [ **FastAPI Cloud** waiting list 🚀 ](https://fastapicloud.com)
 [ Follow **@fastapi** on **X (Twitter)** to stay updated ](https://x.com/fastapi)
 [ Follow **FastAPI** on **LinkedIn** to stay updated ](https://www.linkedin.com/company/fastapi)
@@ -881,7 +949,7 @@ Initializing search
 [ sponsor ![](https://fastapi.tiangolo.com/img/sponsors/greptile-banner.png) ](https://www.greptile.com/?utm_source=fastapi&utm_medium=sponsorship&utm_campaign=fastapi_sponsor_page "Greptile: The AI Code Reviewer")
 [ ![logo](https://fastapi.tiangolo.com/img/icon-white.svg) ](https://fastapi.tiangolo.com/ "FastAPI")
 FastAPI 
-Testing a Database 
+JSON with Bytes as Base64 
   * [ en - English ](https://fastapi.tiangolo.com/)
   * [ de - Deutsch ](https://fastapi.tiangolo.com/de/)
   * [ es - español ](https://fastapi.tiangolo.com/es/)
@@ -896,7 +964,7 @@ Testing a Database
   * [ zh-hant - 繁體中文 ](https://fastapi.tiangolo.com/zh-hant/)
 
 
-[ ](https://fastapi.tiangolo.com/how-to/testing-database/?q= "Share")
+[ ](https://fastapi.tiangolo.com/advanced/json-base64-bytes/?q= "Share")
 Initializing search 
 [ fastapi/fastapi 
   * 0.135.3
@@ -950,7 +1018,7 @@ FastAPI
 
 **crawlee**
 ```
-Testing a Database - FastAPI
+JSON with Bytes as Base64 - FastAPI
 
 
 
@@ -981,7 +1049,7 @@ visibility: hidden;
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/how-to/testing-database/#testing-a-database)
+[Skip to content](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -994,7 +1062,7 @@ visibility: hidden;
 
 **colly+md**
 ```
-Testing a Database - FastAPI
+JSON with Bytes as Base64 - FastAPI
 
 
 
@@ -1010,7 +1078,7 @@ Testing a Database - FastAPI
 
 
 
-[Skip to content](#testing-a-database)
+[Skip to content](#json-with-bytes-as-base64)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1037,7 +1105,7 @@ Testing a Database - FastAPI
 
 **playwright**
 ```
-Testing a Database - FastAPI
+JSON with Bytes as Base64 - FastAPI
 
 
 
@@ -1053,7 +1121,7 @@ Testing a Database - FastAPI
 
 
 
-[Skip to content](https://fastapi.tiangolo.com/how-to/testing-database/#testing-a-database)
+[Skip to content](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
 
 [Join the **FastAPI Cloud** waiting list 🚀](https://fastapicloud.com)
 
@@ -1078,7 +1146,48 @@ Testing a Database - FastAPI
 [sponsor](https://www.coderabbit.ai/?utm_source=fastapi&utm_medium=banner&utm_campaign=fastapi "Cut Code Review Time & Bugs in Half with CodeRabbit")
 ```
 
-**firecrawl** — no output for this URL
+**firecrawl**
+```
+ 
+
+[Skip to content](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
+
+JSON with Bytes as Base64[¶](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#json-with-bytes-as-base64)
+
+=================================================================================================================
+
+If your app needs to receive and send JSON data, but you need to include binary data in it, you can encode it as base64.
+
+Base64 vs Files[¶](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#base64-vs-files)
+
+---------------------------------------------------------------------------------------------
+
+Consider first if you can use [Request Files](https://fastapi.tiangolo.com/tutorial/request-files/)
+ for uploading binary data and [Custom Response - FileResponse](https://fastapi.tiangolo.com/advanced/custom-response/#fileresponse--fileresponse-)
+ for sending binary data, instead of encoding it in JSON.
+
+JSON can only contain UTF-8 encoded strings, so it can't contain raw bytes.
+
+Base64 can encode binary data in strings, but to do it, it needs to use more characters than the original binary data, so it would normally be less efficient than regular files.
+
+Use base64 only if you definitely need to include binary data in JSON, and you can't use files for that.
+
+Pydantic `bytes`[¶](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#pydantic-bytes)
+
+---------------------------------------------------------------------------------------------
+
+You can declare a Pydantic model with `bytes` fields, and then use `val_json_bytes` in the model config to tell it to use base64 to _validate_ input JSON data, as part of that validation it will decode the base64 string into bytes.
+
+[Python 3.10+](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#__tabbed_1_1)
+
+`from fastapi import FastAPI from pydantic import BaseModel class DataInput(BaseModel):     description: str    data: bytes     model_config = {"val_json_bytes": "base64"} # Code here omitted 👈 app = FastAPI() @app.post("/data") def post_data(body: DataInput):     content = body.data.decode("utf-8")    return {"description": body.description, "content": content} # Code below omitted 👇`
+
+👀 Full file preview
+
+[Python 3.10+](https://fastapi.tiangolo.com/advanced/json-base64-bytes/#__tabbed_2_1)
+
+`from fastapi import FastAPI from pydantic import BaseModel class DataInput(BaseModel):     description: str    data: bytes     model_config = {"val_json_bytes": "base64"} class DataOutput(BaseModel):     description: str    data: bytes     model_config = {"ser_json_bytes": "base64"} class DataInputOutput(BaseModel):     description: str    data: bytes     model_config = {        "val_json_bytes": "base64",        "ser_json_bytes": "base64",    } app = FastAPI() @app.post("/data") def post_data(body: DataInput):     content = body.data.decode("utf-8")    return {"description": body.description, "content": content} @app.get("/data") def get_data() -> DataOutput:     data = "hello".encode("utf-8")    return DataOutput(description="A plumbus", data=data) @app.post("/data-in-out") def post_data_in_out(body: DataInputOutput) -> DataInputOutput:     return body`
+```
 
 </details>
 
@@ -1087,36 +1196,47 @@ Testing a Database - FastAPI
 
 | URL | markcrawl words / preamble [1] | crawl4ai words / preamble [1] | crawl4ai-raw words / preamble [1] | scrapy+md words / preamble [1] | crawlee words / preamble [1] | colly+md words / preamble [1] | playwright words / preamble [1] | firecrawl words / preamble [1] |
 |---|---|---|---|---|---|---|---|---|
-| fastapi.tiangolo.com | 2230 / 0 | 3991 / 1538 | 3979 / 1526 | 3092 / 839 | 3374 / 1071 | 3404 / 1054 | 3357 / 1054 | — |
-| fastapi.tiangolo.com/about | 15 / 0 | 1303 / 1241 | 1303 / 1241 | 677 / 646 | 1013 / 880 | 998 / 863 | 1008 / 875 | — |
-| fastapi.tiangolo.com/advanced | 115 / 0 | 1415 / 1261 | 1415 / 1261 | 792 / 661 | 1124 / 899 | 1113 / 882 | 1119 / 894 | — |
-| fastapi.tiangolo.com/advanced/additional-responses | 1274 / 0 | 2648 / 1332 | 2648 / 1332 | 2008 / 718 | 2342 / 958 | 2337 / 941 | 2337 / 953 | — |
-| fastapi.tiangolo.com/advanced/additional-status-codes | 472 / 0 | 1794 / 1278 | 1794 / 1278 | 1165 / 677 | 1502 / 915 | 1491 / 898 | 1497 / 910 | — |
-| fastapi.tiangolo.com/advanced/advanced-dependencies | 2200 / 0 | 3658 / 1432 | 3658 / 1432 | 3012 / 796 | 3330 / 1034 | 3335 / 1015 | 3323 / 1027 | — |
-| fastapi.tiangolo.com/advanced/advanced-python-types | 330 / 0 | 1642 / 1266 | 1642 / 1266 | 1015 / 669 | 1353 / 907 | 1340 / 890 | 1348 / 902 | — |
-| fastapi.tiangolo.com/advanced/async-tests | 646 / 0 | 1991 / 1308 | 1991 / 1308 | 1354 / 692 | 1682 / 928 | 1678 / 911 | 1677 / 923 | — |
-| fastapi.tiangolo.com/advanced/behind-a-proxy | 2218 / 0 | 3672 / 1478 | 3672 / 1478 | 3055 / 821 | 3318 / 1061 | 3378 / 1042 | 3381 / 1054 | — |
-| fastapi.tiangolo.com/advanced/custom-response | 1987 / 0 | 3457 / 1448 | 3457 / 1448 | 2782 / 779 | 3095 / 1025 | 3116 / 1008 | 3090 / 1020 | — |
-| fastapi.tiangolo.com/advanced/dataclasses | 778 / 0 | 2115 / 1296 | 2115 / 1296 | 1482 / 688 | 1813 / 926 | 1804 / 907 | 1806 / 919 | — |
-| fastapi.tiangolo.com/advanced/events | 1500 / 0 | 2886 / 1356 | 2886 / 1356 | 2240 / 724 | 2554 / 960 | 2559 / 943 | 2549 / 955 | — |
-| fastapi.tiangolo.com/advanced/generate-clients | 1654 / 0 | 3179 / 1482 | 3177 / 1480 | 2498 / 828 | 2810 / 1066 | 2823 / 1047 | 2803 / 1059 | — |
-| fastapi.tiangolo.com/advanced/json-base64-bytes | 743 / 0 | 2096 / 1314 | 2096 / 1314 | 1462 / 703 | 1799 / 947 | 1790 / 928 | 1792 / 940 | — |
-| fastapi.tiangolo.com/advanced/middleware | 597 / 0 | 1942 / 1306 | 1942 / 1306 | 1303 / 690 | 1628 / 926 | 1625 / 909 | 1623 / 921 | — |
-| fastapi.tiangolo.com/advanced/openapi-callbacks | 1746 / 0 | 3155 / 1376 | 3155 / 1376 | 2510 / 748 | 2831 / 986 | 2832 / 967 | 2824 / 979 | — |
-| fastapi.tiangolo.com/advanced/openapi-webhooks | 519 / 0 | 1868 / 1304 | 1868 / 1304 | 1231 / 696 | 1564 / 934 | 1555 / 915 | 1557 / 927 | — |
-| fastapi.tiangolo.com/advanced/path-operation-advanced-c | 1323 / 0 | 2727 / 1374 | 2727 / 1374 | 2083 / 744 | 2405 / 984 | 2408 / 967 | 2400 / 979 | — |
-| fastapi.tiangolo.com/advanced/response-change-status-co | 292 / 0 | 1612 / 1280 | 1612 / 1280 | 985 / 677 | 1324 / 921 | 1311 / 902 | 1317 / 914 | — |
-| fastapi.tiangolo.com/advanced/response-cookies | 376 / 0 | 1704 / 1288 | 1704 / 1288 | 1076 / 684 | 1407 / 920 | 1398 / 903 | 1402 / 915 | — |
-| fastapi.tiangolo.com/advanced/response-directly | 737 / 0 | 2099 / 1322 | 2099 / 1322 | 1461 / 708 | 1796 / 948 | 1791 / 931 | 1791 / 943 | — |
-| fastapi.tiangolo.com/advanced/response-headers | 351 / 0 | 1682 / 1290 | 1680 / 1288 | 1051 / 684 | 1383 / 920 | 1374 / 903 | 1378 / 915 | — |
+| fastapi.tiangolo.com | 2230 / 0 | 3991 / 1538 | 3979 / 1526 | 3092 / 839 | 3374 / 1071 | 3404 / 1054 | 3357 / 1054 | 2388 / 196 |
+| fastapi.tiangolo.com/?q= | — | — | — | — | — | — | — | 2388 / 196 |
+| fastapi.tiangolo.com/_llm-test | — | — | — | — | — | — | — | 1598 / 678 |
+| fastapi.tiangolo.com/_llm-test/?q= | — | — | — | — | — | — | — | 1598 / 678 |
+| fastapi.tiangolo.com/about | 15 / 0 | 1303 / 1241 | 1303 / 1241 | 677 / 646 | 1013 / 880 | 998 / 863 | 1008 / 875 | 16 / 16 |
+| fastapi.tiangolo.com/advanced | 115 / 0 | 1415 / 1261 | 1415 / 1261 | 792 / 661 | 1124 / 899 | 1113 / 882 | 1119 / 894 | 113 / 113 |
+| fastapi.tiangolo.com/advanced/additional-responses | 1274 / 0 | 2648 / 1332 | 2648 / 1332 | 2008 / 718 | 2342 / 958 | 2337 / 941 | 2337 / 953 | 1264 / 1264 |
+| fastapi.tiangolo.com/advanced/additional-status-codes | 472 / 0 | 1794 / 1278 | 1794 / 1278 | 1165 / 677 | 1502 / 915 | 1491 / 898 | 1497 / 910 | 466 / 466 |
+| fastapi.tiangolo.com/advanced/advanced-dependencies | 2200 / 0 | 3658 / 1432 | 3658 / 1432 | 3012 / 796 | 3330 / 1034 | 3335 / 1015 | 3323 / 1027 | 2172 / 882 |
+| fastapi.tiangolo.com/advanced/advanced-python-types | 330 / 0 | 1642 / 1266 | 1642 / 1266 | 1015 / 669 | 1353 / 907 | 1340 / 890 | 1348 / 902 | 323 / 323 |
+| fastapi.tiangolo.com/advanced/async-sql-databases | — | — | — | — | — | — | — | 8 / 8 |
+| fastapi.tiangolo.com/advanced/async-tests | 646 / 0 | 1991 / 1308 | 1991 / 1308 | 1354 / 692 | 1682 / 928 | 1678 / 911 | 1677 / 923 | 639 / 639 |
+| fastapi.tiangolo.com/advanced/behind-a-proxy | 2218 / 0 | 3672 / 1478 | 3672 / 1478 | 3055 / 821 | 3318 / 1061 | 3378 / 1042 | 3381 / 1054 | 2188 / 147 |
+| fastapi.tiangolo.com/advanced/conditional-openapi | — | — | — | — | — | — | — | 376 / 376 |
+| fastapi.tiangolo.com/advanced/custom-request-and-route | — | — | — | — | — | — | — | 1483 / 137 |
+| fastapi.tiangolo.com/advanced/custom-response | 1987 / 0 | 3457 / 1448 | 3457 / 1448 | 2782 / 779 | 3095 / 1025 | 3116 / 1008 | 3090 / 1020 | 1965 / 293 |
+| fastapi.tiangolo.com/advanced/dataclasses | 778 / 0 | 2115 / 1296 | 2115 / 1296 | 1482 / 688 | 1813 / 926 | 1804 / 907 | 1806 / 919 | 779 / 779 |
+| fastapi.tiangolo.com/advanced/events | 1500 / 0 | 2886 / 1356 | 2886 / 1356 | 2240 / 724 | 2554 / 960 | 2559 / 943 | 2549 / 955 | 1468 / 543 |
+| fastapi.tiangolo.com/advanced/extending-openapi | — | — | — | — | — | — | — | 736 / 263 |
+| fastapi.tiangolo.com/advanced/generate-clients | 1654 / 0 | 3179 / 1482 | 3177 / 1480 | 2498 / 828 | 2810 / 1066 | 2823 / 1047 | 2803 / 1059 | 1620 / 350 |
+| fastapi.tiangolo.com/advanced/graphql | — | — | — | — | — | — | — | 361 / 361 |
+| fastapi.tiangolo.com/advanced/json-base64-bytes | 743 / 0 | 2096 / 1314 | 2096 / 1314 | 1462 / 703 | 1799 / 947 | 1790 / 928 | 1792 / 940 | 721 / 721 |
+| fastapi.tiangolo.com/advanced/middleware | 597 / 0 | 1942 / 1306 | 1942 / 1306 | 1303 / 690 | 1628 / 926 | 1625 / 909 | 1623 / 921 | 578 / 578 |
+| fastapi.tiangolo.com/advanced/openapi-callbacks | 1746 / 0 | 3155 / 1376 | 3155 / 1376 | 2510 / 748 | 2831 / 986 | 2832 / 967 | 2824 / 979 | 1710 / 814 |
+| fastapi.tiangolo.com/advanced/openapi-webhooks | 519 / 0 | 1868 / 1304 | 1868 / 1304 | 1231 / 696 | 1564 / 934 | 1555 / 915 | 1557 / 927 | 512 / 478 |
+| fastapi.tiangolo.com/advanced/path-operation-advanced-c | 1323 / 0 | 2727 / 1374 | 2727 / 1374 | 2083 / 744 | 2405 / 984 | 2408 / 967 | 2400 / 979 | 1293 / 72 |
+| fastapi.tiangolo.com/advanced/response-change-status-co | 292 / 0 | 1612 / 1280 | 1612 / 1280 | 985 / 677 | 1324 / 921 | 1311 / 902 | 1317 / 914 | 288 / 288 |
+| fastapi.tiangolo.com/advanced/response-cookies | 376 / 0 | 1704 / 1288 | 1704 / 1288 | 1076 / 684 | 1407 / 920 | 1398 / 903 | 1402 / 915 | 369 / 290 |
+| fastapi.tiangolo.com/advanced/response-directly | 737 / 0 | 2099 / 1322 | 2099 / 1322 | 1461 / 708 | 1796 / 948 | 1791 / 931 | 1791 / 943 | 723 / 723 |
+| fastapi.tiangolo.com/advanced/response-headers | 351 / 0 | 1682 / 1290 | 1680 / 1288 | 1051 / 684 | 1383 / 920 | 1374 / 903 | 1378 / 915 | 345 / 345 |
 | fastapi.tiangolo.com/advanced/security | 90 / 0 | 1397 / 1267 | 1395 / 1265 | 770 / 664 | 1101 / 900 | 1090 / 883 | 1096 / 895 | — |
 | fastapi.tiangolo.com/advanced/security/http-basic-auth | 1169 / 0 | 2553 / 1351 | 2553 / 1351 | 1913 / 728 | 2240 / 968 | 2237 / 949 | 2233 / 961 | — |
 | fastapi.tiangolo.com/advanced/security/oauth2-scopes | 8989 / 0 | 10452 / 1443 | 10452 / 1443 | 9798 / 793 | 10106 / 1029 | 10119 / 1012 | 10101 / 1024 | — |
-| fastapi.tiangolo.com/advanced/settings | 2182 / 0 | 3542 / 1470 | 3544 / 1472 | 3006 / 808 | 3193 / 1050 | 3330 / 1031 | 3317 / 1043 | — |
-| fastapi.tiangolo.com/advanced/stream-data | 2723 / 0 | 4109 / 1354 | 4109 / 1354 | 3465 / 726 | 3785 / 962 | 3788 / 945 | 3780 / 957 | — |
-| fastapi.tiangolo.com/advanced/strict-content-type | 522 / 0 | 1858 / 1296 | 1858 / 1296 | 1225 / 687 | 1557 / 925 | 1550 / 908 | 1552 / 920 | — |
-| fastapi.tiangolo.com/advanced/sub-applications | 463 / 0 | 1831 / 1328 | 1829 / 1326 | 1187 / 708 | 1519 / 950 | 1512 / 931 | 1512 / 943 | — |
-| fastapi.tiangolo.com/advanced/templates | 558 / 0 | 1919 / 1328 | 1913 / 1326 | 1281 / 707 | 1599 / 941 | 1599 / 924 | 1598 / 936 | — |
+| fastapi.tiangolo.com/advanced/settings | 2182 / 0 | 3542 / 1470 | 3544 / 1472 | 3006 / 808 | 3193 / 1050 | 3330 / 1031 | 3317 / 1043 | 1994 / 173 |
+| fastapi.tiangolo.com/advanced/sql-databases-peewee | — | — | — | — | — | — | — | 8 / 8 |
+| fastapi.tiangolo.com/advanced/stream-data | 2723 / 0 | 4109 / 1354 | 4109 / 1354 | 3465 / 726 | 3785 / 962 | 3788 / 945 | 3780 / 957 | 2672 / 544 |
+| fastapi.tiangolo.com/advanced/strict-content-type | 522 / 0 | 1858 / 1296 | 1858 / 1296 | 1225 / 687 | 1557 / 925 | 1550 / 908 | 1552 / 920 | 505 / 505 |
+| fastapi.tiangolo.com/advanced/sub-applications | 463 / 0 | 1831 / 1328 | 1829 / 1326 | 1187 / 708 | 1519 / 950 | 1512 / 931 | 1512 / 943 | 452 / 73 |
+| fastapi.tiangolo.com/advanced/sub-applications-proxy | — | — | — | — | — | — | — | 8 / 8 |
+| fastapi.tiangolo.com/advanced/templates | 558 / 0 | 1919 / 1328 | 1913 / 1326 | 1281 / 707 | 1599 / 941 | 1599 / 924 | 1598 / 936 | 528 / 310 |
+| fastapi.tiangolo.com/advanced/testing-database | — | — | — | — | — | — | — | 46 / 46 |
 | fastapi.tiangolo.com/advanced/testing-dependencies | 694 / 0 | 2036 / 1298 | 2034 / 1296 | 1400 / 690 | 1738 / 930 | 1729 / 913 | 1733 / 925 | — |
 | fastapi.tiangolo.com/advanced/testing-events | 263 / 0 | 1562 / 1253 | 1562 / 1253 | 929 / 650 | 1276 / 896 | 1261 / 879 | 1259 / 879 | — |
 | fastapi.tiangolo.com/advanced/testing-websockets | 117 / 0 | 1414 / 1248 | 1414 / 1248 | 783 / 650 | 1123 / 886 | 1108 / 869 | 1118 / 881 | — |
@@ -1124,10 +1244,106 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/advanced/vibe | 389 / 0 | 1717 / 1280 | 1717 / 1280 | 1081 / 676 | 1411 / 912 | 1402 / 895 | 1406 / 907 | — |
 | fastapi.tiangolo.com/advanced/websockets | 1638 / 0 | 3050 / 1374 | 3046 / 1374 | 2397 / 743 | 2714 / 979 | 2714 / 960 | 2711 / 972 | — |
 | fastapi.tiangolo.com/advanced/wsgi | 247 / 0 | 1567 / 1280 | 1565 / 1278 | 937 / 674 | 1276 / 918 | 1265 / 901 | 1271 / 913 | — |
-| fastapi.tiangolo.com/alternatives | 3293 / 0 | 4759 / 1460 | 4757 / 1458 | 4087 / 778 | 4381 / 1018 | 4412 / 1001 | 4376 / 1013 | — |
-| fastapi.tiangolo.com/async | 3651 / 0 | 5200 / 1486 | 5198 / 1484 | 4478 / 811 | 4780 / 1053 | 4805 / 1036 | 4775 / 1048 | — |
-| fastapi.tiangolo.com/benchmarks | 525 / 0 | 1831 / 1256 | 1829 / 1254 | 1202 / 661 | 1535 / 895 | 1522 / 878 | 1530 / 890 | — |
-| fastapi.tiangolo.com/contributing | 1599 / 0 | 3123 / 1496 | 3116 / 1494 | 2438 / 823 | 2753 / 1061 | 2765 / 1044 | 2753 / 1056 | — |
+| fastapi.tiangolo.com/alternatives | 3293 / 0 | 4759 / 1460 | 4757 / 1458 | 4087 / 778 | 4381 / 1018 | 4412 / 1001 | 4376 / 1013 | 3264 / 126 |
+| fastapi.tiangolo.com/alternatives/?q= | — | — | — | — | — | — | — | 3264 / 126 |
+| fastapi.tiangolo.com/async | 3651 / 0 | 5200 / 1486 | 5198 / 1484 | 4478 / 811 | 4780 / 1053 | 4805 / 1036 | 4775 / 1048 | 3641 / 694 |
+| fastapi.tiangolo.com/async/?q= | — | — | — | — | — | — | — | 3641 / 694 |
+| fastapi.tiangolo.com/benchmarks | 525 / 0 | 1831 / 1256 | 1829 / 1254 | 1202 / 661 | 1535 / 895 | 1522 / 878 | 1530 / 890 | 525 / 525 |
+| fastapi.tiangolo.com/benchmarks/?q= | — | — | — | — | — | — | — | 525 / 525 |
+| fastapi.tiangolo.com/contributing | 1599 / 0 | 3123 / 1496 | 3116 / 1494 | 2438 / 823 | 2753 / 1061 | 2765 / 1044 | 2753 / 1056 | 1575 / 50 |
+| fastapi.tiangolo.com/contributing/?q= | — | — | — | — | — | — | — | 1576 / 50 |
+| fastapi.tiangolo.com/de | — | — | — | — | — | — | — | 2331 / 251 |
+| fastapi.tiangolo.com/de/?q= | — | — | — | — | — | — | — | 2331 / 251 |
+| fastapi.tiangolo.com/de/about | — | — | — | — | — | — | — | 62 / 62 |
+| fastapi.tiangolo.com/de/advanced | — | — | — | — | — | — | — | 150 / 150 |
+| fastapi.tiangolo.com/de/advanced/additional-responses | — | — | — | — | — | — | — | 1242 / 1242 |
+| fastapi.tiangolo.com/de/advanced/additional-status-code | — | — | — | — | — | — | — | 488 / 488 |
+| fastapi.tiangolo.com/de/advanced/advanced-dependencies | — | — | — | — | — | — | — | 2108 / 897 |
+| fastapi.tiangolo.com/de/advanced/async-tests | — | — | — | — | — | — | — | 672 / 672 |
+| fastapi.tiangolo.com/de/advanced/behind-a-proxy | — | — | — | — | — | — | — | 2062 / 178 |
+| fastapi.tiangolo.com/de/advanced/custom-response | — | — | — | — | — | — | — | 1907 / 300 |
+| fastapi.tiangolo.com/de/advanced/dataclasses | — | — | — | — | — | — | — | 773 / 773 |
+| fastapi.tiangolo.com/de/advanced/events | — | — | — | — | — | — | — | 1441 / 580 |
+| fastapi.tiangolo.com/de/advanced/middleware | — | — | — | — | — | — | — | 599 / 599 |
+| fastapi.tiangolo.com/de/advanced/openapi-callbacks | — | — | — | — | — | — | — | 1692 / 823 |
+| fastapi.tiangolo.com/de/advanced/openapi-webhooks | — | — | — | — | — | — | — | 527 / 494 |
+| fastapi.tiangolo.com/de/advanced/path-operation-advance | — | — | — | — | — | — | — | 1247 / 113 |
+| fastapi.tiangolo.com/de/advanced/response-change-status | — | — | — | — | — | — | — | 314 / 314 |
+| fastapi.tiangolo.com/de/advanced/response-cookies | — | — | — | — | — | — | — | 397 / 318 |
+| fastapi.tiangolo.com/de/advanced/response-directly | — | — | — | — | — | — | — | 735 / 735 |
+| fastapi.tiangolo.com/de/advanced/response-headers | — | — | — | — | — | — | — | 377 / 377 |
+| fastapi.tiangolo.com/de/advanced/security | — | — | — | — | — | — | — | 129 / 129 |
+| fastapi.tiangolo.com/de/advanced/security/http-basic-au | — | — | — | — | — | — | — | 1193 / 599 |
+| fastapi.tiangolo.com/de/advanced/security/oauth2-scopes | — | — | — | — | — | — | — | 8872 / 8872 |
+| fastapi.tiangolo.com/de/advanced/settings | — | — | — | — | — | — | — | 1942 / 204 |
+| fastapi.tiangolo.com/de/advanced/stream-data | — | — | — | — | — | — | — | 2629 / 568 |
+| fastapi.tiangolo.com/de/advanced/sub-applications | — | — | — | — | — | — | — | 470 / 115 |
+| fastapi.tiangolo.com/de/advanced/templates | — | — | — | — | — | — | — | 557 / 356 |
+| fastapi.tiangolo.com/de/advanced/testing-dependencies | — | — | — | — | — | — | — | 714 / 125 |
+| fastapi.tiangolo.com/de/advanced/testing-events | — | — | — | — | — | — | — | 300 / 300 |
+| fastapi.tiangolo.com/de/advanced/testing-websockets | — | — | — | — | — | — | — | 163 / 163 |
+| fastapi.tiangolo.com/de/advanced/using-request-directly | — | — | — | — | — | — | — | 369 / 369 |
+| fastapi.tiangolo.com/de/advanced/websockets | — | — | — | — | — | — | — | 1653 / 90 |
+| fastapi.tiangolo.com/de/async | — | — | — | — | — | — | — | 3599 / 729 |
+| fastapi.tiangolo.com/de/environment-variables | — | — | — | — | — | — | — | 1062 / 776 |
+| fastapi.tiangolo.com/de/fastapi-people | — | — | — | — | — | — | — | 2188 / 285 |
+| fastapi.tiangolo.com/de/features | — | — | — | — | — | — | — | 1129 / 57 |
+| fastapi.tiangolo.com/de/learn | — | — | — | — | — | — | — | 82 / 82 |
+| fastapi.tiangolo.com/de/python-types | — | — | — | — | — | — | — | 1840 / 260 |
+| fastapi.tiangolo.com/de/reference | — | — | — | — | — | — | — | 45 / 45 |
+| fastapi.tiangolo.com/de/release-notes | — | — | — | — | — | — | — | 56324 / 12 |
+| fastapi.tiangolo.com/de/resources | — | — | — | — | — | — | — | 60 / 60 |
+| fastapi.tiangolo.com/de/tutorial | — | — | — | — | — | — | — | 537 / 537 |
+| fastapi.tiangolo.com/de/tutorial/background-tasks | — | — | — | — | — | — | — | 951 / 951 |
+| fastapi.tiangolo.com/de/tutorial/bigger-applications | — | — | — | — | — | — | — | 3273 / 506 |
+| fastapi.tiangolo.com/de/tutorial/body | — | — | — | — | — | — | — | 1150 / 1150 |
+| fastapi.tiangolo.com/de/tutorial/body-fields | — | — | — | — | — | — | — | 659 / 659 |
+| fastapi.tiangolo.com/de/tutorial/body-multiple-params | — | — | — | — | — | — | — | 1353 / 1353 |
+| fastapi.tiangolo.com/de/tutorial/body-nested-models | — | — | — | — | — | — | — | 1384 / 170 |
+| fastapi.tiangolo.com/de/tutorial/body-updates | — | — | — | — | — | — | — | 1022 / 215 |
+| fastapi.tiangolo.com/de/tutorial/cookie-param-models | — | — | — | — | — | — | — | 592 / 592 |
+| fastapi.tiangolo.com/de/tutorial/cookie-params | — | — | — | — | — | — | — | 379 / 379 |
+| fastapi.tiangolo.com/de/tutorial/cors | — | — | — | — | — | — | — | 746 / 631 |
+| fastapi.tiangolo.com/de/tutorial/debugging | — | — | — | — | — | — | — | 416 / 116 |
+| fastapi.tiangolo.com/de/tutorial/dependencies | — | — | — | — | — | — | — | 1712 / 229 |
+| fastapi.tiangolo.com/de/tutorial/dependencies/classes-a | — | — | — | — | — | — | — | 1940 / 1940 |
+| fastapi.tiangolo.com/de/tutorial/dependencies/dependenc | — | — | — | — | — | — | — | 895 / 378 |
+| fastapi.tiangolo.com/de/tutorial/dependencies/dependenc | — | — | — | — | — | — | — | 2488 / 1257 |
+| fastapi.tiangolo.com/de/tutorial/dependencies/global-de | — | — | — | — | — | — | — | 303 / 303 |
+| fastapi.tiangolo.com/de/tutorial/dependencies/sub-depen | — | — | — | — | — | — | — | 871 / 871 |
+| fastapi.tiangolo.com/de/tutorial/encoder | — | — | — | — | — | — | — | 308 / 308 |
+| fastapi.tiangolo.com/de/tutorial/extra-data-types | — | — | — | — | — | — | — | 711 / 711 |
+| fastapi.tiangolo.com/de/tutorial/extra-models | — | — | — | — | — | — | — | 1158 / 243 |
+| fastapi.tiangolo.com/de/tutorial/first-steps | — | — | — | — | — | — | — | 1659 / 232 |
+| fastapi.tiangolo.com/de/tutorial/handling-errors | — | — | — | — | — | — | — | 1622 / 206 |
+| fastapi.tiangolo.com/de/tutorial/header-param-models | — | — | — | — | — | — | — | 689 / 689 |
+| fastapi.tiangolo.com/de/tutorial/header-params | — | — | — | — | — | — | — | 693 / 693 |
+| fastapi.tiangolo.com/de/tutorial/metadata | — | — | — | — | — | — | — | 1085 / 628 |
+| fastapi.tiangolo.com/de/tutorial/middleware | — | — | — | — | — | — | — | 618 / 376 |
+| fastapi.tiangolo.com/de/tutorial/path-operation-configu | — | — | — | — | — | — | — | 884 / 306 |
+| fastapi.tiangolo.com/de/tutorial/path-params | — | — | — | — | — | — | — | 1421 / 654 |
+| fastapi.tiangolo.com/de/tutorial/path-params-numeric-va | — | — | — | — | — | — | — | 1699 / 937 |
+| fastapi.tiangolo.com/de/tutorial/query-param-models | — | — | — | — | — | — | — | 533 / 533 |
+| fastapi.tiangolo.com/de/tutorial/query-params | — | — | — | — | — | — | — | 815 / 815 |
+| fastapi.tiangolo.com/de/tutorial/query-params-str-valid | — | — | — | — | — | — | — | 3890 / 194 |
+| fastapi.tiangolo.com/de/tutorial/request-files | — | — | — | — | — | — | — | 1741 / 599 |
+| fastapi.tiangolo.com/de/tutorial/request-form-models | — | — | — | — | — | — | — | 461 / 461 |
+| fastapi.tiangolo.com/de/tutorial/request-forms | — | — | — | — | — | — | — | 491 / 491 |
+| fastapi.tiangolo.com/de/tutorial/request-forms-and-file | — | — | — | — | — | — | — | 406 / 406 |
+| fastapi.tiangolo.com/de/tutorial/response-model | — | — | — | — | — | — | — | 2918 / 611 |
+| fastapi.tiangolo.com/de/tutorial/response-status-code | — | — | — | — | — | — | — | 638 / 638 |
+| fastapi.tiangolo.com/de/tutorial/schema-extra-example | — | — | — | — | — | — | — | 1940 / 420 |
+| fastapi.tiangolo.com/de/tutorial/security | — | — | — | — | — | — | — | 701 / 219 |
+| fastapi.tiangolo.com/de/tutorial/security/first-steps | — | — | — | — | — | — | — | 1514 / 1214 |
+| fastapi.tiangolo.com/de/tutorial/security/get-current-u | — | — | — | — | — | — | — | 1525 / 1525 |
+| fastapi.tiangolo.com/de/tutorial/security/oauth2-jwt | — | — | — | — | — | — | — | 4388 / 391 |
+| fastapi.tiangolo.com/de/tutorial/security/simple-oauth2 | — | — | — | — | — | — | — | 3511 / 196 |
+| fastapi.tiangolo.com/de/tutorial/server-sent-events | — | — | — | — | — | — | — | 1441 / 623 |
+| fastapi.tiangolo.com/de/tutorial/sql-databases | — | — | — | — | — | — | — | 10410 / 323 |
+| fastapi.tiangolo.com/de/tutorial/static-files | — | — | — | — | — | — | — | 284 / 125 |
+| fastapi.tiangolo.com/de/tutorial/stream-json-lines | — | — | — | — | — | — | — | 1226 / 863 |
+| fastapi.tiangolo.com/de/tutorial/testing | — | — | — | — | — | — | — | 1480 / 338 |
+| fastapi.tiangolo.com/de/virtual-environments | — | — | — | — | — | — | — | 2916 / 1039 |
 | fastapi.tiangolo.com/deployment | 240 / 0 | 1542 / 1259 | 1540 / 1257 | 915 / 659 | 1245 / 893 | 1234 / 876 | 1240 / 888 | — |
 | fastapi.tiangolo.com/deployment/cloud | 142 / 0 | 1468 / 1280 | 1466 / 1278 | 833 / 675 | 1174 / 917 | 1163 / 900 | 1169 / 912 | — |
 | fastapi.tiangolo.com/deployment/concepts | 3066 / 0 | 4701 / 1608 | 4699 / 1606 | 3988 / 906 | 4274 / 1142 | 4313 / 1125 | 4269 / 1137 | — |
@@ -1137,14 +1353,27 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/deployment/manually | 798 / 0 | 2132 / 1332 | 2052 / 1332 | 1528 / 714 | 1734 / 954 | 1852 / 937 | 1809 / 949 | — |
 | fastapi.tiangolo.com/deployment/server-workers | 864 / 0 | 2029 / 1296 | 2026 / 1296 | 1564 / 684 | 1725 / 928 | 1898 / 911 | 1798 / 923 | — |
 | fastapi.tiangolo.com/deployment/versions | 537 / 0 | 1888 / 1320 | 1886 / 1318 | 1254 / 701 | 1578 / 939 | 1575 / 922 | 1573 / 934 | — |
-| fastapi.tiangolo.com/editor-support | 310 / 0 | 1621 / 1274 | 1621 / 1274 | 998 / 672 | 1326 / 908 | 1317 / 891 | 1321 / 903 | — |
-| fastapi.tiangolo.com/environment-variables | 1134 / 0 | 2464 / 1326 | 2449 / 1326 | 1862 / 712 | 2110 / 948 | 2185 / 931 | 2217 / 943 | — |
-| fastapi.tiangolo.com/external-links | 699 / 0 | 1999 / 1254 | 1999 / 1254 | 1375 / 660 | 1714 / 898 | 1699 / 879 | 1707 / 891 | — |
-| fastapi.tiangolo.com/fastapi-cli | 658 / 0 | 1930 / 1296 | 1825 / 1296 | 1364 / 690 | 1521 / 926 | 1684 / 909 | 1621 / 921 | — |
-| fastapi.tiangolo.com/fastapi-people | 1434 / 0 | 3347 / 1430 | 3347 / 1430 | 2230 / 780 | 2536 / 1018 | 2551 / 999 | 2529 / 1011 | — |
-| fastapi.tiangolo.com/features | 1154 / 0 | 2569 / 1366 | 2569 / 1366 | 1899 / 729 | 2204 / 963 | 2215 / 946 | 2199 / 958 | — |
-| fastapi.tiangolo.com/help-fastapi | 1955 / 0 | 3521 / 1566 | 3519 / 1564 | 2842 / 875 | 3139 / 1117 | 3172 / 1100 | 3134 / 1112 | — |
-| fastapi.tiangolo.com/history-design-future | 619 / 0 | 1946 / 1296 | 1946 / 1296 | 1315 / 680 | 1645 / 922 | 1640 / 903 | 1638 / 915 | — |
+| fastapi.tiangolo.com/editor-support | 310 / 0 | 1621 / 1274 | 1621 / 1274 | 998 / 672 | 1326 / 908 | 1317 / 891 | 1321 / 903 | 309 / 98 |
+| fastapi.tiangolo.com/editor-support/?q= | — | — | — | — | — | — | — | 317 / 102 |
+| fastapi.tiangolo.com/environment-variables | 1134 / 0 | 2464 / 1326 | 2449 / 1326 | 1862 / 712 | 2110 / 948 | 2185 / 931 | 2217 / 943 | 1116 / 807 |
+| fastapi.tiangolo.com/es | — | — | — | — | — | — | — | 2504 / 263 |
+| fastapi.tiangolo.com/es/advanced | — | — | — | — | — | — | — | 156 / 156 |
+| fastapi.tiangolo.com/es/async | — | — | — | — | — | — | — | 3629 / 751 |
+| fastapi.tiangolo.com/es/features | — | — | — | — | — | — | — | 1294 / 60 |
+| fastapi.tiangolo.com/es/python-types | — | — | — | — | — | — | — | 1843 / 259 |
+| fastapi.tiangolo.com/es/tutorial | — | — | — | — | — | — | — | 550 / 550 |
+| fastapi.tiangolo.com/external-links | 699 / 0 | 1999 / 1254 | 1999 / 1254 | 1375 / 660 | 1714 / 898 | 1699 / 879 | 1707 / 891 | 798 / 798 |
+| fastapi.tiangolo.com/external-links/?q= | — | — | — | — | — | — | — | 802 / 802 |
+| fastapi.tiangolo.com/fastapi-cli | 658 / 0 | 1930 / 1296 | 1825 / 1296 | 1364 / 690 | 1521 / 926 | 1684 / 909 | 1621 / 921 | 574 / 312 |
+| fastapi.tiangolo.com/fastapi-cli/?q= | — | — | — | — | — | — | — | 650 / 382 |
+| fastapi.tiangolo.com/fastapi-people | 1434 / 0 | 3347 / 1430 | 3347 / 1430 | 2230 / 780 | 2536 / 1018 | 2551 / 999 | 2529 / 1011 | 2189 / 286 |
+| fastapi.tiangolo.com/fastapi-people/?q= | — | — | — | — | — | — | — | 2223 / 294 |
+| fastapi.tiangolo.com/features | 1154 / 0 | 2569 / 1366 | 2569 / 1366 | 1899 / 729 | 2204 / 963 | 2215 / 946 | 2199 / 958 | 1171 / 17 |
+| fastapi.tiangolo.com/fr | — | — | — | — | — | — | — | 2697 / 301 |
+| fastapi.tiangolo.com/help-fastapi | 1955 / 0 | 3521 / 1566 | 3519 / 1564 | 2842 / 875 | 3139 / 1117 | 3172 / 1100 | 3134 / 1112 | 1928 / 578 |
+| fastapi.tiangolo.com/help-fastapi/?q= | — | — | — | — | — | — | — | 1928 / 578 |
+| fastapi.tiangolo.com/history-design-future | 619 / 0 | 1946 / 1296 | 1946 / 1296 | 1315 / 680 | 1645 / 922 | 1640 / 903 | 1638 / 915 | 612 / 612 |
+| fastapi.tiangolo.com/history-design-future/?q= | — | — | — | — | — | — | — | 612 / 612 |
 | fastapi.tiangolo.com/how-to | 97 / 0 | 1400 / 1251 | 1400 / 1251 | 764 / 651 | 1112 / 893 | 1095 / 874 | 1105 / 886 | — |
 | fastapi.tiangolo.com/how-to/authentication-error-status | 194 / 0 | 1494 / 1256 | 1492 / 1254 | 861 / 651 | 1206 / 897 | 1191 / 880 | 1201 / 892 | — |
 | fastapi.tiangolo.com/how-to/conditional-openapi | 380 / 0 | 1715 / 1289 | 1713 / 1287 | 1083 / 687 | 1422 / 925 | 1406 / 906 | 1415 / 918 | — |
@@ -1157,12 +1386,25 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/how-to/migrate-from-pydantic-v1-to | 944 / 0 | 2267 / 1369 | 2267 / 1369 | 1698 / 738 | 1955 / 986 | 2031 / 967 | 2025 / 979 | — |
 | fastapi.tiangolo.com/how-to/separate-openapi-schemas | 887 / 0 | 2345 / 1411 | 2345 / 1411 | 1679 / 776 | 2016 / 1028 | 2017 / 1009 | 2009 / 1021 | — |
 | fastapi.tiangolo.com/how-to/testing-database | 42 / 0 | 1342 / 1250 | 1342 / 1250 | 709 / 651 | 1052 / 889 | 1037 / 872 | 1047 / 884 | — |
+| fastapi.tiangolo.com/ja | — | — | — | — | — | — | — | 1308 / 95 |
+| fastapi.tiangolo.com/ko | — | — | — | — | — | — | — | 2003 / 202 |
 | fastapi.tiangolo.com/learn | 35 / 0 | 1324 / 1243 | 1322 / 1241 | 697 / 646 | 1030 / 880 | 1015 / 863 | 1025 / 875 | — |
-| fastapi.tiangolo.com/management | 215 / 0 | 1535 / 1280 | 1535 / 1280 | 905 / 674 | 1231 / 910 | 1224 / 893 | 1226 / 905 | — |
-| fastapi.tiangolo.com/management-tasks | 1798 / 0 | 3193 / 1370 | 3193 / 1370 | 2553 / 739 | 2871 / 977 | 2876 / 960 | 2866 / 972 | — |
-| fastapi.tiangolo.com/newsletter | 10 / 0 | 1301 / 1246 | 1299 / 1244 | 672 / 646 | 1014 / 888 | 997 / 869 | 1007 / 881 | — |
-| fastapi.tiangolo.com/project-generation | 253 / 0 | 1568 / 1272 | 1568 / 1272 | 945 / 676 | 1283 / 916 | 1270 / 899 | 1278 / 911 | — |
-| fastapi.tiangolo.com/python-types | 1892 / 0 | 3339 / 1424 | 3337 / 1422 | 2671 / 763 | 2976 / 1001 | 2995 / 984 | 2971 / 996 | — |
+| fastapi.tiangolo.com/management | 215 / 0 | 1535 / 1280 | 1535 / 1280 | 905 / 674 | 1231 / 910 | 1224 / 893 | 1226 / 905 | 214 / 214 |
+| fastapi.tiangolo.com/management-tasks | 1798 / 0 | 3193 / 1370 | 3193 / 1370 | 2553 / 739 | 2871 / 977 | 2876 / 960 | 2866 / 972 | 1787 / 142 |
+| fastapi.tiangolo.com/management-tasks/?q= | — | — | — | — | — | — | — | 1787 / 142 |
+| fastapi.tiangolo.com/management/?q= | — | — | — | — | — | — | — | 214 / 214 |
+| fastapi.tiangolo.com/newsletter | 10 / 0 | 1301 / 1246 | 1299 / 1244 | 672 / 646 | 1014 / 888 | 997 / 869 | 1007 / 881 | 11 / 11 |
+| fastapi.tiangolo.com/newsletter/?q= | — | — | — | — | — | — | — | 11 / 11 |
+| fastapi.tiangolo.com/project-generation | 253 / 0 | 1568 / 1272 | 1568 / 1272 | 945 / 676 | 1283 / 916 | 1270 / 899 | 1278 / 911 | 254 / 254 |
+| fastapi.tiangolo.com/project-generation/?q= | — | — | — | — | — | — | — | 254 / 254 |
+| fastapi.tiangolo.com/pt | — | — | — | — | — | — | — | 2504 / 260 |
+| fastapi.tiangolo.com/pt/alternatives | — | — | — | — | — | — | — | 3483 / 173 |
+| fastapi.tiangolo.com/pt/benchmarks | — | — | — | — | — | — | — | 591 / 591 |
+| fastapi.tiangolo.com/pt/features | — | — | — | — | — | — | — | 1329 / 67 |
+| fastapi.tiangolo.com/pt/history-design-future | — | — | — | — | — | — | — | 667 / 667 |
+| fastapi.tiangolo.com/pt/tutorial | — | — | — | — | — | — | — | 568 / 568 |
+| fastapi.tiangolo.com/python-types | 1892 / 0 | 3339 / 1424 | 3337 / 1422 | 2671 / 763 | 2976 / 1001 | 2995 / 984 | 2971 / 996 | 1829 / 209 |
+| fastapi.tiangolo.com/python-types/?q= | — | — | — | — | — | — | — | 1829 / 209 |
 | fastapi.tiangolo.com/reference | 44 / 0 | 1336 / 1243 | 1334 / 1241 | 706 / 646 | 1044 / 880 | 1029 / 863 | 1039 / 875 | — |
 | fastapi.tiangolo.com/reference/apirouter | 24889 / 0 | 26605 / 1406 | 26603 / 1404 | 25651 / 746 | 25969 / 982 | 25976 / 965 | 25964 / 977 | — |
 | fastapi.tiangolo.com/reference/background | 375 / 0 | 1717 / 1300 | 1715 / 1298 | 1079 / 688 | 1416 / 928 | 1403 / 911 | 1411 / 923 | — |
@@ -1173,7 +1415,7 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/reference/httpconnection | 292 / 0 | 1671 / 1336 | 1669 / 1334 | 1022 / 714 | 1356 / 950 | 1341 / 933 | 1351 / 945 | — |
 | fastapi.tiangolo.com/reference/middleware | 1030 / 0 | 2490 / 1410 | 2490 / 1410 | 1811 / 765 | 2152 / 1001 | 2135 / 982 | 2145 / 994 | — |
 | fastapi.tiangolo.com/reference/openapi | 32 / 0 | 1322 / 1247 | 1320 / 1245 | 696 / 648 | 1028 / 882 | 1013 / 865 | 1023 / 877 | — |
-| fastapi.tiangolo.com/reference/openapi/docs | 1757 / 0 | 3076 / 1276 | 3074 / 1274 | 2445 / 672 | 2781 / 910 | 2764 / 891 | 2774 / 903 | — |
+| fastapi.tiangolo.com/reference/openapi/docs | 1757 / 0 | 3076 / 1276 | 3074 / 1274 | 2445 / 672 | 2781 / 910 | 2764 / 891 | 2774 / 903 | 1717 / 1717 |
 | fastapi.tiangolo.com/reference/openapi/models | 3708 / 0 | 7396 / 3188 | 7394 / 3186 | 5672 / 1948 | 6007 / 2184 | 5992 / 2167 | 6002 / 2179 | — |
 | fastapi.tiangolo.com/reference/parameters | 12456 / 0 | 13851 / 1288 | 13849 / 1286 | 13154 / 682 | 13489 / 918 | 13474 / 901 | 13484 / 913 | — |
 | fastapi.tiangolo.com/reference/request | 680 / 0 | 2124 / 1390 | 2122 / 1388 | 1446 / 750 | 1782 / 986 | 1767 / 969 | 1777 / 981 | — |
@@ -1186,9 +1428,15 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/reference/testclient | 2168 / 0 | 3662 / 1448 | 3660 / 1446 | 2972 / 788 | 3312 / 1028 | 3297 / 1011 | 3307 / 1023 | — |
 | fastapi.tiangolo.com/reference/uploadfile | 713 / 0 | 2072 / 1314 | 2070 / 1312 | 1427 / 698 | 1763 / 934 | 1750 / 917 | 1758 / 929 | — |
 | fastapi.tiangolo.com/reference/websockets | 1267 / 0 | 2828 / 1468 | 2826 / 1466 | 2086 / 803 | 2419 / 1039 | 2404 / 1020 | 2412 / 1032 | — |
-| fastapi.tiangolo.com/release-notes | 52941 / 0 | 59610 / 8426 | 59793 / 8424 | 57519 / 4562 | 56028 / 4798 | 57836 / 4781 | 56208 / 4793 | — |
+| fastapi.tiangolo.com/release-notes | 52941 / 0 | 59610 / 8426 | 59793 / 8424 | 57519 / 4562 | 56028 / 4798 | 57836 / 4781 | 56208 / 4793 | 56325 / 13 |
 | fastapi.tiangolo.com/resources | 14 / 0 | 1304 / 1243 | 1302 / 1241 | 676 / 646 | 1012 / 880 | 997 / 863 | 1007 / 875 | — |
+| fastapi.tiangolo.com/ru | — | — | — | — | — | — | — | 2235 / 238 |
+| fastapi.tiangolo.com/tr | — | — | — | — | — | — | — | 2143 / 238 |
+| fastapi.tiangolo.com/translation-banner | — | — | — | — | — | — | — | 52 / 52 |
+| fastapi.tiangolo.com/translation-banner/?q= | — | — | — | — | — | — | — | 52 / 52 |
+| fastapi.tiangolo.com/translation-banner/ENGLISH_VERSION | — | — | — | — | — | — | — | 8 / 8 |
 | fastapi.tiangolo.com/tutorial | 574 / 0 | 1824 / 1270 | 1717 / 1268 | 1255 / 665 | 1421 / 905 | 1579 / 888 | 1521 / 900 | — |
+| fastapi.tiangolo.com/tutorial/application-configuration | — | — | — | — | — | — | — | 8 / 8 |
 | fastapi.tiangolo.com/tutorial/background-tasks | 974 / 0 | 2336 / 1327 | 2334 / 1325 | 1695 / 705 | 2019 / 941 | 2018 / 924 | 2014 / 936 | — |
 | fastapi.tiangolo.com/tutorial/bigger-applications | 3327 / 0 | 4914 / 1567 | 4912 / 1565 | 4229 / 886 | 4532 / 1128 | 4557 / 1111 | 4527 / 1123 | — |
 | fastapi.tiangolo.com/tutorial/body | 1231 / 0 | 2652 / 1381 | 2650 / 1379 | 1994 / 747 | 2314 / 985 | 2317 / 966 | 2307 / 978 | — |
@@ -1238,8 +1486,10 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/tutorial/static-files | 245 / 0 | 1575 / 1293 | 1573 / 1291 | 944 / 683 | 1274 / 921 | 1265 / 902 | 1267 / 914 | — |
 | fastapi.tiangolo.com/tutorial/stream-json-lines | 1214 / 0 | 2544 / 1343 | 2544 / 1343 | 1950 / 720 | 2226 / 960 | 2276 / 941 | 2272 / 953 | — |
 | fastapi.tiangolo.com/tutorial/testing | 1485 / 0 | 2853 / 1341 | 2851 / 1339 | 2217 / 716 | 2533 / 952 | 2534 / 933 | 2526 / 945 | — |
-| fastapi.tiangolo.com/virtual-environments | 3009 / 0 | 4558 / 1524 | 4528 / 1524 | 3869 / 844 | 4142 / 1082 | 4191 / 1063 | 4264 / 1075 | — |
-| fastapi.tiangolo.com/zh-hant | 1126 / 0 | 2714 / 1341 | 2714 / 1341 | 1786 / 637 | 2068 / 869 | 2098 / 852 | 2051 / 852 | — |
+| fastapi.tiangolo.com/uk | — | — | — | — | — | — | — | 2274 / 233 |
+| fastapi.tiangolo.com/virtual-environments | 3009 / 0 | 4558 / 1524 | 4528 / 1524 | 3869 / 844 | 4142 / 1082 | 4191 / 1063 | 4264 / 1075 | 2934 / 988 |
+| fastapi.tiangolo.com/zh | — | — | — | — | — | — | — | 1318 / 93 |
+| fastapi.tiangolo.com/zh-hant | 1126 / 0 | 2714 / 1341 | 2714 / 1341 | 1786 / 637 | 2068 / 869 | 2098 / 852 | 2051 / 852 | 1285 / 90 |
 | fastapi.tiangolo.com/zh-hant/about | 21 / 0 | 1157 / 1092 | 1155 / 1090 | 527 / 490 | 860 / 724 | 845 / 707 | 855 / 719 | — |
 | fastapi.tiangolo.com/zh-hant/advanced | 43 / 0 | 1186 / 1104 | 1184 / 1102 | 558 / 499 | 885 / 733 | 874 / 716 | 880 / 728 | — |
 | fastapi.tiangolo.com/zh-hant/advanced/additional-respon | 739 / 0 | 1921 / 1147 | 1919 / 1145 | 1283 / 528 | 1607 / 764 | 1602 / 747 | 1602 / 759 | — |
@@ -1362,6 +1612,20 @@ Testing a Database - FastAPI
 | fastapi.tiangolo.com/zh-hant/tutorial/stream-json-lines | 810 / 0 | 1975 / 1173 | 1975 / 1173 | 1371 / 545 | 1644 / 785 | 1694 / 766 | 1690 / 778 | — |
 | fastapi.tiangolo.com/zh-hant/tutorial/testing | 1039 / 0 | 2233 / 1169 | 2233 / 1169 | 1596 / 541 | 1909 / 775 | 1912 / 758 | 1904 / 770 | — |
 | fastapi.tiangolo.com/zh-hant/virtual-environments | 967 / 0 | 2284 / 1275 | 2286 / 1277 | 1576 / 593 | 1847 / 829 | 1894 / 810 | 1967 / 822 | — |
+| fastapi.tiangolo.com/zh/contributing | — | — | — | — | — | — | — | 1610 / 84 |
+| fastapi.tiangolo.com/zh/deployment | — | — | — | — | — | — | — | 46 / 46 |
+| fastapi.tiangolo.com/zh/features | — | — | — | — | — | — | — | 410 / 21 |
+| fastapi.tiangolo.com/zh/help-fastapi | — | — | — | — | — | — | — | 463 / 209 |
+| fastapi.tiangolo.com/zh/python-types | — | — | — | — | — | — | — | 684 / 86 |
+| fastapi.tiangolo.com/zh/tutorial | — | — | — | — | — | — | — | 278 / 278 |
+| fastapi.tiangolo.com/zh/tutorial/body | — | — | — | — | — | — | — | 524 / 524 |
+| fastapi.tiangolo.com/zh/tutorial/body-fields | — | — | — | — | — | — | — | 427 / 427 |
+| fastapi.tiangolo.com/zh/tutorial/body-multiple-params | — | — | — | — | — | — | — | 909 / 909 |
+| fastapi.tiangolo.com/zh/tutorial/first-steps | — | — | — | — | — | — | — | 820 / 162 |
+| fastapi.tiangolo.com/zh/tutorial/path-params | — | — | — | — | — | — | — | 712 / 263 |
+| fastapi.tiangolo.com/zh/tutorial/path-params-numeric-va | — | — | — | — | — | — | — | 1086 / 588 |
+| fastapi.tiangolo.com/zh/tutorial/query-params | — | — | — | — | — | — | — | 420 / 420 |
+| fastapi.tiangolo.com/zh/tutorial/query-params-str-valid | — | — | — | — | — | — | — | 2477 / 86 |
 
 </details>
 
@@ -1376,61 +1640,26 @@ Testing a Database - FastAPI
 | crawlee | 4132 | 51 ⚠ | 0% | 3039 | 19.1 | 7.5 | 100% | 96% |
 | colly+md | 4044 | 24 | 0% | 3039 | 19.1 | 7.5 | 100% | 96% |
 | playwright | 4132 | 51 ⚠ | 0% | 3039 | 19.1 | 7.5 | 100% | 96% |
-| firecrawl | — | — | — | — | — | — | — | — |
+| firecrawl | 3077 | 0 | 0% | 1815 | 8.2 | 0.0 | 0% | 0% |
 
 **[1]** Avg words per page before the first heading (nav chrome). **⚠** = likely nav/boilerplate problem (preamble >50 or repeat rate >20%).
 
 **Reading the numbers:**
-**markcrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai** injects 61 words of nav chrome before content begins. markcrawl's lower recall (87% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
+**firecrawl** produces the cleanest output with 0 word of preamble per page, while **crawl4ai** injects 61 words of nav chrome before content begins. firecrawl's lower recall (0% vs 100%) reflects stricter content filtering — the "missed" sentences are predominantly navigation, sponsor links, and footer text that other tools include as content. For RAG, this is a net positive: fewer junk tokens per chunk means better embedding quality and retrieval precision.
 
 <details>
-<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/library/chunk.html</code></summary>
+<summary>Sample output — first 40 lines of <code>docs.python.org/3.10/genindex-Y.html</code></summary>
 
 This shows what each tool outputs at the *top* of the same page.
 Nav boilerplate appears here before the real content starts.
 
 **markcrawl**
 ```
-# [`chunk`](#module-chunk "chunk: Module to read IFF chunks. (deprecated)") — Read IFF chunked data[¶](#module-chunk "Permalink to this headline")
+# Index – Y
 
-**Source code:** [Lib/chunk.py](https://github.com/python/cpython/tree/3.10/Lib/chunk.py)
-
-Deprecated since version 3.11: The [`chunk`](#module-chunk "chunk: Module to read IFF chunks. (deprecated)") module is deprecated
-(see [**PEP 594**](https://www.python.org/dev/peps/pep-0594#chunk) for details).
-
----
-
-This module provides an interface for reading files that use EA IFF 85 chunks.
-[1](#id2) This format is used in at least the Audio Interchange File Format
-(AIFF/AIFF-C) and the Real Media File Format (RMFF). The WAVE audio file format
-is closely related and can also be read using this module.
-
-A chunk has the following structure:
-
-| Offset | Length | Contents |
-| --- | --- | --- |
-| 0 | 4 | Chunk ID |
-| 4 | 4 | Size of chunk in big-endian byte order, not including the header |
-| 8 | *n* | Data bytes, where *n* is the size given in the preceding field |
-| 8 + *n* | 0 or 1 | Pad byte needed if *n* is odd and chunk alignment is used |
-
-The ID is a 4-byte string which identifies the type of chunk.
-
-The size field (a 32-bit value, encoded using big-endian byte order) gives the
-size of the chunk data, not including the 8-byte header.
-
-Usually an IFF-type file consists of one or more chunks. The proposed usage of
-the [`Chunk`](#chunk.Chunk "chunk.Chunk") class defined here is to instantiate an instance at the start
-of each chunk and read from the instance until it reaches the end, after which a
-new instance can be instantiated. At the end of the file, creating a new
-instance will fail with an [`EOFError`](exceptions.html#EOFError "EOFError") exception.
-
-*class* `chunk.``Chunk`(*file*, *align=True*, *bigendian=True*, *inclheader=False*)[¶](#chunk.Chunk "Permalink to this definition")
-:   Class which represents a chunk. The *file* argument is expected to be a
-    file-like object. An instance of this class is specifically allowed. The
-    only method that is needed is `read()`. If the methods
-    [`seek()`](io.html#io.IOBase.seek "io.IOBase.seek") and [`tell()`](io.html#io.IOBase.tell "io.IOBase.tell") are present and don’t
-    raise an exception, they are also used.
+|  |  |
+| --- | --- |
+| * [ycor() (in module turtle)](library/turtle.html#turtle.ycor) * [year (datetime.date attribute)](library/datetime.html#datetime.date.year)   * [(datetime.datetime attribute)](library/datetime.html#datetime.datetime.year) * [Year 2038](library/time.html#index-2) * [yeardatescalendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardatescalendar) * [yeardays2calendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardays2calendar) * [yeardayscalendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardayscalendar) * [YESEXPR (in module locale)](library/locale.html#locale.YESEXPR) | * yield   * [examples](reference/expressions.html#index-34)   * [expression](reference/expressions.html#index-23)   * [keyword](reference/expressions.html#index-23)   * [statement](reference/simple_stmts.html#index-26)   * [yield from (in What's New)](whatsnew/3.3.html#index-11) * [Yield (class in ast)](library/ast.html#ast.Yield) * [YIELD_FROM (opcode)](library/dis.html#opcode-YIELD_FROM) * [YIELD_VALUE (opcode)](library/dis.html#opcode-YIELD_VALUE) * [YieldFrom (class in ast)](library/ast.html#ast.YieldFrom) * [yiq_to_rgb() (in module colorsys)](library/colorsys.html#colorsys.yiq_to_rgb) * [yview() (tkinter.ttk.Treeview method)](library/tkinter.ttk.html#tkinter.ttk.Treeview.yview) |
 ```
 
 **crawl4ai**
@@ -1438,43 +1667,43 @@ instance will fail with an [`EOFError`](exceptions.html#EOFError "EOFError") exc
 [ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[`cgitb` — Traceback manager for CGI scripts](https://docs.python.org/3.10/library/cgitb.html "previous chapter")
-#### Next topic
-[`crypt` — Function to check Unix passwords](https://docs.python.org/3.10/library/crypt.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/library/chunk.rst)
-
-
 ### Navigation
   * [index](https://docs.python.org/3.10/genindex.html "General Index")
   * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/library/crypt.html "crypt — Function to check Unix passwords") |
-  * [previous](https://docs.python.org/3.10/library/cgitb.html "cgitb — Traceback manager for CGI scripts") |
   * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
   * [Python](https://www.python.org/) »
   * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
   * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [The Python Standard Library](https://docs.python.org/3.10/library/index.html) »
-  * [Superseded Modules](https://docs.python.org/3.10/library/superseded.html) »
-  * [`chunk` — Read IFF chunked data](https://docs.python.org/3.10/library/chunk.html)
+  * [Index](https://docs.python.org/3.10/genindex-Y.html)
   * | 
   * Theme  Auto Light Dark |
 
 
-#  [`chunk`](https://docs.python.org/3.10/library/chunk.html#module-chunk "chunk: Module to read IFF chunks. \(deprecated\)") — Read IFF chunked data[¶](https://docs.python.org/3.10/library/chunk.html#module-chunk "Permalink to this headline")
-**Source code:** [Lib/chunk.py](https://github.com/python/cpython/tree/3.10/Lib/chunk.py)
-Deprecated since version 3.11: The [`chunk`](https://docs.python.org/3.10/library/chunk.html#module-chunk "chunk: Module to read IFF chunks. \(deprecated\)") module is deprecated (see [**PEP 594**](https://www.python.org/dev/peps/pep-0594#chunk) for details).
-* * *
-This module provides an interface for reading files that use EA IFF 85 chunks. [1](https://docs.python.org/3.10/library/chunk.html#id2) This format is used in at least the Audio Interchange File Format (AIFF/AIFF-C) and the Real Media File Format (RMFF). The WAVE audio file format is closely related and can also be read using this module.
-A chunk has the following structure:  
-| Offset  | Length  | Contents  |  
-| --- | --- | --- |  
-| 0  | 4  | Chunk ID  |  
-| 4  | 4  | Size of chunk in big-endian byte order, not including the header  |  
-| 8  | _n_  | Data bytes, where _n_ is the size given in the preceding field  |  
+# Index – Y  
+| 
+  * [ycor() (in module turtle)](https://docs.python.org/3.10/library/turtle.html#turtle.ycor)
+  * [year (datetime.date attribute)](https://docs.python.org/3.10/library/datetime.html#datetime.date.year)
+    * [(datetime.datetime attribute)](https://docs.python.org/3.10/library/datetime.html#datetime.datetime.year)
+  * [Year 2038](https://docs.python.org/3.10/library/time.html#index-2)
+  * [yeardatescalendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardatescalendar)
+  * [yeardays2calendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardays2calendar)
+  * [yeardayscalendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardayscalendar)
+  * [YESEXPR (in module locale)](https://docs.python.org/3.10/library/locale.html#locale.YESEXPR)
+
+ | 
+  * yield 
+    * [examples](https://docs.python.org/3.10/reference/expressions.html#index-34)
+    * [expression](https://docs.python.org/3.10/reference/expressions.html#index-23)
+    * [keyword](https://docs.python.org/3.10/reference/expressions.html#index-23)
+    * [statement](https://docs.python.org/3.10/reference/simple_stmts.html#index-26)
+    * [yield from (in What's New)](https://docs.python.org/3.10/whatsnew/3.3.html#index-11)
+  * [Yield (class in ast)](https://docs.python.org/3.10/library/ast.html#ast.Yield)
+  * [YIELD_FROM (opcode)](https://docs.python.org/3.10/library/dis.html#opcode-YIELD_FROM)
+  * [YIELD_VALUE (opcode)](https://docs.python.org/3.10/library/dis.html#opcode-YIELD_VALUE)
+  * [YieldFrom (class in ast)](https://docs.python.org/3.10/library/ast.html#ast.YieldFrom)
+  * [yiq_to_rgb() (in module colorsys)](https://docs.python.org/3.10/library/colorsys.html#colorsys.yiq_to_rgb)
+  * [yview() (tkinter.ttk.Treeview method)](https://docs.python.org/3.10/library/tkinter.ttk.html#tkinter.ttk.Treeview.yview)
 ```
 
 **crawl4ai-raw**
@@ -1482,43 +1711,43 @@ A chunk has the following structure:
 [ ![Python logo](https://docs.python.org/3.10/_static/py.svg) ](https://www.python.org/) dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
 Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 Theme  Auto Light Dark
-#### Previous topic
-[`cgitb` — Traceback manager for CGI scripts](https://docs.python.org/3.10/library/cgitb.html "previous chapter")
-#### Next topic
-[`crypt` — Function to check Unix passwords](https://docs.python.org/3.10/library/crypt.html "next chapter")
-### This Page
-  * [Report a Bug](https://docs.python.org/3.10/bugs.html)
-  * [Show Source ](https://github.com/python/cpython/blob/3.10/Doc/library/chunk.rst)
-
-
 ### Navigation
   * [index](https://docs.python.org/3.10/genindex.html "General Index")
   * [modules](https://docs.python.org/3.10/py-modindex.html "Python Module Index") |
-  * [next](https://docs.python.org/3.10/library/crypt.html "crypt — Function to check Unix passwords") |
-  * [previous](https://docs.python.org/3.10/library/cgitb.html "cgitb — Traceback manager for CGI scripts") |
   * ![Python logo](https://docs.python.org/3.10/_static/py.svg)
   * [Python](https://www.python.org/) »
   * Greek | Ελληνικά English Spanish | español French | français Italian | italiano Japanese | 日本語 Korean | 한국어 Polish | polski Brazilian Portuguese | Português brasileiro Romanian | Românește Turkish | Türkçe Simplified Chinese | 简体中文 Traditional Chinese | 繁體中文
 dev (3.15) 3.14 3.13 3.12 3.11 3.10.20 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0 2.7 2.6
   * [3.10.20 Documentation](https://docs.python.org/3.10/index.html) » 
-  * [The Python Standard Library](https://docs.python.org/3.10/library/index.html) »
-  * [Superseded Modules](https://docs.python.org/3.10/library/superseded.html) »
-  * [`chunk` — Read IFF chunked data](https://docs.python.org/3.10/library/chunk.html)
+  * [Index](https://docs.python.org/3.10/genindex-Y.html)
   * | 
   * Theme  Auto Light Dark |
 
 
-#  [`chunk`](https://docs.python.org/3.10/library/chunk.html#module-chunk "chunk: Module to read IFF chunks. \(deprecated\)") — Read IFF chunked data[¶](https://docs.python.org/3.10/library/chunk.html#module-chunk "Permalink to this headline")
-**Source code:** [Lib/chunk.py](https://github.com/python/cpython/tree/3.10/Lib/chunk.py)
-Deprecated since version 3.11: The [`chunk`](https://docs.python.org/3.10/library/chunk.html#module-chunk "chunk: Module to read IFF chunks. \(deprecated\)") module is deprecated (see [**PEP 594**](https://www.python.org/dev/peps/pep-0594#chunk) for details).
-* * *
-This module provides an interface for reading files that use EA IFF 85 chunks. [1](https://docs.python.org/3.10/library/chunk.html#id2) This format is used in at least the Audio Interchange File Format (AIFF/AIFF-C) and the Real Media File Format (RMFF). The WAVE audio file format is closely related and can also be read using this module.
-A chunk has the following structure:  
-| Offset  | Length  | Contents  |  
-| --- | --- | --- |  
-| 0  | 4  | Chunk ID  |  
-| 4  | 4  | Size of chunk in big-endian byte order, not including the header  |  
-| 8  | _n_  | Data bytes, where _n_ is the size given in the preceding field  |  
+# Index – Y  
+| 
+  * [ycor() (in module turtle)](https://docs.python.org/3.10/library/turtle.html#turtle.ycor)
+  * [year (datetime.date attribute)](https://docs.python.org/3.10/library/datetime.html#datetime.date.year)
+    * [(datetime.datetime attribute)](https://docs.python.org/3.10/library/datetime.html#datetime.datetime.year)
+  * [Year 2038](https://docs.python.org/3.10/library/time.html#index-2)
+  * [yeardatescalendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardatescalendar)
+  * [yeardays2calendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardays2calendar)
+  * [yeardayscalendar() (calendar.Calendar method)](https://docs.python.org/3.10/library/calendar.html#calendar.Calendar.yeardayscalendar)
+  * [YESEXPR (in module locale)](https://docs.python.org/3.10/library/locale.html#locale.YESEXPR)
+
+ | 
+  * yield 
+    * [examples](https://docs.python.org/3.10/reference/expressions.html#index-34)
+    * [expression](https://docs.python.org/3.10/reference/expressions.html#index-23)
+    * [keyword](https://docs.python.org/3.10/reference/expressions.html#index-23)
+    * [statement](https://docs.python.org/3.10/reference/simple_stmts.html#index-26)
+    * [yield from (in What's New)](https://docs.python.org/3.10/whatsnew/3.3.html#index-11)
+  * [Yield (class in ast)](https://docs.python.org/3.10/library/ast.html#ast.Yield)
+  * [YIELD_FROM (opcode)](https://docs.python.org/3.10/library/dis.html#opcode-YIELD_FROM)
+  * [YIELD_VALUE (opcode)](https://docs.python.org/3.10/library/dis.html#opcode-YIELD_VALUE)
+  * [YieldFrom (class in ast)](https://docs.python.org/3.10/library/ast.html#ast.YieldFrom)
+  * [yiq_to_rgb() (in module colorsys)](https://docs.python.org/3.10/library/colorsys.html#colorsys.yiq_to_rgb)
+  * [yview() (tkinter.ttk.Treeview method)](https://docs.python.org/3.10/library/tkinter.ttk.html#tkinter.ttk.Treeview.yview)
 ```
 
 **scrapy+md**
@@ -1528,31 +1757,14 @@ Auto
 Light
 Dark
 
-#### Previous topic
-
-[`cgitb` — Traceback manager for CGI scripts](cgitb.html "previous chapter")
-
-#### Next topic
-
-[`crypt` — Function to check Unix passwords](crypt.html "next chapter")
-
-### This Page
-
-* [Report a Bug](../bugs.html)
-* [Show Source](https://github.com/python/cpython/blob/3.10/Doc/library/chunk.rst)
-
 ### Navigation
 
-* [index](../genindex.html "General Index")
-* [modules](../py-modindex.html "Python Module Index") |
-* [next](crypt.html "crypt — Function to check Unix passwords") |
-* [previous](cgitb.html "cgitb — Traceback manager for CGI scripts") |
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
 * [Python](https://www.python.org/) »
 
-* [3.10.20 Documentation](../index.html) »
-* [The Python Standard Library](index.html) »
-* [Superseded Modules](superseded.html) »
-* `chunk` — Read IFF chunked data
+* [3.10.20 Documentation](index.html) »
+* Index
 * |
 * Theme
   Auto
@@ -1560,16 +1772,31 @@ Dark
   Dark
    |
 
-# [`chunk`](#module-chunk "chunk: Module to read IFF chunks. (deprecated)") — Read IFF chunked data[¶](#module-chunk "Permalink to this headline")
+# Index – Y
 
-**Source code:** [Lib/chunk.py](https://github.com/python/cpython/tree/3.10/Lib/chunk.py)
+|  |  |
+| --- | --- |
+| * [ycor() (in module turtle)](library/turtle.html#turtle.ycor) * [year (datetime.date attribute)](library/datetime.html#datetime.date.year)   + [(datetime.datetime attribute)](library/datetime.html#datetime.datetime.year) * [Year 2038](library/time.html#index-2) * [yeardatescalendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardatescalendar) * [yeardays2calendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardays2calendar) * [yeardayscalendar() (calendar.Calendar method)](library/calendar.html#calendar.Calendar.yeardayscalendar) * [YESEXPR (in module locale)](library/locale.html#locale.YESEXPR) | * yield   + [examples](reference/expressions.html#index-34)   + [expression](reference/expressions.html#index-23)   + [keyword](reference/expressions.html#index-23)   + [statement](reference/simple_stmts.html#index-26)   + [yield from (in What's New)](whatsnew/3.3.html#index-11) * [Yield (class in ast)](library/ast.html#ast.Yield) * [YIELD\_FROM (opcode)](library/dis.html#opcode-YIELD_FROM) * [YIELD\_VALUE (opcode)](library/dis.html#opcode-YIELD_VALUE) * [YieldFrom (class in ast)](library/ast.html#ast.YieldFrom) * [yiq\_to\_rgb() (in module colorsys)](library/colorsys.html#colorsys.yiq_to_rgb) * [yview() (tkinter.ttk.Treeview method)](library/tkinter.ttk.html#tkinter.ttk.Treeview.yview) |
+
+### Navigation
+
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
+
+* [3.10.20 Documentation](index.html) »
+* Index
+* |
+* Theme
+  Auto
+  Light
+  Dark
+   |
 ```
 
 **crawlee**
 ```
-chunk — Read IFF chunked data — Python 3.10.20 documentation
-
-
+Index — Python 3.10.20 documentation
 
 
 
@@ -1602,18 +1829,17 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Navigation
 
-[`cgitb` — Traceback manager for CGI scripts](cgitb.html "previous chapter")
-
-#### Next topic
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
+* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 ```
 
 **colly+md**
 ```
-chunk — Read IFF chunked data — Python 3.10.20 documentation
-
-
+Index — Python 3.10.20 documentation
 
 
 
@@ -1642,22 +1868,22 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Navigation
 
-[`cgitb` — Traceback manager for CGI scripts](cgitb.html "previous chapter")
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
 
-#### Next topic
-
-[`crypt` — Function to check Unix passwords](crypt.html "next chapter")
-
-### This Page
+* [3.10.20 Documentation](index.html) »
+* Index
+* |
+* Theme
+  Auto
 ```
 
 **playwright**
 ```
-chunk — Read IFF chunked data — Python 3.10.20 documentation
-
-
+Index — Python 3.10.20 documentation
 
 
 
@@ -1690,11 +1916,12 @@ Auto
 Light
 Dark
 
-#### Previous topic
+### Navigation
 
-[`cgitb` — Traceback manager for CGI scripts](cgitb.html "previous chapter")
-
-#### Next topic
+* [index](genindex.html "General Index")
+* [modules](py-modindex.html "Python Module Index") |
+* [Python](https://www.python.org/) »
+* Greek | ΕλληνικάEnglishSpanish | españolFrench | françaisItalian | italianoJapanese | 日本語Korean | 한국어Polish | polskiBrazilian Portuguese | Português brasileiroRomanian | RomâneșteTurkish | TürkçeSimplified Chinese | 简体中文Traditional Chinese | 繁體中文
 ```
 
 **firecrawl** — no output for this URL
@@ -2205,6 +2432,326 @@ Dark
 | docs.python.org/3.8 | 189 / 0 | 551 / 56 | 551 / 56 | — | 484 / 39 | 400 / 12 | 484 / 39 | — |
 | docs.python.org/3.9 | 190 / 0 | 580 / 63 | 580 / 63 | — | 504 / 43 | 408 / 12 | 504 / 43 | — |
 | docs.python.org/3/bugs.html | — | — | — | 980 / 4 | — | 997 / 21 | — | — |
+| docs.python.org/3/library | — | — | — | — | — | — | — | 2394 / 0 |
+| docs.python.org/3/library/__future__.html | — | — | — | — | — | — | — | 912 / 0 |
+| docs.python.org/3/library/__main__.html | — | — | — | — | — | — | — | 1979 / 0 |
+| docs.python.org/3/library/_thread.html | — | — | — | — | — | — | — | 1312 / 0 |
+| docs.python.org/3/library/abc.html | — | — | — | — | — | — | — | 1771 / 0 |
+| docs.python.org/3/library/aifc.html | — | — | — | — | — | — | — | 292 / 0 |
+| docs.python.org/3/library/allos.html | — | — | — | — | — | — | — | 775 / 0 |
+| docs.python.org/3/library/annotationlib.html | — | — | — | — | — | — | — | 4093 / 0 |
+| docs.python.org/3/library/archiving.html | — | — | — | — | — | — | — | 487 / 0 |
+| docs.python.org/3/library/argparse.html | — | — | — | — | — | — | — | 11203 / 0 |
+| docs.python.org/3/library/array.html | — | — | — | — | — | — | — | 1716 / 0 |
+| docs.python.org/3/library/ast.html | — | — | — | — | — | — | — | 10362 / 0 |
+| docs.python.org/3/library/asynchat.html | — | — | — | — | — | — | — | 311 / 0 |
+| docs.python.org/3/library/asyncio-api-index.html | — | — | — | — | — | — | — | 911 / 0 |
+| docs.python.org/3/library/asyncio-dev.html | — | — | — | — | — | — | — | 2081 / 0 |
+| docs.python.org/3/library/asyncio-eventloop.html | — | — | — | — | — | — | — | 9323 / 0 |
+| docs.python.org/3/library/asyncio-exceptions.html | — | — | — | — | — | — | — | 468 / 0 |
+| docs.python.org/3/library/asyncio-extending.html | — | — | — | — | — | — | — | 636 / 0 |
+| docs.python.org/3/library/asyncio-future.html | — | — | — | — | — | — | — | 1379 / 0 |
+| docs.python.org/3/library/asyncio-graph.html | — | — | — | — | — | — | — | 880 / 0 |
+| docs.python.org/3/library/asyncio-llapi-index.html | — | — | — | — | — | — | — | 1914 / 0 |
+| docs.python.org/3/library/asyncio-platforms.html | — | — | — | — | — | — | — | 573 / 0 |
+| docs.python.org/3/library/asyncio-policy.html | — | — | — | — | — | — | — | 824 / 0 |
+| docs.python.org/3/library/asyncio-protocol.html | — | — | — | — | — | — | — | 4244 / 0 |
+| docs.python.org/3/library/asyncio-queue.html | — | — | — | — | — | — | — | 1292 / 0 |
+| docs.python.org/3/library/asyncio-runner.html | — | — | — | — | — | — | — | 1071 / 0 |
+| docs.python.org/3/library/asyncio-stream.html | — | — | — | — | — | — | — | 2264 / 0 |
+| docs.python.org/3/library/asyncio-subprocess.html | — | — | — | — | — | — | — | 1651 / 0 |
+| docs.python.org/3/library/asyncio-sync.html | — | — | — | — | — | — | — | 2032 / 0 |
+| docs.python.org/3/library/asyncio-task.html | — | — | — | — | — | — | — | 6789 / 0 |
+| docs.python.org/3/library/asyncio.html | — | — | — | — | — | — | — | 572 / 0 |
+| docs.python.org/3/library/asyncore.html | — | — | — | — | — | — | — | 302 / 0 |
+| docs.python.org/3/library/atexit.html | — | — | — | — | — | — | — | 872 / 0 |
+| docs.python.org/3/library/audioop.html | — | — | — | — | — | — | — | 292 / 0 |
+| docs.python.org/3/library/audit_events.html | — | — | — | — | — | — | — | 1847 / 0 |
+| docs.python.org/3/library/base64.html | — | — | — | — | — | — | — | 2052 / 0 |
+| docs.python.org/3/library/bdb.html | — | — | — | — | — | — | — | 2604 / 0 |
+| docs.python.org/3/library/binary.html | — | — | — | — | — | — | — | 463 / 0 |
+| docs.python.org/3/library/binascii.html | — | — | — | — | — | — | — | 1221 / 0 |
+| docs.python.org/3/library/bisect.html | — | — | — | — | — | — | — | 1617 / 0 |
+| docs.python.org/3/library/builtins.html | — | — | — | — | — | — | — | 431 / 0 |
+| docs.python.org/3/library/bz2.html | — | — | — | — | — | — | — | 2097 / 0 |
+| docs.python.org/3/library/calendar.html | — | — | — | — | — | — | — | 3889 / 0 |
+| docs.python.org/3/library/cgi.html | — | — | — | — | — | — | — | 329 / 0 |
+| docs.python.org/3/library/cgitb.html | — | — | — | — | — | — | — | 330 / 0 |
+| docs.python.org/3/library/chunk.html | — | — | — | — | — | — | — | 301 / 0 |
+| docs.python.org/3/library/cmath.html | — | — | — | — | — | — | — | 2209 / 0 |
+| docs.python.org/3/library/cmd.html | — | — | — | — | — | — | — | 2237 / 0 |
+| docs.python.org/3/library/cmdline.html | — | — | — | — | — | — | — | 444 / 0 |
+| docs.python.org/3/library/cmdlinelibs.html | — | — | — | — | — | — | — | 334 / 0 |
+| docs.python.org/3/library/code.html | — | — | — | — | — | — | — | 1407 / 0 |
+| docs.python.org/3/library/codecs.html | — | — | — | — | — | — | — | 8946 / 0 |
+| docs.python.org/3/library/codeop.html | — | — | — | — | — | — | — | 670 / 0 |
+| docs.python.org/3/library/collections.abc.html | — | — | — | — | — | — | — | 2442 / 0 |
+| docs.python.org/3/library/collections.html | — | — | — | — | — | — | — | 7302 / 0 |
+| docs.python.org/3/library/colorsys.html | — | — | — | — | — | — | — | 457 / 0 |
+| docs.python.org/3/library/compileall.html | — | — | — | — | — | — | — | 2258 / 0 |
+| docs.python.org/3/library/compression.html | — | — | — | — | — | — | — | 377 / 0 |
+| docs.python.org/3/library/compression.zstd.html | — | — | — | — | — | — | — | 5047 / 0 |
+| docs.python.org/3/library/concurrency.html | — | — | — | — | — | — | — | 679 / 0 |
+| docs.python.org/3/library/concurrent.futures.html | — | — | — | — | — | — | — | 4248 / 0 |
+| docs.python.org/3/library/concurrent.html | — | — | — | — | — | — | — | 275 / 0 |
+| docs.python.org/3/library/concurrent.interpreters.html | — | — | — | — | — | — | — | 1945 / 0 |
+| docs.python.org/3/library/configparser.html | — | — | — | — | — | — | — | 7144 / 0 |
+| docs.python.org/3/library/constants.html | — | — | — | — | — | — | — | 849 / 0 |
+| docs.python.org/3/library/contextlib.html | — | — | — | — | — | — | — | 4996 / 0 |
+| docs.python.org/3/library/contextvars.html | — | — | — | — | — | — | — | 1676 / 0 |
+| docs.python.org/3/library/copy.html | — | — | — | — | — | — | — | 878 / 0 |
+| docs.python.org/3/library/copyreg.html | — | — | — | — | — | — | — | 516 / 0 |
+| docs.python.org/3/library/crypt.html | — | — | — | — | — | — | — | 344 / 0 |
+| docs.python.org/3/library/crypto.html | — | — | — | — | — | — | — | 356 / 0 |
+| docs.python.org/3/library/csv.html | — | — | — | — | — | — | — | 3499 / 0 |
+| docs.python.org/3/library/ctypes.html | — | — | — | — | — | — | — | 15868 / 0 |
+| docs.python.org/3/library/curses.ascii.html | — | — | — | — | — | — | — | 1238 / 0 |
+| docs.python.org/3/library/curses.html | — | — | — | — | — | — | — | 10727 / 0 |
+| docs.python.org/3/library/curses.panel.html | — | — | — | — | — | — | — | 677 / 0 |
+| docs.python.org/3/library/custominterp.html | — | — | — | — | — | — | — | 315 / 0 |
+| docs.python.org/3/library/dataclasses.html | — | — | — | — | — | — | — | 4930 / 0 |
+| docs.python.org/3/library/datatypes.html | — | — | — | — | — | — | — | 688 / 0 |
+| docs.python.org/3/library/datetime.html | — | — | — | — | — | — | — | 15139 / 0 |
+| docs.python.org/3/library/dbm.html | — | — | — | — | — | — | — | 2563 / 0 |
+| docs.python.org/3/library/debug.html | — | — | — | — | — | — | — | 484 / 0 |
+| docs.python.org/3/library/decimal.html | — | — | — | — | — | — | — | 11401 / 0 |
+| docs.python.org/3/library/development.html | — | — | — | — | — | — | — | 979 / 0 |
+| docs.python.org/3/library/devmode.html | — | — | — | — | — | — | — | 1242 / 0 |
+| docs.python.org/3/library/dialog.html | — | — | — | — | — | — | — | 1087 / 0 |
+| docs.python.org/3/library/difflib.html | — | — | — | — | — | — | — | 4984 / 0 |
+| docs.python.org/3/library/dis.html | — | — | — | — | — | — | — | 8612 / 0 |
+| docs.python.org/3/library/distribution.html | — | — | — | — | — | — | — | 341 / 0 |
+| docs.python.org/3/library/distutils.html | — | — | — | — | — | — | — | 312 / 0 |
+| docs.python.org/3/library/doctest.html | — | — | — | — | — | — | — | 10845 / 0 |
+| docs.python.org/3/library/email.charset.html | — | — | — | — | — | — | — | 1338 / 0 |
+| docs.python.org/3/library/email.compat32-message.html | — | — | — | — | — | — | — | 4628 / 0 |
+| docs.python.org/3/library/email.contentmanager.html | — | — | — | — | — | — | — | 1424 / 0 |
+| docs.python.org/3/library/email.encoders.html | — | — | — | — | — | — | — | 616 / 0 |
+| docs.python.org/3/library/email.errors.html | — | — | — | — | — | — | — | 980 / 0 |
+| docs.python.org/3/library/email.examples.html | — | — | — | — | — | — | — | 1837 / 0 |
+| docs.python.org/3/library/email.generator.html | — | — | — | — | — | — | — | 2024 / 0 |
+| docs.python.org/3/library/email.header.html | — | — | — | — | — | — | — | 1651 / 0 |
+| docs.python.org/3/library/email.headerregistry.html | — | — | — | — | — | — | — | 2829 / 0 |
+| docs.python.org/3/library/email.html | — | — | — | — | — | — | — | 1328 / 0 |
+| docs.python.org/3/library/email.iterators.html | — | — | — | — | — | — | — | 528 / 0 |
+| docs.python.org/3/library/email.message.html | — | — | — | — | — | — | — | 4579 / 0 |
+| docs.python.org/3/library/email.mime.html | — | — | — | — | — | — | — | 1661 / 0 |
+| docs.python.org/3/library/email.parser.html | — | — | — | — | — | — | — | 2196 / 0 |
+| docs.python.org/3/library/email.policy.html | — | — | — | — | — | — | — | 4165 / 0 |
+| docs.python.org/3/library/email.utils.html | — | — | — | — | — | — | — | 1590 / 0 |
+| docs.python.org/3/library/ensurepip.html | — | — | — | — | — | — | — | 993 / 0 |
+| docs.python.org/3/library/enum.html | — | — | — | — | — | — | — | 5123 / 0 |
+| docs.python.org/3/library/errno.html | — | — | — | — | — | — | — | 2005 / 0 |
+| docs.python.org/3/library/exceptions.html | — | — | — | — | — | — | — | 6007 / 0 |
+| docs.python.org/3/library/faulthandler.html | — | — | — | — | — | — | — | 1651 / 0 |
+| docs.python.org/3/library/fcntl.html | — | — | — | — | — | — | — | 1860 / 0 |
+| docs.python.org/3/library/filecmp.html | — | — | — | — | — | — | — | 1114 / 0 |
+| docs.python.org/3/library/fileformats.html | — | — | — | — | — | — | — | 354 / 0 |
+| docs.python.org/3/library/fileinput.html | — | — | — | — | — | — | — | 1586 / 0 |
+| docs.python.org/3/library/filesys.html | — | — | — | — | — | — | — | 529 / 0 |
+| docs.python.org/3/library/fnmatch.html | — | — | — | — | — | — | — | 758 / 0 |
+| docs.python.org/3/library/fractions.html | — | — | — | — | — | — | — | 1387 / 0 |
+| docs.python.org/3/library/ftplib.html | — | — | — | — | — | — | — | 3285 / 0 |
+| docs.python.org/3/library/functional.html | — | — | — | — | — | — | — | 300 / 0 |
+| docs.python.org/3/library/functions.html | — | — | — | — | — | — | — | 13267 / 0 |
+| docs.python.org/3/library/functools.html | — | — | — | — | — | — | — | 4211 / 0 |
+| docs.python.org/3/library/gc.html | — | — | — | — | — | — | — | 1987 / 0 |
+| docs.python.org/3/library/getopt.html | — | — | — | — | — | — | — | 1504 / 0 |
+| docs.python.org/3/library/getpass.html | — | — | — | — | — | — | — | 619 / 0 |
+| docs.python.org/3/library/gettext.html | — | — | — | — | — | — | — | 3650 / 0 |
+| docs.python.org/3/library/glob.html | — | — | — | — | — | — | — | 1190 / 0 |
+| docs.python.org/3/library/graphlib.html | — | — | — | — | — | — | — | 1461 / 0 |
+| docs.python.org/3/library/grp.html | — | — | — | — | — | — | — | 537 / 0 |
+| docs.python.org/3/library/gzip.html | — | — | — | — | — | — | — | 1888 / 0 |
+| docs.python.org/3/library/hashlib.html | — | — | — | — | — | — | — | 4253 / 0 |
+| docs.python.org/3/library/heapq.html | — | — | — | — | — | — | — | 2756 / 0 |
+| docs.python.org/3/library/hmac.html | — | — | — | — | — | — | — | 980 / 0 |
+| docs.python.org/3/library/html.entities.html | — | — | — | — | — | — | — | 390 / 0 |
+| docs.python.org/3/library/html.html | — | — | — | — | — | — | — | 439 / 0 |
+| docs.python.org/3/library/html.parser.html | — | — | — | — | — | — | — | 1760 / 0 |
+| docs.python.org/3/library/i18n.html | — | — | — | — | — | — | — | 347 / 0 |
+| docs.python.org/3/library/idle.html | — | — | — | — | — | — | — | 6890 / 0 |
+| docs.python.org/3/library/imaplib.html | — | — | — | — | — | — | — | 3648 / 0 |
+| docs.python.org/3/library/imghdr.html | — | — | — | — | — | — | — | 329 / 0 |
+| docs.python.org/3/library/imp.html | — | — | — | — | — | — | — | 310 / 0 |
+| docs.python.org/3/library/importlib.html | — | — | — | — | — | — | — | 7805 / 0 |
+| docs.python.org/3/library/importlib.metadata.html | — | — | — | — | — | — | — | 2820 / 0 |
+| docs.python.org/3/library/importlib.resources.abc.html | — | — | — | — | — | — | — | 1067 / 0 |
+| docs.python.org/3/library/importlib.resources.html | — | — | — | — | — | — | — | 1486 / 0 |
+| docs.python.org/3/library/inspect.html | — | — | — | — | — | — | — | 8427 / 0 |
+| docs.python.org/3/library/internet.html | — | — | — | — | — | — | — | 811 / 0 |
+| docs.python.org/3/library/intro.html | — | — | — | — | — | — | — | 1512 / 0 |
+| docs.python.org/3/library/io.html | — | — | — | — | — | — | — | 7118 / 0 |
+| docs.python.org/3/library/ipaddress.html | — | — | — | — | — | — | — | 5187 / 0 |
+| docs.python.org/3/library/ipc.html | — | — | — | — | — | — | — | 336 / 0 |
+| docs.python.org/3/library/itertools.html | — | — | — | — | — | — | — | 5819 / 0 |
+| docs.python.org/3/library/json.html | — | — | — | — | — | — | — | 4288 / 0 |
+| docs.python.org/3/library/keyword.html | — | — | — | — | — | — | — | 393 / 0 |
+| docs.python.org/3/library/language.html | — | — | — | — | — | — | — | 449 / 0 |
+| docs.python.org/3/library/linecache.html | — | — | — | — | — | — | — | 624 / 0 |
+| docs.python.org/3/library/locale.html | — | — | — | — | — | — | — | 4046 / 0 |
+| docs.python.org/3/library/logging.config.html | — | — | — | — | — | — | — | 5867 / 0 |
+| docs.python.org/3/library/logging.handlers.html | — | — | — | — | — | — | — | 7330 / 0 |
+| docs.python.org/3/library/logging.html | — | — | — | — | — | — | — | 9825 / 0 |
+| docs.python.org/3/library/lzma.html | — | — | — | — | — | — | — | 2718 / 0 |
+| docs.python.org/3/library/mailbox.html | — | — | — | — | — | — | — | 8759 / 0 |
+| docs.python.org/3/library/mailcap.html | — | — | — | — | — | — | — | 298 / 0 |
+| docs.python.org/3/library/markup.html | — | — | — | — | — | — | — | 581 / 0 |
+| docs.python.org/3/library/marshal.html | — | — | — | — | — | — | — | 1225 / 0 |
+| docs.python.org/3/library/math.html | — | — | — | — | — | — | — | 4631 / 0 |
+| docs.python.org/3/library/mimetypes.html | — | — | — | — | — | — | — | 2291 / 0 |
+| docs.python.org/3/library/mm.html | — | — | — | — | — | — | — | 273 / 0 |
+| docs.python.org/3/library/mmap.html | — | — | — | — | — | — | — | 2585 / 0 |
+| docs.python.org/3/library/modulefinder.html | — | — | — | — | — | — | — | 629 / 0 |
+| docs.python.org/3/library/modules.html | — | — | — | — | — | — | — | 440 / 0 |
+| docs.python.org/3/library/msilib.html | — | — | — | — | — | — | — | 304 / 0 |
+| docs.python.org/3/library/msvcrt.html | — | — | — | — | — | — | — | 1400 / 0 |
+| docs.python.org/3/library/multiprocessing.html | — | — | — | — | — | — | — | 18264 / 0 |
+| docs.python.org/3/library/multiprocessing.shared_memory | — | — | — | — | — | — | — | 2624 / 0 |
+| docs.python.org/3/library/netdata.html | — | — | — | — | — | — | — | 495 / 0 |
+| docs.python.org/3/library/netrc.html | — | — | — | — | — | — | — | 736 / 0 |
+| docs.python.org/3/library/nis.html | — | — | — | — | — | — | — | 304 / 0 |
+| docs.python.org/3/library/nntplib.html | — | — | — | — | — | — | — | 301 / 0 |
+| docs.python.org/3/library/numbers.html | — | — | — | — | — | — | — | 1275 / 0 |
+| docs.python.org/3/library/numeric.html | — | — | — | — | — | — | — | 572 / 0 |
+| docs.python.org/3/library/operator.html | — | — | — | — | — | — | — | 2663 / 0 |
+| docs.python.org/3/library/optparse.html | — | — | — | — | — | — | — | 11471 / 0 |
+| docs.python.org/3/library/os.html | — | — | — | — | — | — | — | 29776 / 0 |
+| docs.python.org/3/library/os.path.html | — | — | — | — | — | — | — | 3477 / 0 |
+| docs.python.org/3/library/ossaudiodev.html | — | — | — | — | — | — | — | 295 / 0 |
+| docs.python.org/3/library/pathlib.html | — | — | — | — | — | — | — | 8859 / 0 |
+| docs.python.org/3/library/pdb.html | — | — | — | — | — | — | — | 4588 / 0 |
+| docs.python.org/3/library/persistence.html | — | — | — | — | — | — | — | 603 / 0 |
+| docs.python.org/3/library/pickle.html | — | — | — | — | — | — | — | 7372 / 0 |
+| docs.python.org/3/library/pickletools.html | — | — | — | — | — | — | — | 803 / 0 |
+| docs.python.org/3/library/pipes.html | — | — | — | — | — | — | — | 302 / 0 |
+| docs.python.org/3/library/pkgutil.html | — | — | — | — | — | — | — | 1581 / 0 |
+| docs.python.org/3/library/platform.html | — | — | — | — | — | — | — | 2106 / 0 |
+| docs.python.org/3/library/plistlib.html | — | — | — | — | — | — | — | 1094 / 0 |
+| docs.python.org/3/library/poplib.html | — | — | — | — | — | — | — | 1495 / 0 |
+| docs.python.org/3/library/posix.html | — | — | — | — | — | — | — | 738 / 0 |
+| docs.python.org/3/library/pprint.html | — | — | — | — | — | — | — | 2093 / 0 |
+| docs.python.org/3/library/profile.html | — | — | — | — | — | — | — | 4490 / 0 |
+| docs.python.org/3/library/pty.html | — | — | — | — | — | — | — | 879 / 0 |
+| docs.python.org/3/library/pwd.html | — | — | — | — | — | — | — | 535 / 0 |
+| docs.python.org/3/library/py_compile.html | — | — | — | — | — | — | — | 1195 / 0 |
+| docs.python.org/3/library/pyclbr.html | — | — | — | — | — | — | — | 914 / 0 |
+| docs.python.org/3/library/pydoc.html | — | — | — | — | — | — | — | 992 / 0 |
+| docs.python.org/3/library/pyexpat.html | — | — | — | — | — | — | — | 4738 / 0 |
+| docs.python.org/3/library/python.html | — | — | — | — | — | — | — | 764 / 0 |
+| docs.python.org/3/library/queue.html | — | — | — | — | — | — | — | 2029 / 0 |
+| docs.python.org/3/library/quopri.html | — | — | — | — | — | — | — | 590 / 0 |
+| docs.python.org/3/library/random.html | — | — | — | — | — | — | — | 4206 / 0 |
+| docs.python.org/3/library/re.html | — | — | — | — | — | — | — | 11123 / 0 |
+| docs.python.org/3/library/readline.html | — | — | — | — | — | — | — | 2056 / 0 |
+| docs.python.org/3/library/removed.html | — | — | — | — | — | — | — | 439 / 0 |
+| docs.python.org/3/library/reprlib.html | — | — | — | — | — | — | — | 1226 / 0 |
+| docs.python.org/3/library/resource.html | — | — | — | — | — | — | — | 2058 / 0 |
+| docs.python.org/3/library/rlcompleter.html | — | — | — | — | — | — | — | 581 / 0 |
+| docs.python.org/3/library/runpy.html | — | — | — | — | — | — | — | 1500 / 0 |
+| docs.python.org/3/library/sched.html | — | — | — | — | — | — | — | 898 / 0 |
+| docs.python.org/3/library/secrets.html | — | — | — | — | — | — | — | 1084 / 0 |
+| docs.python.org/3/library/security_warnings.html | — | — | — | — | — | — | — | 507 / 0 |
+| docs.python.org/3/library/select.html | — | — | — | — | — | — | — | 3356 / 0 |
+| docs.python.org/3/library/selectors.html | — | — | — | — | — | — | — | 1466 / 0 |
+| docs.python.org/3/library/shelve.html | — | — | — | — | — | — | — | 1556 / 0 |
+| docs.python.org/3/library/shlex.html | — | — | — | — | — | — | — | 2795 / 0 |
+| docs.python.org/3/library/shutil.html | — | — | — | — | — | — | — | 5342 / 0 |
+| docs.python.org/3/library/signal.html | — | — | — | — | — | — | — | 4310 / 0 |
+| docs.python.org/3/library/site.html | — | — | — | — | — | — | — | 1806 / 0 |
+| docs.python.org/3/library/smtpd.html | — | — | — | — | — | — | — | 312 / 0 |
+| docs.python.org/3/library/smtplib.html | — | — | — | — | — | — | — | 3632 / 0 |
+| docs.python.org/3/library/sndhdr.html | — | — | — | — | — | — | — | 317 / 0 |
+| docs.python.org/3/library/socket.html | — | — | — | — | — | — | — | 12781 / 0 |
+| docs.python.org/3/library/socketserver.html | — | — | — | — | — | — | — | 3649 / 0 |
+| docs.python.org/3/library/spwd.html | — | — | — | — | — | — | — | 325 / 0 |
+| docs.python.org/3/library/sqlite3.html | — | — | — | — | — | — | — | 11571 / 0 |
+| docs.python.org/3/library/ssl.html | — | — | — | — | — | — | — | 14512 / 0 |
+| docs.python.org/3/library/stat.html | — | — | — | — | — | — | — | 1976 / 0 |
+| docs.python.org/3/library/statistics.html | — | — | — | — | — | — | — | 6180 / 0 |
+| docs.python.org/3/library/stdtypes.html | — | — | — | — | — | — | — | 31227 / 0 |
+| docs.python.org/3/library/string.html | — | — | — | — | — | — | — | 5725 / 0 |
+| docs.python.org/3/library/string.templatelib.html | — | — | — | — | — | — | — | 1768 / 0 |
+| docs.python.org/3/library/stringprep.html | — | — | — | — | — | — | — | 794 / 0 |
+| docs.python.org/3/library/struct.html | — | — | — | — | — | — | — | 3680 / 0 |
+| docs.python.org/3/library/subprocess.html | — | — | — | — | — | — | — | 8821 / 0 |
+| docs.python.org/3/library/sunau.html | — | — | — | — | — | — | — | 295 / 0 |
+| docs.python.org/3/library/superseded.html | — | — | — | — | — | — | — | 398 / 0 |
+| docs.python.org/3/library/symtable.html | — | — | — | — | — | — | — | 1648 / 0 |
+| docs.python.org/3/library/sys.html | — | — | — | — | — | — | — | 12257 / 0 |
+| docs.python.org/3/library/sys.monitoring.html | — | — | — | — | — | — | — | 2237 / 0 |
+| docs.python.org/3/library/sys_path_init.html | — | — | — | — | — | — | — | 1191 / 0 |
+| docs.python.org/3/library/sysconfig.html | — | — | — | — | — | — | — | 2337 / 0 |
+| docs.python.org/3/library/syslog.html | — | — | — | — | — | — | — | 1227 / 0 |
+| docs.python.org/3/library/tabnanny.html | — | — | — | — | — | — | — | 485 / 0 |
+| docs.python.org/3/library/tarfile.html | — | — | — | — | — | — | — | 7535 / 0 |
+| docs.python.org/3/library/telnetlib.html | — | — | — | — | — | — | — | 320 / 0 |
+| docs.python.org/3/library/tempfile.html | — | — | — | — | — | — | — | 3089 / 0 |
+| docs.python.org/3/library/termios.html | — | — | — | — | — | — | — | 842 / 0 |
+| docs.python.org/3/library/test.html | — | — | — | — | — | — | — | 8442 / 0 |
+| docs.python.org/3/library/text.html | — | — | — | — | — | — | — | 465 / 0 |
+| docs.python.org/3/library/textwrap.html | — | — | — | — | — | — | — | 1749 / 0 |
+| docs.python.org/3/library/threading.html | — | — | — | — | — | — | — | 7930 / 0 |
+| docs.python.org/3/library/threadsafety.html | — | — | — | — | — | — | — | 3067 / 0 |
+| docs.python.org/3/library/time.html | — | — | — | — | — | — | — | 5434 / 0 |
+| docs.python.org/3/library/timeit.html | — | — | — | — | — | — | — | 2170 / 0 |
+| docs.python.org/3/library/tk.html | — | — | — | — | — | — | — | 1017 / 0 |
+| docs.python.org/3/library/tkinter.colorchooser.html | — | — | — | — | — | — | — | 341 / 0 |
+| docs.python.org/3/library/tkinter.dnd.html | — | — | — | — | — | — | — | 533 / 0 |
+| docs.python.org/3/library/tkinter.font.html | — | — | — | — | — | — | — | 684 / 0 |
+| docs.python.org/3/library/tkinter.html | — | — | — | — | — | — | — | 6426 / 0 |
+| docs.python.org/3/library/tkinter.messagebox.html | — | — | — | — | — | — | — | 1064 / 0 |
+| docs.python.org/3/library/tkinter.scrolledtext.html | — | — | — | — | — | — | — | 381 / 0 |
+| docs.python.org/3/library/tkinter.ttk.html | — | — | — | — | — | — | — | 6688 / 0 |
+| docs.python.org/3/library/token.html | — | — | — | — | — | — | — | 1801 / 0 |
+| docs.python.org/3/library/tokenize.html | — | — | — | — | — | — | — | 1643 / 0 |
+| docs.python.org/3/library/tomllib.html | — | — | — | — | — | — | — | 792 / 0 |
+| docs.python.org/3/library/trace.html | — | — | — | — | — | — | — | 1256 / 0 |
+| docs.python.org/3/library/traceback.html | — | — | — | — | — | — | — | 3818 / 0 |
+| docs.python.org/3/library/tracemalloc.html | — | — | — | — | — | — | — | 3657 / 0 |
+| docs.python.org/3/library/tty.html | — | — | — | — | — | — | — | 605 / 0 |
+| docs.python.org/3/library/turtle.html | — | — | — | — | — | — | — | 10964 / 0 |
+| docs.python.org/3/library/types.html | — | — | — | — | — | — | — | 2466 / 0 |
+| docs.python.org/3/library/typing.html | — | — | — | — | — | — | — | 19075 / 0 |
+| docs.python.org/3/library/unicodedata.html | — | — | — | — | — | — | — | 1172 / 0 |
+| docs.python.org/3/library/unittest.html | — | — | — | — | — | — | — | 13372 / 0 |
+| docs.python.org/3/library/unittest.mock-examples.html | — | — | — | — | — | — | — | 6905 / 0 |
+| docs.python.org/3/library/unittest.mock.html | — | — | — | — | — | — | — | 14261 / 0 |
+| docs.python.org/3/library/unix.html | — | — | — | — | — | — | — | 352 / 0 |
+| docs.python.org/3/library/urllib.error.html | — | — | — | — | — | — | — | 568 / 0 |
+| docs.python.org/3/library/urllib.html | — | — | — | — | — | — | — | 333 / 0 |
+| docs.python.org/3/library/urllib.parse.html | — | — | — | — | — | — | — | 4407 / 0 |
+| docs.python.org/3/library/urllib.request.html | — | — | — | — | — | — | — | 8074 / 0 |
+| docs.python.org/3/library/urllib.robotparser.html | — | — | — | — | — | — | — | 611 / 0 |
+| docs.python.org/3/library/uu.html | — | — | — | — | — | — | — | 295 / 0 |
+| docs.python.org/3/library/uuid.html | — | — | — | — | — | — | — | 2449 / 0 |
+| docs.python.org/3/library/venv.html | — | — | — | — | — | — | — | 3779 / 0 |
+| docs.python.org/3/library/warnings.html | — | — | — | — | — | — | — | 4247 / 0 |
+| docs.python.org/3/library/wave.html | — | — | — | — | — | — | — | 1347 / 0 |
+| docs.python.org/3/library/weakref.html | — | — | — | — | — | — | — | 3421 / 0 |
+| docs.python.org/3/library/webbrowser.html | — | — | — | — | — | — | — | 1566 / 0 |
+| docs.python.org/3/library/windows.html | — | — | — | — | — | — | — | 301 / 0 |
+| docs.python.org/3/library/winreg.html | — | — | — | — | — | — | — | 3755 / 0 |
+| docs.python.org/3/library/winsound.html | — | — | — | — | — | — | — | 977 / 0 |
+| docs.python.org/3/library/wsgiref.html | — | — | — | — | — | — | — | 5199 / 0 |
+| docs.python.org/3/library/xdrlib.html | — | — | — | — | — | — | — | 289 / 0 |
+| docs.python.org/3/library/xml.dom.html | — | — | — | — | — | — | — | 5230 / 0 |
+| docs.python.org/3/library/xml.dom.minidom.html | — | — | — | — | — | — | — | 1841 / 0 |
+| docs.python.org/3/library/xml.dom.pulldom.html | — | — | — | — | — | — | — | 864 / 0 |
+| docs.python.org/3/library/xml.etree.elementtree.html | — | — | — | — | — | — | — | 7753 / 0 |
+| docs.python.org/3/library/xml.html | — | — | — | — | — | — | — | 827 / 0 |
+| docs.python.org/3/library/xml.sax.handler.html | — | — | — | — | — | — | — | 2510 / 0 |
+| docs.python.org/3/library/xml.sax.html | — | — | — | — | — | — | — | 1224 / 0 |
+| docs.python.org/3/library/xml.sax.reader.html | — | — | — | — | — | — | — | 1859 / 0 |
+| docs.python.org/3/library/xml.sax.utils.html | — | — | — | — | — | — | — | 780 / 0 |
+| docs.python.org/3/library/xmlrpc.client.html | — | — | — | — | — | — | — | 2927 / 0 |
+| docs.python.org/3/library/xmlrpc.html | — | — | — | — | — | — | — | 318 / 0 |
+| docs.python.org/3/library/xmlrpc.server.html | — | — | — | — | — | — | — | 2252 / 0 |
+| docs.python.org/3/library/zipapp.html | — | — | — | — | — | — | — | 2421 / 0 |
+| docs.python.org/3/library/zipfile.html | — | — | — | — | — | — | — | 5543 / 0 |
+| docs.python.org/3/library/zipimport.html | — | — | — | — | — | — | — | 1105 / 0 |
+| docs.python.org/3/library/zlib.html | — | — | — | — | — | — | — | 2756 / 0 |
+| docs.python.org/3/library/zoneinfo.html | — | — | — | — | — | — | — | 2485 / 0 |
 | docs.python.org/3/license.html | — | — | — | 8679 / 4 | — | 8696 / 21 | — | — |
 | docs.python.org/bugs.html | 650 / 0 | 1096 / 68 | 1096 / 68 | — | 1092 / 52 | — | 1092 / 52 | — |
 | docs.python.org/license.html | 8155 / 0 | 8801 / 68 | 8801 / 68 | — | 8791 / 52 | — | 8791 / 52 | — |

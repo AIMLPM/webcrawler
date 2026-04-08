@@ -32,4 +32,5 @@ output/
 benchmarks/runs/
 benchmarks/embed_cache/
 benchmarks/retrieval_checkpoints/
+benchmarks/firecrawl/firecrawl-src/
 storage/
