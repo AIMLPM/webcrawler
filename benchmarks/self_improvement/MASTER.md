@@ -32,6 +32,26 @@ Each spec contains:
 | 04 | [Report Style Compliance](04_report_style_compliance.md) | Markdown reports vs CLAUDE.md style guide | All `benchmarks/*.md` reports |
 | 05 | [Cross-Report Data Consistency](05_cross_report_consistency.md) | Numbers agree across reports | SPEED, RETRIEVAL, ANSWER_QUALITY, COST reports + source data |
 | 06 | [Resilience & Restart](06_resilience_restart.md) | Checkpointing, crash recovery, data integrity | All benchmark scripts, checkpoint dirs |
+| 07 | [Report Data Quality](07_report_data_quality.md) | Fishy data detection, page count gaps, early warnings | All reports + source data + benchmark scripts |
+| 08 | [Persona Reviews](08_persona_reviews.md) | Persona definitions, assignments, review guides | README, all reports, all specs |
+
+---
+
+## Persona Assignment Matrix
+
+Each spec is reviewed by at least 2 personas. See [08_persona_reviews.md](08_persona_reviews.md)
+for full persona definitions and per-spec checklists.
+
+| Spec | LLM Agent | Junior Dev | Principal Eng | Product Manager |
+|------|-----------|------------|---------------|-----------------|
+| 01 MarkCrawl Code | | x | x | |
+| 02 Benchmark Code | | x | x | |
+| 03 Docker Infra | | | x | |
+| 04 Report Style | x | x | | x |
+| 05 Cross-Report Consistency | | | x | x |
+| 06 Resilience | | x | x | |
+| 07 Report Data Quality | | x | x | x |
+| README & Docs | x | x | | x |
 
 ---
 
