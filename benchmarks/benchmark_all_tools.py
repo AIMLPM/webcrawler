@@ -832,11 +832,18 @@ def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
     rate_limit_wait = 0.0
     for attempt in range(max_retries):
         try:
-            result = app.crawl(
-                url,
-                limit=max_pages,
-                scrape_options=ScrapeOptions(formats=["markdown"]),
-            )
+            if url_list:
+                # Batch-scrape the pre-discovered URLs (same pages as other tools)
+                result = app.batch_scrape(
+                    url_list[:max_pages],
+                    formats=["markdown"],
+                )
+            else:
+                result = app.crawl(
+                    url,
+                    limit=max_pages,
+                    scrape_options=ScrapeOptions(formats=["markdown"]),
+                )
             break
         except Exception as exc:
             msg = str(exc)
