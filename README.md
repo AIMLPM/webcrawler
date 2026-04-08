@@ -81,11 +81,42 @@ markcrawl --base https://docs.example.com/guides \
   --no-sitemap --max-pages 50 --show-progress
 ```
 
-**Crawl and feed into a RAG pipeline:**
+**Competitive analysis** (crawl 3 competitors, extract pricing):
 
 ```bash
-markcrawl --base https://docs.example.com --out ./docs --show-progress
+markcrawl --base https://competitor-one.com/pricing --no-sitemap --max-pages 1 --out ./comp1
+markcrawl --base https://competitor-two.com/pricing --no-sitemap --max-pages 1 --out ./comp2
+markcrawl --base https://competitor-three.com/pricing --no-sitemap --max-pages 1 --out ./comp3
+markcrawl-extract \
+  --jsonl ./comp1/pages.jsonl ./comp2/pages.jsonl ./comp3/pages.jsonl \
+  --fields pricing_tiers features free_trial --show-progress
+# → extracted.jsonl with structured pricing data across all three
+```
+
+**Docs site → RAG chatbot** (full pipeline: crawl, embed, query):
+
+```bash
+markcrawl --base https://docs.example.com --out ./docs --max-pages 500 --concurrency 5 --show-progress
 markcrawl-upload --jsonl ./docs/pages.jsonl --show-progress
+# → pages are chunked, embedded, and uploaded to Supabase/pgvector
+# Wire your chatbot to query the vector table — see docs/SUPABASE.md
+```
+
+**API docs → code generation prompt:**
+
+```bash
+markcrawl --base https://api.example.com/docs --out ./api-docs --max-pages 200 --show-progress
+# Feed the output to an LLM:
+# "Using the API documentation in ./api-docs/pages.jsonl, generate a
+#  typed Python client with methods for each endpoint."
+```
+
+**Back up a blog before it shuts down:**
+
+```bash
+markcrawl --base https://engineering.example.com/blog \
+  --no-sitemap --max-pages 1000 --concurrency 5 --out ./blog-archive --show-progress
+# → every post saved as clean Markdown with citations and access dates
 ```
 
 **Resume an interrupted crawl:**
