@@ -38,13 +38,14 @@ Hit rate = correct source page in top-K results. Higher is better.
 | colly+md | embedding | 74% (68/92) ±9% | 79% (73/92) ±8% | 84% (77/92) ±8% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.776 |
 | colly+md | bm25 | 40% (37/92) ±10% | 48% (44/92) ±10% | 57% (52/92) ±10% | 68% (63/92) ±9% | 77% (71/92) ±8% | 0.485 |
 | colly+md | hybrid | 61% (56/92) ±10% | 80% (74/92) ±8% | 84% (77/92) ±8% | 86% (79/92) ±7% | 86% (79/92) ±7% | 0.709 |
+| colly+md | reranked | 100% (8/8) ±16% | 100% (8/8) ±16% | 100% (8/8) ±16% | 100% (8/8) ±16% | 100% (8/8) ±16% | 1.000 |
 | playwright | embedding | 75% (69/92) ±9% | 82% (75/92) ±8% | 85% (78/92) ±7% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.787 |
 | playwright | bm25 | 39% (36/92) ±10% | 49% (45/92) ±10% | 58% (53/92) ±10% | 70% (64/92) ±9% | 77% (71/92) ±8% | 0.482 |
 | playwright | hybrid | 61% (56/92) ±10% | 82% (75/92) ±8% | 85% (78/92) ±7% | 86% (79/92) ±7% | 86% (79/92) ±7% | 0.711 |
-| firecrawl | embedding | 65% (60/92) ±10% | 72% (66/92) ±9% | 75% (69/92) ±9% | 77% (71/92) ±8% | 79% (73/92) ±8% | 0.694 |
-| firecrawl | bm25 | 40% (37/92) ±10% | 51% (47/92) ±10% | 58% (53/92) ±10% | 65% (60/92) ±10% | 74% (68/92) ±9% | 0.476 |
-| firecrawl | hybrid | 57% (52/92) ±10% | 66% (61/92) ±9% | 74% (68/92) ±9% | 77% (71/92) ±8% | 78% (72/92) ±8% | 0.631 |
-| firecrawl | reranked | 20% (2/10) ±23% | 30% (3/10) ±25% | 40% (4/10) ±26% | 60% (6/10) ±26% | 70% (7/10) ±25% | 0.311 |
+| firecrawl | embedding | 66% (61/92) ±9% | 75% (69/92) ±9% | 76% (70/92) ±9% | 80% (74/92) ±8% | 83% (76/92) ±8% | 0.710 |
+| firecrawl | bm25 | 36% (33/92) ±10% | 53% (49/92) ±10% | 63% (58/92) ±10% | 70% (64/92) ±9% | 76% (70/92) ±9% | 0.467 |
+| firecrawl | hybrid | 61% (56/92) ±10% | 71% (65/92) ±9% | 75% (69/92) ±9% | 78% (72/92) ±8% | 80% (74/92) ±8% | 0.668 |
+| firecrawl | reranked | 36% (8/22) ±19% | 59% (13/22) ±19% | 64% (14/22) ±19% | 77% (17/22) ±17% | 82% (18/22) ±16% | 0.493 |
 
 
 ## Summary: embedding-only (hit rate at multiple K values)
@@ -56,9 +57,9 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | 71% (65/92) ±9% | 78% (72/92) ±8% | 83% (76/92) ±8% | 85% (78/92) ±7% | 86% (79/92) ±7% | 0.755 | 35442 | 134 |
 | scrapy+md | 67% (62/92) ±9% | 77% (71/92) ±8% | 84% (77/92) ±8% | 85% (78/92) ±7% | 85% (78/92) ±7% | 0.734 | 27861 | 133 |
 | crawlee | 75% (69/92) ±9% | 82% (75/92) ±8% | 85% (78/92) ±7% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.787 | 45673 | 199 |
-| colly+md | 74% (68/92) ±9% | 79% (73/92) ±8% | 84% (77/92) ±8% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.776 | 48724 | 233 |
+| colly+md | 74% (68/92) ±9% | 79% (73/92) ±8% | 84% (77/92) ±8% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.776 | 53398 | 223 |
 | playwright | 75% (69/92) ±9% | 82% (75/92) ±8% | 85% (78/92) ±7% | 85% (78/92) ±7% | 87% (80/92) ±7% | 0.787 | 53896 | 223 |
-| firecrawl | 65% (60/92) ±10% | 72% (66/92) ±9% | 75% (69/92) ±9% | 77% (71/92) ±8% | 79% (73/92) ±8% | 0.694 | 15225 | 201 |
+| firecrawl | 66% (61/92) ±9% | 75% (69/92) ±9% | 76% (70/92) ±9% | 80% (74/92) ±8% | 83% (76/92) ±8% | 0.710 | 16790 | 199 |
 
 
 ## quotes-toscrape
@@ -924,7 +925,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | 67% (8/12) | 92% (11/12) | 100% (12/12) | 100% (12/12) | 100% (12/12) | 0.785 | 6441 | 221 |
 | colly+md | 67% (8/12) | 92% (11/12) | 100% (12/12) | 100% (12/12) | 100% (12/12) | 0.785 | 6392 | 221 |
 | playwright | 67% (8/12) | 92% (11/12) | 100% (12/12) | 100% (12/12) | 100% (12/12) | 0.785 | 6392 | 221 |
-| firecrawl | 67% (8/12) | 67% (8/12) | 67% (8/12) | 67% (8/12) | 67% (8/12) | 0.667 | 257 | 25 |
+| firecrawl | 67% (8/12) | 75% (9/12) | 75% (9/12) | 83% (10/12) | 83% (10/12) | 0.708 | 553 | 43 |
 
 <details>
 <summary>Query-by-query results for react-dev</summary>
@@ -941,7 +942,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | react.dev/learn/preserving-and-resetting-state | 0.736 | react.dev/learn/reacting-to-input-with-state | 0.691 | react.dev/learn/state-a-components-memory | 0.689 |
 | colly+md | #1 | react.dev/learn/preserving-and-resetting-state | 0.736 | react.dev/learn/reacting-to-input-with-state | 0.691 | react.dev/learn/state-a-components-memory | 0.689 |
 | playwright | #1 | react.dev/learn/preserving-and-resetting-state | 0.736 | react.dev/learn/reacting-to-input-with-state | 0.691 | react.dev/learn/state-a-components-memory | 0.689 |
-| firecrawl | #1 | react.dev/learn/preserving-and-resetting-state | 0.706 | react.dev/learn/reacting-to-input-with-state | 0.685 | react.dev/learn/extracting-state-logic-into-a-redu | 0.645 |
+| firecrawl | #1 | react.dev/learn/preserving-and-resetting-state | 0.706 | react.dev/learn/reacting-to-input-with-state | 0.685 | react.dev/learn/state-a-components-memory | 0.655 |
 
 
 **Q2: What are React hooks and how do I use them?**
@@ -956,7 +957,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #3 | react.dev/warnings/react-dom-test-utils | 0.709 | react.dev/versions | 0.709 | react.dev/learn/reusing-logic-with-custom-hooks | 0.708 |
 | colly+md | #3 | react.dev/versions | 0.709 | react.dev/warnings/react-dom-test-utils | 0.709 | react.dev/learn/reusing-logic-with-custom-hooks | 0.708 |
 | playwright | #3 | react.dev/warnings/react-dom-test-utils | 0.709 | react.dev/versions | 0.709 | react.dev/learn/reusing-logic-with-custom-hooks | 0.708 |
-| firecrawl | miss | react.dev/learn/manipulating-the-dom-with-refs | 0.591 | react.dev/learn/typescript | 0.587 | react.dev/learn/referencing-values-with-refs | 0.583 |
+| firecrawl | #3 | react.dev/learn/state-a-components-memory | 0.699 | react.dev/learn/state-a-components-memory | 0.645 | react.dev/reference/rules/rules-of-hooks | 0.620 |
 
 
 **Q3: How does the useEffect hook work in React?**
@@ -971,7 +972,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | react.dev/reference/react/useEffect | 0.742 | react.dev/reference/react/useEffectEvent | 0.634 | react.dev/reference/react/useEffect | 0.625 |
 | colly+md | #1 | react.dev/reference/react/useEffect | 0.742 | react.dev/reference/react/useEffectEvent | 0.634 | react.dev/reference/react/useEffect | 0.625 |
 | playwright | #1 | react.dev/reference/react/useEffect | 0.742 | react.dev/reference/react/useEffectEvent | 0.634 | react.dev/reference/react/useEffect | 0.625 |
-| firecrawl | #1 | react.dev/learn/you-might-not-need-an-effect | 0.592 | react.dev/learn/you-might-not-need-an-effect | 0.557 | react.dev/learn/you-might-not-need-an-effect | 0.537 |
+| firecrawl | #1 | react.dev/learn/synchronizing-with-effects | 0.599 | react.dev/learn/you-might-not-need-an-effect | 0.592 | react.dev/learn/state-a-components-memory | 0.583 |
 
 
 **Q4: How do I handle forms and user input in React?**
@@ -1061,7 +1062,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | react.dev/reference/react/useRef | 0.758 | react.dev/learn/referencing-values-with-refs | 0.719 | react.dev/reference/react/useRef | 0.674 |
 | colly+md | #1 | react.dev/reference/react/useRef | 0.758 | react.dev/learn/referencing-values-with-refs | 0.719 | react.dev/reference/react/useRef | 0.674 |
 | playwright | #1 | react.dev/reference/react/useRef | 0.758 | react.dev/learn/referencing-values-with-refs | 0.719 | react.dev/reference/react/useRef | 0.674 |
-| firecrawl | #1 | react.dev/learn/referencing-values-with-refs | 0.683 | react.dev/learn/referencing-values-with-refs | 0.640 | react.dev/learn/manipulating-the-dom-with-refs | 0.640 |
+| firecrawl | #1 | react.dev/learn/referencing-values-with-refs | 0.683 | react.dev/learn/manipulating-the-dom-with-refs | 0.640 | react.dev/learn/referencing-values-with-refs | 0.640 |
 
 
 **Q10: How do I pass props between React components?**
@@ -1106,7 +1107,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | react.dev/reference/react/useMemo | 0.736 | react.dev/learn/react-compiler/introduction | 0.649 | react.dev/reference/react/useMemo | 0.643 |
 | colly+md | #1 | react.dev/reference/react/useMemo | 0.736 | react.dev/learn/react-compiler/introduction | 0.649 | react.dev/reference/react/useMemo | 0.643 |
 | playwright | #1 | react.dev/reference/react/useMemo | 0.736 | react.dev/learn/react-compiler/introduction | 0.649 | react.dev/reference/react/useMemo | 0.643 |
-| firecrawl | miss | react.dev/learn/typescript | 0.650 | react.dev/learn/you-might-not-need-an-effect | 0.616 | react.dev/learn/typescript | 0.553 |
+| firecrawl | #6 | react.dev/learn/typescript | 0.650 | react.dev/learn/you-might-not-need-an-effect | 0.616 | react.dev/learn/react-compiler/introduction | 0.593 |
 
 
 </details>
@@ -1290,7 +1291,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | 80% (8/10) | 80% (8/10) | 90% (9/10) | 90% (9/10) | 90% (9/10) | 0.820 | 11984 | 221 |
 | colly+md | 80% (8/10) | 80% (8/10) | 90% (9/10) | 90% (9/10) | 90% (9/10) | 0.822 | 21249 | 402 |
 | playwright | 80% (8/10) | 80% (8/10) | 90% (9/10) | 90% (9/10) | 90% (9/10) | 0.822 | 21360 | 402 |
-| firecrawl | 20% (2/10) | 20% (2/10) | 40% (4/10) | 60% (6/10) | 70% (7/10) | 0.280 | 504 | 190 |
+| firecrawl | 30% (3/10) | 40% (4/10) | 40% (4/10) | 70% (7/10) | 80% (8/10) | 0.382 | 1773 | 395 |
 
 <details>
 <summary>Query-by-query results for stripe-docs</summary>
@@ -1307,7 +1308,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.676 | docs.stripe.com/apple-pay | 0.668 | docs.stripe.com/billing/subscriptions/third-party- | 0.615 |
 | colly+md | #1 | docs.stripe.com/changelog/2022-08-01/deferred-paym | 0.693 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.676 | docs.stripe.com/apple-pay | 0.669 |
 | playwright | #1 | docs.stripe.com/changelog/2022-08-01/deferred-paym | 0.693 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.676 | docs.stripe.com/apple-pay | 0.668 |
-| firecrawl | #1 | docs.stripe.com/agentic-commerce/concepts/shared-p | 0.574 | docs.stripe.com/changelog/2022-08-01/deferred-paym | 0.563 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.553 |
+| firecrawl | #6 | docs.stripe.com/apple-pay | 0.663 | docs.stripe.com/automated-testing | 0.637 | docs.stripe.com/billing/subscriptions/au-becs-debi | 0.608 |
 
 
 **Q2: How do I handle webhooks from Stripe?**
@@ -1322,7 +1323,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/billing/subscriptions/webhooks | 0.770 | docs.stripe.com/error-handling | 0.715 | docs.stripe.com/billing/taxes/collect-taxes | 0.621 |
 | colly+md | #1 | docs.stripe.com/billing/subscriptions/webhooks | 0.770 | docs.stripe.com/error-handling | 0.711 | docs.stripe.com/billing/taxes/collect-taxes | 0.621 |
 | playwright | #1 | docs.stripe.com/billing/subscriptions/webhooks | 0.770 | docs.stripe.com/error-handling | 0.715 | docs.stripe.com/billing/taxes/collect-taxes | 0.621 |
-| firecrawl | miss | docs.stripe.com/agents-billing-workflows | 0.577 | docs.stripe.com/customer-management/integrate-cust | 0.558 | docs.stripe.com/ach-deprecated | 0.536 |
+| firecrawl | miss | docs.stripe.com/error-handling | 0.666 | docs.stripe.com/error-handling | 0.599 | docs.stripe.com/agents-billing-workflows | 0.577 |
 
 
 **Q3: How do I set up Stripe subscriptions?**
@@ -1337,7 +1338,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/subscriptions | 0.782 | docs.stripe.com/billing/subscriptions/paypal | 0.778 | docs.stripe.com/billing/subscriptions/overview | 0.766 |
 | colly+md | #1 | docs.stripe.com/subscriptions | 0.782 | docs.stripe.com/billing/subscriptions/paypal | 0.778 | docs.stripe.com/billing/subscriptions/overview | 0.766 |
 | playwright | #1 | docs.stripe.com/subscriptions | 0.782 | docs.stripe.com/billing/subscriptions/paypal | 0.778 | docs.stripe.com/billing/subscriptions/overview | 0.766 |
-| firecrawl | #27 | docs.stripe.com/billing/customer | 0.631 | docs.stripe.com/billing/entitlements | 0.569 | docs.stripe.com/issuing/integration-guides/embedde | 0.557 |
+| firecrawl | #1 | docs.stripe.com/billing/subscriptions/migrate-subs | 0.660 | docs.stripe.com/billing/subscriptions/sales-led-bi | 0.654 | docs.stripe.com/billing/subscriptions/import-subsc | 0.645 |
 
 
 **Q4: How do I authenticate with the Stripe API?**
@@ -1352,7 +1353,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/payment-authentication/writing-que | 0.702 | docs.stripe.com/apis | 0.672 | docs.stripe.com/keys | 0.665 |
 | colly+md | #1 | docs.stripe.com/payment-authentication/writing-que | 0.702 | docs.stripe.com/apis | 0.672 | docs.stripe.com/keys | 0.665 |
 | playwright | #1 | docs.stripe.com/payment-authentication/writing-que | 0.702 | docs.stripe.com/apis | 0.672 | docs.stripe.com/keys | 0.665 |
-| firecrawl | miss | docs.stripe.com/ach-deprecated | 0.579 | docs.stripe.com/ach-deprecated | 0.537 | docs.stripe.com/issuing/integration-guides/embedde | 0.530 |
+| firecrawl | miss | docs.stripe.com/ach-deprecated | 0.579 | docs.stripe.com/get-started/account/activate | 0.569 | docs.stripe.com/get-started/account/checklist | 0.558 |
 
 
 **Q5: How do I handle errors in the Stripe API?**
@@ -1367,7 +1368,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/error-handling | 0.793 | docs.stripe.com/error-low-level | 0.782 | docs.stripe.com/error-codes | 0.705 |
 | colly+md | #1 | docs.stripe.com/error-handling | 0.793 | docs.stripe.com/error-low-level | 0.782 | docs.stripe.com/error-codes | 0.705 |
 | playwright | #1 | docs.stripe.com/error-handling | 0.793 | docs.stripe.com/error-low-level | 0.782 | docs.stripe.com/error-codes | 0.705 |
-| firecrawl | #5 | docs.stripe.com/issuing/customer-support | 0.545 | docs.stripe.com/ach-deprecated | 0.535 | docs.stripe.com/issuing/customer-support | 0.532 |
+| firecrawl | #1 | docs.stripe.com/error-handling | 0.688 | docs.stripe.com/error-handling | 0.662 | docs.stripe.com/error-handling | 0.637 |
 
 
 **Q6: How do I create a customer in Stripe?**
@@ -1382,7 +1383,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/connect/use-accounts-as-customers | 0.700 | docs.stripe.com/billing/customer | 0.699 | docs.stripe.com/customer-management/configure-port | 0.697 |
 | colly+md | #1 | docs.stripe.com/connect/use-accounts-as-customers | 0.700 | docs.stripe.com/billing/customer | 0.699 | docs.stripe.com/customer-management/configure-port | 0.697 |
 | playwright | #1 | docs.stripe.com/connect/use-accounts-as-customers | 0.700 | docs.stripe.com/billing/customer | 0.699 | docs.stripe.com/customer-management/configure-port | 0.697 |
-| firecrawl | #1 | docs.stripe.com/billing/customer | 0.636 | docs.stripe.com/billing/customer | 0.622 | docs.stripe.com/billing/customer | 0.613 |
+| firecrawl | #3 | docs.stripe.com/billing/subscriptions/usage-based- | 0.699 | docs.stripe.com/billing/taxes/collect-taxes | 0.648 | docs.stripe.com/billing/customer | 0.637 |
 
 
 **Q7: How do I process refunds with Stripe?**
@@ -1397,7 +1398,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/changelog/2014-07-26/application-f | 0.634 | docs.stripe.com/ach-deprecated | 0.621 | docs.stripe.com/billing/subscriptions/third-party- | 0.617 |
 | colly+md | #1 | docs.stripe.com/changelog/2016-02-23/orders-paid-f | 0.664 | docs.stripe.com/changelog/2015-08-19/balance-trans | 0.652 | docs.stripe.com/changelog/2014-07-26/application-f | 0.634 |
 | playwright | #1 | docs.stripe.com/changelog/2016-02-23/orders-paid-f | 0.664 | docs.stripe.com/changelog/2015-08-19/balance-trans | 0.652 | docs.stripe.com/changelog/2014-07-26/application-f | 0.634 |
-| firecrawl | #7 | docs.stripe.com/ach-deprecated | 0.603 | docs.stripe.com/issuing/customer-support | 0.548 | docs.stripe.com/ach-deprecated | 0.512 |
+| firecrawl | #7 | docs.stripe.com/billing/subscriptions/third-party- | 0.619 | docs.stripe.com/ach-deprecated | 0.605 | docs.stripe.com/billing/subscriptions/third-party- | 0.565 |
 
 
 **Q8: How do I use Stripe checkout for payments?**
@@ -1412,7 +1413,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | miss | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.681 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.663 | docs.stripe.com/billing/subscriptions/third-party- | 0.655 |
 | colly+md | #44 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.681 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.663 | docs.stripe.com/billing/subscriptions/third-party- | 0.655 |
 | playwright | #44 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.681 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.663 | docs.stripe.com/billing/subscriptions/third-party- | 0.655 |
-| firecrawl | #11 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.633 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.613 | docs.stripe.com/agentic-commerce/apps | 0.585 |
+| firecrawl | #18 | docs.stripe.com/get-started/data-migrations/pan-im | 0.664 | docs.stripe.com/agentic-commerce/apps/accept-payme | 0.633 | docs.stripe.com/get-started/data-migrations/pan-im | 0.614 |
 
 
 **Q9: How do I test Stripe payments in development?**
@@ -1427,7 +1428,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #1 | docs.stripe.com/automated-testing | 0.719 | docs.stripe.com/automated-testing | 0.680 | docs.stripe.com/automated-testing | 0.663 |
 | colly+md | #1 | docs.stripe.com/automated-testing | 0.719 | docs.stripe.com/automated-testing | 0.680 | docs.stripe.com/automated-testing | 0.663 |
 | playwright | #1 | docs.stripe.com/automated-testing | 0.719 | docs.stripe.com/automated-testing | 0.680 | docs.stripe.com/automated-testing | 0.663 |
-| firecrawl | #8 | docs.stripe.com/ach-deprecated | 0.610 | docs.stripe.com/issuing/sample-app | 0.584 | docs.stripe.com/agents-billing-workflows | 0.584 |
+| firecrawl | #1 | docs.stripe.com/automated-testing | 0.674 | docs.stripe.com/billing/subscriptions/stablecoins | 0.672 | docs.stripe.com/automated-testing | 0.664 |
 
 
 **Q10: What are Stripe Connect and platform payments?**
@@ -1442,7 +1443,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawlee | #5 | docs.stripe.com/ach-deprecated | 0.661 | docs.stripe.com/get-started/account/orgs/setup | 0.646 | docs.stripe.com/capital/overview | 0.640 |
 | colly+md | #5 | docs.stripe.com/ach-deprecated | 0.654 | docs.stripe.com/get-started/account/orgs/setup | 0.646 | docs.stripe.com/capital/overview | 0.640 |
 | playwright | #5 | docs.stripe.com/ach-deprecated | 0.661 | docs.stripe.com/get-started/account/orgs/setup | 0.646 | docs.stripe.com/capital/overview | 0.640 |
-| firecrawl | #5 | docs.stripe.com/issuing/integration-guides/embedde | 0.625 | docs.stripe.com/customer-management/configure-port | 0.595 | docs.stripe.com/issuing/integration-guides/embedde | 0.557 |
+| firecrawl | #8 | docs.stripe.com/issuing/integration-guides/embedde | 0.625 | docs.stripe.com/get-started/account/orgs/setup | 0.597 | docs.stripe.com/customer-management/configure-port | 0.595 |
 
 
 </details>
@@ -1456,7 +1457,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 5316 | 200 |
 | scrapy+md | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 1844 | 200 |
 | crawlee | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 5967 | 200 |
-| colly+md | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 681 | 25 |
+| colly+md | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 5355 | 200 |
 | playwright | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 5955 | 200 |
 | firecrawl | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | 1.000 | 687 | 200 |
 
@@ -1488,7 +1489,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.502 | github.blog/news-insights/company-news/gh-ost-gith | 0.496 | github.blog/news-insights/company-news/gh-ost-gith | 0.476 |
 | scrapy+md | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.507 | github.blog/news-insights/company-news/gh-ost-gith | 0.484 | github.blog/news-insights/company-news/gh-ost-gith | 0.455 |
 | crawlee | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.507 | github.blog/news-insights/company-news/gh-ost-gith | 0.484 | github.blog/news-insights/company-news/gh-ost-gith | 0.455 |
-| colly+md | #1 | github.blog/engineering/infrastructure/evolution-o | 0.336 | github.blog/news-insights/the-library/participatio | 0.323 | github.blog/news-insights/the-library/cross-platfo | 0.323 |
+| colly+md | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.507 | github.blog/news-insights/company-news/gh-ost-gith | 0.484 | github.blog/news-insights/company-news/gh-ost-gith | 0.455 |
 | playwright | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.507 | github.blog/news-insights/company-news/gh-ost-gith | 0.484 | github.blog/news-insights/company-news/gh-ost-gith | 0.455 |
 | firecrawl | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.511 | github.blog/news-insights/company-news/gh-ost-gith | 0.488 | github.blog/news-insights/company-news/gh-ost-gith | 0.456 |
 
@@ -1503,7 +1504,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/news-insights/company-news/gh-ost-gith | 0.450 | github.blog/news-insights/the-library/brubeck/ | 0.443 | github.blog/news-insights/the-library/brubeck/ | 0.442 |
 | scrapy+md | #1 | github.blog/news-insights/the-library/exception-mo | 0.460 | github.blog/news-insights/company-news/gh-ost-gith | 0.444 | github.blog/news-insights/the-library/brubeck/ | 0.424 |
 | crawlee | #1 | github.blog/news-insights/the-library/exception-mo | 0.459 | github.blog/news-insights/company-news/gh-ost-gith | 0.444 | github.blog/news-insights/the-library/brubeck/ | 0.424 |
-| colly+md | #1 | github.blog/news-insights/the-library/participatio | 0.417 | github.blog/news-insights/the-library/paris-git-tr | 0.417 | github.blog/engineering/infrastructure/building-re | 0.417 |
+| colly+md | #1 | github.blog/news-insights/the-library/exception-mo | 0.460 | github.blog/news-insights/company-news/gh-ost-gith | 0.444 | github.blog/news-insights/the-library/brubeck/ | 0.424 |
 | playwright | #1 | github.blog/news-insights/the-library/exception-mo | 0.459 | github.blog/news-insights/company-news/gh-ost-gith | 0.444 | github.blog/news-insights/the-library/brubeck/ | 0.424 |
 | firecrawl | #1 | github.blog/news-insights/the-library/brubeck/ | 0.452 | github.blog/news-insights/company-news/gh-ost-gith | 0.444 | github.blog/news-insights/the-library/exception-mo | 0.440 |
 
@@ -1518,7 +1519,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.454 | github.blog/news-insights/the-library/deploying-wi | 0.443 | github.blog/engineering/infrastructure/githubs-met | 0.435 |
 | scrapy+md | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.419 | github.blog/engineering/infrastructure/kubernetes- | 0.407 | github.blog/engineering/infrastructure/kubernetes- | 0.402 |
 | crawlee | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.419 | github.blog/news-insights/the-library/deploying-wi | 0.412 | github.blog/engineering/infrastructure/kubernetes- | 0.407 |
-| colly+md | #1 | github.blog/news-insights/the-library/scala-projec | 0.385 | github.blog/news-insights/the-library/the-github-c | 0.385 | github.blog/news-insights/the-library/fork-you-on- | 0.385 |
+| colly+md | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.419 | github.blog/news-insights/the-library/deploying-wi | 0.412 | github.blog/engineering/infrastructure/kubernetes- | 0.407 |
 | playwright | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.419 | github.blog/news-insights/the-library/deploying-wi | 0.412 | github.blog/engineering/infrastructure/kubernetes- | 0.407 |
 | firecrawl | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.409 | github.blog/engineering/infrastructure/kubernetes- | 0.397 | github.blog/news-insights/the-library/runnable-doc | 0.391 |
 
@@ -1533,7 +1534,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/engineering/infrastructure/context-awa | 0.347 | github.blog/news-insights/the-library/services-gal | 0.342 | github.blog/engineering/infrastructure/githubs-met | 0.313 |
 | scrapy+md | #1 | github.blog/engineering/engineering-principles/scr | 0.337 | github.blog/engineering/platform-security/syn-floo | 0.337 | github.blog/engineering/infrastructure/building-re | 0.337 |
 | crawlee | #1 | github.blog/engineering/user-experience/topics/ | 0.337 | github.blog/engineering/platform-security/syn-floo | 0.337 | github.blog/engineering/infrastructure/building-re | 0.337 |
-| colly+md | #1 | github.blog/engineering/infrastructure/evolution-o | 0.337 | github.blog/engineering/infrastructure/building-re | 0.337 | github.blog/engineering/infrastructure/githubs-met | 0.337 |
+| colly+md | #1 | github.blog/engineering/infrastructure/githubs-met | 0.337 | github.blog/engineering/infrastructure/glb-directo | 0.337 | github.blog/engineering/engineering-principles/mov | 0.337 |
 | playwright | #1 | github.blog/engineering/user-experience/topics/ | 0.337 | github.blog/engineering/infrastructure/evolution-o | 0.337 | github.blog/engineering/infrastructure/context-awa | 0.337 |
 | firecrawl | #1 | github.blog/engineering/infrastructure/context-awa | 0.327 | github.blog/engineering/engineering-principles/scr | 0.312 | github.blog/news-insights/the-library/services-gal | 0.287 |
 
@@ -1548,7 +1549,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/news-insights/the-library/api-forum-gr | 0.386 | github.blog/news-insights/the-library/the-api/ | 0.370 | github.blog/engineering/infrastructure/kubernetes- | 0.350 |
 | scrapy+md | #1 | github.blog/engineering/infrastructure/kubernetes- | 0.338 | github.blog/engineering/engineering-principles/mov | 0.333 | github.blog/news-insights/the-library/runnable-doc | 0.333 |
 | crawlee | #1 | github.blog/news-insights/the-library/api-forum-gr | 0.365 | github.blog/news-insights/the-library/the-api/ | 0.355 | github.blog/engineering/infrastructure/kubernetes- | 0.338 |
-| colly+md | #1 | github.blog/latest/ | 0.315 | github.blog/engineering/infrastructure/githubs-met | 0.315 | github.blog/news-insights/the-library/check-your-u | 0.315 |
+| colly+md | #1 | github.blog/news-insights/the-library/api-forum-gr | 0.365 | github.blog/news-insights/the-library/the-api/ | 0.355 | github.blog/engineering/infrastructure/kubernetes- | 0.338 |
 | playwright | #1 | github.blog/news-insights/the-library/api-forum-gr | 0.365 | github.blog/news-insights/the-library/the-api/ | 0.355 | github.blog/engineering/infrastructure/kubernetes- | 0.338 |
 | firecrawl | #1 | github.blog/engineering/engineering-principles/mov | 0.336 | github.blog/news-insights/the-library/runnable-doc | 0.336 | github.blog/news-insights/the-library/announcing-e | 0.334 |
 
@@ -1563,7 +1564,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/news-insights/the-library/more-db-opti | 0.346 | github.blog/news-insights/the-library/facebook-s-m | 0.328 | github.blog/engineering/infrastructure/context-awa | 0.326 |
 | scrapy+md | #1 | github.blog/engineering/user-experience/topics/ | 0.366 | github.blog/engineering/engineering-principles/mov | 0.366 | github.blog/engineering/infrastructure/building-re | 0.366 |
 | crawlee | #1 | github.blog/engineering/infrastructure/githubs-met | 0.366 | github.blog/engineering/infrastructure/orchestrato | 0.366 | github.blog/engineering/infrastructure/transit-and | 0.366 |
-| colly+md | #1 | github.blog/engineering/infrastructure/evolution-o | 0.365 | github.blog/engineering/infrastructure/building-re | 0.365 | github.blog/engineering/infrastructure/githubs-met | 0.365 |
+| colly+md | #1 | github.blog/engineering/engineering-principles/mov | 0.366 | github.blog/engineering/infrastructure/transit-and | 0.366 | github.blog/engineering/infrastructure/evolution-o | 0.366 |
 | playwright | #1 | github.blog/engineering/infrastructure/orchestrato | 0.366 | github.blog/engineering/architecture-optimization/ | 0.366 | github.blog/engineering/infrastructure/glb-directo | 0.366 |
 | firecrawl | #1 | github.blog/engineering/infrastructure/context-awa | 0.307 | github.blog/news-insights/the-library/github-rebas | 0.296 | github.blog/engineering/infrastructure/context-awa | 0.294 |
 
@@ -1578,7 +1579,7 @@ Hit rate = correct source page in top-K results. Higher is better.
 | crawl4ai-raw | #1 | github.blog/engineering/infrastructure/building-re | 0.507 | github.blog/engineering/infrastructure/orchestrato | 0.485 | github.blog/engineering/infrastructure/orchestrato | 0.467 |
 | scrapy+md | #1 | github.blog/engineering/infrastructure/building-re | 0.487 | github.blog/engineering/infrastructure/orchestrato | 0.450 | github.blog/engineering/infrastructure/kubernetes- | 0.439 |
 | crawlee | #1 | github.blog/engineering/infrastructure/building-re | 0.487 | github.blog/engineering/infrastructure/orchestrato | 0.450 | github.blog/engineering/infrastructure/kubernetes- | 0.439 |
-| colly+md | #1 | github.blog/engineering/infrastructure/building-re | 0.487 | github.blog/engineering/infrastructure/building-re | 0.428 | github.blog/engineering/infrastructure/building-re | 0.427 |
+| colly+md | #1 | github.blog/engineering/infrastructure/building-re | 0.487 | github.blog/engineering/infrastructure/orchestrato | 0.450 | github.blog/engineering/infrastructure/kubernetes- | 0.439 |
 | playwright | #1 | github.blog/engineering/infrastructure/building-re | 0.487 | github.blog/engineering/infrastructure/orchestrato | 0.450 | github.blog/engineering/infrastructure/kubernetes- | 0.439 |
 | firecrawl | #1 | github.blog/engineering/infrastructure/building-re | 0.470 | github.blog/engineering/infrastructure/orchestrato | 0.455 | github.blog/engineering/infrastructure/building-re | 0.454 |
 
