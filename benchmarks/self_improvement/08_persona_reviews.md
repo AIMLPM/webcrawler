@@ -125,13 +125,55 @@ They care about outcomes, not internals.
 
 ---
 
-## Per-persona review guides
+## Per-spec checklists
 
-### LLM Agent reviews
+### Spec 01: MarkCrawl Code Review
 
-**Applies to:** Specs 04 (reports), README & Docs
+**Junior Developer:**
+- [ ] Could I debug this if it broke? Are error messages clear?
+- [ ] Are there comments explaining the "why" for non-obvious code?
+- [ ] Are setup instructions complete? (install, configure, run)
 
-**When reviewing reports (Spec 04):**
+**Principal Engineer:**
+- [ ] Would I approve this PR? What would I flag?
+- [ ] Are the error handling patterns consistent and appropriate?
+- [ ] Is there test coverage for the critical paths?
+- [ ] Are there any security concerns (injection, SSRF, path traversal)?
+- [ ] Is the code maintainable by someone unfamiliar with the project?
+
+---
+
+### Spec 02: Benchmark Code Review
+
+**Junior Developer:**
+- [ ] Could I debug this if it broke? Are error messages clear?
+- [ ] Are there comments explaining the "why" for non-obvious code?
+- [ ] If I need to add a new tool to the benchmark, is the process obvious?
+- [ ] Are setup instructions complete? (install, configure, run)
+
+**Principal Engineer:**
+- [ ] Would I approve this PR? What would I flag?
+- [ ] Are the error handling patterns consistent and appropriate?
+- [ ] Is there test coverage for the critical paths?
+- [ ] Are there any security concerns (injection, SSRF, path traversal)?
+- [ ] Is the code maintainable by someone unfamiliar with the project?
+
+---
+
+### Spec 03: Docker Infrastructure Review
+
+**Principal Engineer:**
+- [ ] Would I approve this PR? What would I flag?
+- [ ] Are the error handling patterns consistent and appropriate?
+- [ ] Is the code maintainable by someone unfamiliar with the project?
+- [ ] What's the blast radius of a crash at each point in the pipeline?
+- [ ] How does the system behave under resource pressure (disk full, OOM)?
+
+---
+
+### Spec 04: Report Style Compliance
+
+**LLM Agent:**
 - [ ] Can I extract the key finding from the first paragraph without
   understanding the methodology?
 - [ ] If a user asks me "which crawler should I use?", can I answer
@@ -140,7 +182,79 @@ They care about outcomes, not internals.
 - [ ] If I cite a number from this report, is there enough context
   that the citation makes sense standalone?
 
-**When reviewing README & Docs:**
+**Junior Developer:**
+- [ ] Do I understand what the numbers mean without a statistics background?
+- [ ] Is the scoring scale explained? (What does 3.91/5 mean -- is that good?)
+- [ ] Can I reproduce the benchmark on my machine with the given instructions?
+- [ ] Are tool recommendations clear? ("If you need X, use Y")
+
+**Product Manager:**
+- [ ] Is the value proposition clear from the summary table?
+- [ ] Can I map the cost analysis to my team's scale?
+  (100 pages? 10K pages? 1M pages?)
+- [ ] Are the benchmark claims credible? Would a competitor poke holes?
+- [ ] Is there a clear "when to use markcrawl vs alternatives" takeaway?
+- [ ] Are trade-offs framed honestly? (Overclaiming kills trust)
+
+---
+
+### Spec 05: Cross-Report Data Consistency
+
+**Principal Engineer:**
+- [ ] Can I verify every number in the summary table from the source data?
+- [ ] Are the aggregation formulas correct? (weighted vs unweighted means)
+- [ ] Is the benchmark methodology fair to all tools?
+- [ ] Are known limitations documented honestly, or hidden?
+- [ ] Would I trust these numbers enough to present to my leadership?
+
+**Product Manager:**
+- [ ] Are the benchmark claims credible? Would a competitor poke holes?
+- [ ] Are trade-offs framed honestly? (Overclaiming kills trust)
+- [ ] Are savings expressed in terms I can put in a slide?
+  ("$X/year saved" not "1.21x chunk ratio")
+
+---
+
+### Spec 06: Resilience & Restart
+
+**Junior Developer:**
+- [ ] If my laptop dies mid-benchmark, what do I lose?
+- [ ] Is the recovery procedure documented? (Not just "re-run" -- what about
+  partial data, stale checkpoints?)
+- [ ] Are error messages from interrupted runs helpful?
+
+**Principal Engineer:**
+- [ ] What's the blast radius of a crash at each point in the pipeline?
+- [ ] Are writes atomic? Can corruption happen?
+- [ ] Is there a disaster recovery path? (Not just "re-run everything")
+- [ ] How does the system behave under resource pressure (disk full, OOM)?
+
+---
+
+### Spec 07: Report Data Quality
+
+**Junior Developer:**
+- [ ] Do I understand what the numbers mean without a statistics background?
+- [ ] Can I reproduce the benchmark on my machine with the given instructions?
+- [ ] Are tool recommendations clear? ("If you need X, use Y")
+
+**Principal Engineer:**
+- [ ] Can I verify every number in the summary table from the source data?
+- [ ] Are the aggregation formulas correct? (weighted vs unweighted means)
+- [ ] Is the benchmark methodology fair to all tools?
+- [ ] Are known limitations documented honestly, or hidden?
+- [ ] Would I trust these numbers enough to present to my leadership?
+
+**Product Manager:**
+- [ ] Is the value proposition clear from the summary table?
+- [ ] Are the benchmark claims credible? Would a competitor poke holes?
+- [ ] Is the cheapest option clearly identified with honest caveats?
+
+---
+
+### README & Docs
+
+**LLM Agent:**
 - [ ] If a user says "scrape this one page for me," can I find the
   right command within 10 seconds of reading?
 - [ ] Are common flag combinations shown as recipes?
@@ -150,7 +264,7 @@ They care about outcomes, not internals.
 - [ ] If I try the obvious command and it fails (e.g., sitemap hijacking),
   does the output or docs tell me the fix?
 
-**README recipe checklist** -- do these use cases have clear examples?
+**LLM Agent recipe checklist** -- do these use cases have clear examples?
 
 | Use case | Flags | Recipe exists? |
 |----------|-------|---------------|
@@ -158,124 +272,62 @@ They care about outcomes, not internals.
 | Scrape a single page (JS-rendered) | `--no-sitemap --max-pages 1 --render-js` | |
 | Crawl a docs site | `--max-pages 500 --concurrency 5` | |
 | Crawl only a subsection (no sitemap wandering) | `--no-sitemap --max-pages 50` | |
-| Crawl a blog (newest first) | `--no-sitemap --max-pages 100` | |
+| Competitive analysis (multi-site extract) | crawl N sites + `markcrawl-extract` | |
+| Docs → RAG chatbot pipeline | crawl + `markcrawl-upload` | |
+| API docs → code generation | crawl + feed to LLM | |
+| Blog archival | `--no-sitemap --max-pages 1000` | |
 | Resume an interrupted crawl | `--resume` | |
 | Get clean text (no markdown) | `--format text` | |
 | Crawl behind a proxy | `--proxy http://proxy:8080` | |
 | Crawl a React/Vue SPA | `--render-js` | |
-| Feed output into a RAG pipeline | crawl + `markcrawl-upload` | |
 
 **Additional recipe ideas to consider:**
 - Scraping a YouTube channel page (the real case study above)
 - Crawling a site with an aggressive sitemap (GitHub, YouTube)
-- Extracting specific fields from crawled pages (crawl + extract pipeline)
-- Comparing output from two different sites (competitive analysis)
 - Crawling a site and uploading to Supabase in one pipeline
 
----
-
-### Junior Developer reviews
-
-**Applies to:** Specs 01, 02, 04, 06, 07, README
-
-**When reviewing code (Specs 01, 02):**
-- [ ] Could I debug this if it broke? Are error messages clear?
-- [ ] Are there comments explaining the "why" for non-obvious code?
-- [ ] If I need to add a new tool to the benchmark, is the process obvious?
-- [ ] Are setup instructions complete? (install, configure, run)
-
-**When reviewing reports (Specs 04, 07):**
-- [ ] Do I understand what the numbers mean without a statistics background?
-- [ ] Is the scoring scale explained? (What does 3.91/5 mean -- is that good?)
-- [ ] Can I reproduce the benchmark on my machine with the given instructions?
-- [ ] Are tool recommendations clear? ("If you need X, use Y")
-
-**When reviewing resilience (Spec 06):**
-- [ ] If my laptop dies mid-benchmark, what do I lose?
-- [ ] Is the recovery procedure documented? (Not just "re-run" -- what about
-  partial data, stale checkpoints?)
-- [ ] Are error messages from interrupted runs helpful?
-
-**When reviewing README:**
+**Junior Developer:**
 - [ ] Can I go from zero to working output in under 5 minutes?
 - [ ] Does the Quickstart work on a fresh machine?
 - [ ] Is every CLI flag described with enough context to know when I'd use it?
 - [ ] If I get an error, does the README help me fix it?
 
----
-
-### Principal Engineer reviews
-
-**Applies to:** Specs 01, 02, 03, 05, 06, 07
-
-**When reviewing code (Specs 01, 02, 03):**
-- [ ] Would I approve this PR? What would I flag?
-- [ ] Are the error handling patterns consistent and appropriate?
-- [ ] Is there test coverage for the critical paths?
-- [ ] Are there any security concerns (injection, SSRF, path traversal)?
-- [ ] Is the code maintainable by someone unfamiliar with the project?
-
-**When reviewing data quality (Specs 05, 07):**
-- [ ] Can I verify every number in the summary table from the source data?
-- [ ] Are the aggregation formulas correct? (weighted vs unweighted means)
-- [ ] Is the benchmark methodology fair to all tools?
-- [ ] Are known limitations documented honestly, or hidden?
-- [ ] Would I trust these numbers enough to present to my leadership?
-
-**When reviewing resilience (Spec 06):**
-- [ ] What's the blast radius of a crash at each point in the pipeline?
-- [ ] Are writes atomic? Can corruption happen?
-- [ ] Is there a disaster recovery path? (Not just "re-run everything")
-- [ ] How does the system behave under resource pressure (disk full, OOM)?
-
----
-
-### Product Manager reviews
-
-**Applies to:** Specs 04, 05, 07, README
-
-**When reviewing reports (Specs 04, 05, 07):**
-- [ ] Is the value proposition clear from the summary table?
-- [ ] Can I map the cost analysis to my team's scale?
-  (100 pages? 10K pages? 1M pages?)
-- [ ] Are the benchmark claims credible? Would a competitor poke holes?
-- [ ] Is there a clear "when to use markcrawl vs alternatives" takeaway?
-- [ ] Are trade-offs framed honestly? (Overclaiming kills trust)
-
-**When reviewing README:**
+**Product Manager:**
 - [ ] In 30 seconds, can I understand what this tool does and why I'd use it?
 - [ ] Is the comparison table (in `<details>`) fair and complete?
 - [ ] Does the roadmap signal active maintenance?
 - [ ] Are the cost numbers realistic and up to date?
 - [ ] Would I forward this README to my engineering team as-is?
-
-**Key questions for cost/value narrative:**
 - [ ] Does COST_AT_SCALE show my scenario? (startup, mid-size, enterprise)
-- [ ] Are savings expressed in terms I can put in a slide?
-  ("$X/year saved" not "1.21x chunk ratio")
-- [ ] Is the cheapest option clearly identified with honest caveats?
 
 ---
 
 ## How to run a persona review
 
 1. Pick the spec you want to review
-2. Check the assignment matrix for which personas apply
-3. For each persona, read their review guide above
-4. Go through the checklist items for that persona
-5. Flag findings as:
+2. Find the spec's section in [Per-spec checklists](#per-spec-checklists) above
+3. Go through each persona's checklist items for that spec
+4. Flag findings as:
    - **PASS** -- meets the persona's expectations
    - **ISSUE** -- needs improvement (describe what and why)
    - **SUGGESTION** -- nice-to-have improvement
 
 Example output:
 ```
-## Spec 04 Review -- LLM Agent Persona
+## Spec 04 Review
 
-PASS: Summary tables have clear rankings
-ISSUE: RETRIEVAL_COMPARISON uses "MRR" without explaining it until section 3
-SUGGESTION: Add a "Key metrics explained" box before the first table
-PASS: Cross-references link to related reports
+LLM Agent:
+  PASS: Summary tables have clear rankings
+  ISSUE: RETRIEVAL_COMPARISON uses "MRR" without explaining it until section 3
+  SUGGESTION: Add a "Key metrics explained" box before the first table
+
+Junior Developer:
+  PASS: Scoring scale explained before tables
+  PASS: Reproduction instructions are complete
+
+Product Manager:
+  PASS: Trade-offs are honest
+  ISSUE: COST_AT_SCALE doesn't show a "10-person startup" scenario
 ```
 
 ---
@@ -285,5 +337,6 @@ PASS: Cross-references link to related reports
 When adding a new spec to the self-improvement folder:
 1. Add it to the assignment matrix
 2. Decide which personas should review it (minimum 2)
-3. Add persona-specific checklist items to the review guides above
+3. Add a new section under [Per-spec checklists](#per-spec-checklists) with
+   the relevant persona checklist items grouped together
 4. Update MASTER.md
