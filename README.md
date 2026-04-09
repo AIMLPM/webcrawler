@@ -521,25 +521,6 @@ source .env
 │   ├── test_core.py
 │   ├── test_extract.py
 │   └── test_upload.py
-├── benchmarks/
-│   ├── Dockerfile
-│   ├── run_benchmarks.sh
-│   ├── preflight.py
-│   ├── benchmark_all_tools.py
-│   ├── benchmark_markcrawl.py
-│   ├── benchmark_quality.py
-│   ├── benchmark_retrieval.py
-│   ├── benchmark_answer_quality.py
-│   ├── quality_scorer.py
-│   ├── crawlee_worker.py
-│   ├── lint_reports.py
-│   ├── METHODOLOGY.md
-│   ├── SPEED_COMPARISON.md
-│   ├── QUALITY_COMPARISON.md
-│   ├── RETRIEVAL_COMPARISON.md
-│   ├── ANSWER_QUALITY.md
-│   ├── COST_AT_SCALE.md
-│   └── MARKCRAWL_RESULTS.md
 └── markcrawl/
     ├── __init__.py
     ├── cli.py

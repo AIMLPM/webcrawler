@@ -36,11 +36,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**To run the benchmark comparison** (all 7 tools), use the pre-flight script instead — it installs all benchmark dependencies and verifies everything is ready:
-
-```bash
-python benchmarks/preflight.py --install
-```
+Benchmarks are maintained in a separate repository: [AIMLPM/llm-crawler-bench](https://github.com/AIMLPM/llm-crawler-bench).
 
 ## Suggested checks before opening a PR
 
