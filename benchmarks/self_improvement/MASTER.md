@@ -37,6 +37,34 @@ Each spec contains:
 | 09 | [Safeguards](09_safeguards.md) | Pre-commit validation, feedback preservation, invariant checks | All changes |
 | -- | [Feedback Registry](feedback_registry.md) | Protected content from user/reviewer feedback | All files |
 | -- | [check_invariants.py](check_invariants.py) | Automated invariant checker (run before committing) | README, reports, code |
+| -- | [check_cross_report_consistency.py](check_cross_report_consistency.py) | Cross-report data consistency checker (run before committing) | README, SPEED, COST, ANSWER_QUALITY reports |
+
+---
+
+## Severity escalation
+
+Any finding where a **published number** (README benchmark table, report
+summary table) disagrees with its **source data** (the report or script that
+produced the number) is automatically **CRITICAL**, regardless of which spec
+catches it.
+
+Published numbers are what readers see first and cite to others. Wrong numbers
+in the README or a summary table destroy credibility in a way that a stale
+methodology footnote does not. This rule exists because the April 2026 audit
+predicted Spec 05 (cross-report consistency) would produce "2-4 inconsistencies"
+but it turned out to be the only CRITICAL finding — the severity was
+under-triaged because the process treated data mismatches the same as style nits.
+
+**Examples of auto-CRITICAL findings:**
+- README says "scrapy+md is fastest" but SPEED_COMPARISON.md ranks a different
+  tool first
+- README table shows chunks/page = 12.0 but COST_AT_SCALE source data says 10.1
+- COST_AT_SCALE cites answer quality of 3.91 but ANSWER_QUALITY.md says 3.86
+
+**Not auto-CRITICAL** (normal severity rules apply):
+- A methodology footnote references an old date
+- A cross-reference link points to a renamed section
+- Tool name casing differs between reports
 
 ---
 
@@ -134,7 +162,39 @@ resolved in a read-only review (e.g., benchmark re-runs needed, user
 decisions required). Remove items from this list when resolved — the
 resolution goes into a git commit.
 
-**Currently: no pending findings.**
+### PF-001: MARKCRAWL_RESULTS.md is stale
+
+- **Filed:** 2026-04-08
+- **Found by:** Spec 07 review
+- **Type:** BENCHMARK-RERUN
+- **Scripts to re-run:**
+  - [ ] `benchmark_markcrawl.py` (~10-30 min, no API cost)
+- **What triggered this:** MARKCRAWL_RESULTS.md was generated on 2026-04-05
+  but report and style fixes were applied on 2026-04-08. The headline
+  numbers (5.99 pages/sec, 227 pages) may be outdated.
+- **Stale files:** `benchmarks/MARKCRAWL_RESULTS.md`
+- **Reports that will change:** MARKCRAWL_RESULTS.md only (self-benchmark,
+  no cross-report dependencies)
+- **Estimated effort:** 10-30 min runtime, no API cost
+- **Resolved:** _pending_
+
+### PF-002: Missing fastapi-docs "file uploads" retrieval query
+
+- **Filed:** 2026-04-08
+- **Found by:** Spec 07 review (from 2026-04-06 next-steps list)
+- **Type:** BENCHMARK-RERUN
+- **Scripts to re-run:**
+  - [ ] `benchmark_retrieval.py` (~1-2 hours, ~$2 OpenAI embedding cost)
+  - [ ] `benchmark_answer_quality.py` (~30 min, ~$0.50 OpenAI cost)
+- **What triggered this:** The fastapi-docs query set has no query about
+  file uploads (a common FastAPI feature). Adding it would increase the
+  query set from 92 to 93 and require re-running retrieval + answer quality.
+- **Stale files:** retrieval and answer quality checkpoints for all tools
+  on fastapi-docs
+- **Reports that will change:** RETRIEVAL_COMPARISON.md, ANSWER_QUALITY.md,
+  COST_AT_SCALE.md (query count references)
+- **Estimated effort:** ~2 hours + ~$2.50 OpenAI costs
+- **Resolved:** _pending_
 
 <!--
 When adding findings, replace the "no pending findings" line with entries

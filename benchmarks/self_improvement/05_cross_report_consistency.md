@@ -6,6 +6,12 @@ consistent across all benchmark reports and their source data.
 **When to run:** After any benchmark re-run, after updating reports, or when
 a report "doesn't smell right."
 
+**Automated checks:** The most critical subset of this spec (README vs source
+reports) is now automated by `check_cross_report_consistency.py`. Run it as
+part of the pre-commit gate. The manual checks below cover areas the script
+does not (page counts vs raw JSONL, tool name casing, aggregation math,
+checkpoint staleness).
+
 ---
 
 ## Why this matters

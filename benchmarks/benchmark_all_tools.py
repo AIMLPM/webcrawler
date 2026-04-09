@@ -36,6 +36,7 @@ if sys.prefix == sys.base_prefix and _VENV_PYTHON.exists():
 
 import argparse  # noqa: E402
 import json  # noqa: E402
+import logging  # noqa: E402
 import random  # noqa: E402
 import shutil  # noqa: E402
 import statistics  # noqa: E402
@@ -46,6 +47,8 @@ import time  # noqa: E402
 from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: E402
 from dataclasses import dataclass, field  # noqa: E402
 from typing import Callable, Dict, List, Optional  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 # Add parent dir to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -359,6 +362,7 @@ def _validate_urls(urls: List[str], concurrency: int = 20) -> tuple[List[str], L
     to avoid wiping the cache during a temporary outage.
     """
     import urllib.request
+    import urllib.error
 
     # Map url → is_live, preserving order
     status_map: Dict[str, bool] = {}
@@ -370,14 +374,14 @@ def _validate_urls(urls: List[str], concurrency: int = 20) -> tuple[List[str], L
             req.add_header("User-Agent", "markcrawl-benchmark/1.0")
             resp = urllib.request.urlopen(req, timeout=10)
             code = resp.getcode()
-        except Exception:
+        except (urllib.error.URLError, urllib.error.HTTPError, OSError):
             # HEAD rejected — try GET
             try:
                 req = urllib.request.Request(url)
                 req.add_header("User-Agent", "markcrawl-benchmark/1.0")
                 resp = urllib.request.urlopen(req, timeout=10)
                 code = resp.getcode()
-            except Exception:
+            except (urllib.error.URLError, urllib.error.HTTPError, OSError):
                 code = 0
 
         with lock:
@@ -389,7 +393,7 @@ def _validate_urls(urls: List[str], concurrency: int = 20) -> tuple[List[str], L
     dead_count = sum(1 for ok in status_map.values() if not ok)
     if len(urls) > 5 and dead_count > len(urls) * 0.5:
         # Likely a network issue, not actual page removal — keep all
-        print(f"WARNING: {dead_count}/{len(urls)} URLs unreachable, likely network issue — keeping all cached URLs")
+        logger.warning(f"{dead_count}/{len(urls)} URLs unreachable, likely network issue -- keeping all cached URLs")
         return list(urls), []
 
     # Preserve original ordering
@@ -426,7 +430,10 @@ def _discover_fresh(url: str, max_pages: int, skip_patterns: Optional[List[str]]
             for line in f:
                 line = line.strip()
                 if line:
-                    page = json.loads(line)
+                    try:
+                        page = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
                     page_url = page.get("url", "")
                     if page_url and not any(p.search(page_url) for p in compiled):
                         urls.append(page_url)
@@ -469,20 +476,20 @@ def discover_urls(
         needs_more = (max_pages > len(entry.get("urls", [])) and max_pages > cached_max)
 
         if settings_changed:
-            print("skip_patterns changed, rediscovering...", end=" ", flush=True)
+            logger.info("skip_patterns changed, rediscovering...")
         elif needs_more:
-            print(f"max_pages increased ({cached_max}→{max_pages}), rediscovering...", end=" ", flush=True)
+            logger.info(f"max_pages increased ({cached_max}->{max_pages}), rediscovering...")
         elif age_days >= _URL_CACHE_MAX_AGE_DAYS:
-            print(f"cache expired ({age_days:.0f} days old), rediscovering...", end=" ", flush=True)
+            logger.info(f"cache expired ({age_days:.0f} days old), rediscovering...")
         else:
             # Cache is usable — validate
             cached_urls = entry["urls"]
-            print(f"validating {len(cached_urls)} cached URLs...", end=" ", flush=True)
+            logger.info(f"validating {len(cached_urls)} cached URLs...")
             live, dead = _validate_urls(cached_urls)
             if dead:
-                print(f"{len(dead)} removed, {len(live)} live")
+                logger.info(f"{len(dead)} removed, {len(live)} live")
             else:
-                print("all live")
+                logger.info("all live")
 
             # Update cache with only live URLs
             if dead:
@@ -583,7 +590,8 @@ def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List
                             continue
                         _write_output(out_dir, jsonl_path, result.url, result)
                         pages_saved += 1
-                    except Exception:
+                    except (OSError, ValueError, KeyError, AttributeError) as exc:
+                        logger.debug("crawl4ai batch: skipping result: %s", exc)
                         continue
             else:
                 # Discovery mode — follow links (sequential, can't batch)
@@ -606,7 +614,8 @@ def run_crawl4ai(url: str, out_dir: str, max_pages: int, url_list: Optional[List
                                 link = link_info.get("href", "") if isinstance(link_info, dict) else str(link_info)
                                 if link and link not in visited and base_domain in link:
                                     to_visit.append(link)
-                    except Exception:
+                    except (OSError, ValueError, KeyError, AttributeError) as exc:
+                        logger.debug("crawl4ai discovery: skipping %s: %s", current_url, exc)
                         continue
 
     def _write_output(out_dir, jsonl_path, page_url, result):
@@ -666,7 +675,8 @@ def run_crawl4ai_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[
                             "text": result.markdown,
                         }, ensure_ascii=False) + "\n")
                     pages_saved += 1
-                except Exception:
+                except (OSError, ValueError, KeyError, AttributeError) as exc:
+                    logger.debug("crawl4ai-raw: skipping %s: %s", page_url, exc)
                     continue
 
     asyncio.run(_crawl())
@@ -852,7 +862,7 @@ def run_firecrawl(url: str, out_dir: str, max_pages: int, url_list: Optional[Lis
             match = _re.search(r"retry after (\d+)s", msg)
             wait = int(match.group(1)) + 2 if match else 15
             if attempt < max_retries - 1:
-                print(f"    [firecrawl] rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
+                logger.warning(f"    [firecrawl] rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
                 rate_limit_wait += wait
                 time.sleep(wait)
             else:
@@ -958,11 +968,11 @@ def run_crawlee(url: str, out_dir: str, max_pages: int, url_list: Optional[List[
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, check=False)
         if result.stderr:
-            print(f"[crawlee stderr] {result.stderr[:500]}", flush=True)
+            logger.warning(f"[crawlee stderr] {result.stderr[:500]}")
         last_line = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else "0"
         return int(last_line)
     except subprocess.TimeoutExpired:
-        print("[crawlee] timed out after 300s", flush=True)
+        logger.warning("[crawlee] timed out after 300s")
         return 0
     except ValueError:
         return 0
@@ -1002,7 +1012,7 @@ def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Opti
 
     colly_result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, check=False)
     if colly_result.stderr:
-        print(f"[colly] stderr: {colly_result.stderr[:500]}", flush=True)
+        logger.warning(f"[colly] stderr: {colly_result.stderr[:500]}")
 
     # Convert HTML files to Markdown using markdownify
     from markdownify import markdownify as md
@@ -1047,7 +1057,7 @@ def run_colly_markdownify(url: str, out_dir: str, max_pages: int, url_list: Opti
 
 def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optional[List[str]] = None, **kwargs) -> int:
     """Raw Playwright baseline — browser fetch + markdownify, no framework overhead."""
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import sync_playwright, Error as PlaywrightError
 
     os.makedirs(out_dir, exist_ok=True)
     urls_to_fetch = url_list if url_list else [url]
@@ -1081,7 +1091,8 @@ def run_playwright_raw(url: str, out_dir: str, max_pages: int, url_list: Optiona
                 page.goto(page_url, timeout=15000, wait_until="domcontentloaded")
                 html = page.content()
                 title = page.title()
-            except Exception:
+            except (PlaywrightError, OSError) as exc:
+                logger.debug("playwright: skipping %s: %s", page_url, exc)
                 continue
 
             markdown = md(html, heading_style="ATX", strip=["img", "script", "style", "nav", "footer"])
@@ -1446,14 +1457,14 @@ def main():
         tool_filter = set(t.strip() for t in args.tools.split(","))
         unknown = tool_filter - set(TOOLS.keys())
         if unknown:
-            print(f"Unknown tool(s): {', '.join(unknown)}")
-            print(f"Available: {', '.join(TOOLS.keys())}")
+            logger.error(f"Unknown tool(s): {', '.join(unknown)}")
+            logger.error(f"Available: {', '.join(TOOLS.keys())}")
             sys.exit(1)
 
     # Check available tools
     available = []
     skipped = {}
-    print("Checking tools...")
+    logger.info("Checking tools...")
     for name, tool in TOOLS.items():
         if tool_filter and name not in tool_filter:
             continue
@@ -1463,11 +1474,11 @@ def main():
         if name == "firecrawl":
             detail = getattr(check_fn, "status", "")
             if ok:
-                extra = f" [{firecrawl_tier} tier — {detail}]" if detail else f" [{firecrawl_tier} tier]"
+                extra = f" [{firecrawl_tier} tier -- {detail}]" if detail else f" [{firecrawl_tier} tier]"
             elif detail:
                 extra = f" ({detail})"
         status = "available" if ok else "NOT AVAILABLE"
-        print(f"  {name}: {status}{extra}")
+        logger.info(f"  {name}: {status}{extra}")
         if ok:
             available.append(name)
         else:
@@ -1475,35 +1486,35 @@ def main():
             skipped[name] = reason or "not installed"
 
     if not available:
-        print("\nNo tools available. Install at least: pip install markcrawl")
+        logger.error("No tools available. Install at least: pip install markcrawl")
         sys.exit(1)
 
     # --- Pre-flight: run the full preflight check before starting ---
-    print("\n--- Pre-flight check ---")
+    logger.info("\n--- Pre-flight check ---")
     try:
         from preflight import print_ready_status, run_checks
         tool_results, _ = run_checks()
         print_ready_status(tool_results)
         if not tool_results.get("markcrawl"):
-            print("\nPre-flight FAILED: markcrawl is required (used for URL discovery).")
-            print("  Fix: pip install -e .  (from repo root)")
+            logger.error("Pre-flight FAILED: markcrawl is required (used for URL discovery).")
+            logger.error("  Fix: pip install -e .  (from repo root)")
             sys.exit(1)
         not_ready = [t for t, ok in tool_results.items() if not ok]
         if not_ready:
-            print(f"\nPre-flight FAILED: {len(not_ready)} tool(s) not ready: {', '.join(not_ready)}")
-            print("  Fix: python benchmarks/preflight.py --install")
+            logger.error(f"Pre-flight FAILED: {len(not_ready)} tool(s) not ready: {', '.join(not_ready)}")
+            logger.error("  Fix: python benchmarks/preflight.py --install")
             sys.exit(1)
-        print("Pre-flight passed — all tools ready.\n")
+        logger.info("Pre-flight passed -- all tools ready.\n")
     except ImportError:
-        print("  Warning: preflight.py not found, skipping pre-flight checks.\n")
+        logger.warning("  preflight.py not found, skipping pre-flight checks.\n")
 
     mode = "parallel" if args.parallel else "sequential"
-    print(f"\nRunning comparison: {len(available)} tool(s) × {len(sites)} site(s) × {args.iterations} iteration(s) [{mode}]")
+    logger.info(f"\nRunning comparison: {len(available)} tool(s) x {len(sites)} site(s) x {args.iterations} iteration(s) [{mode}]")
     if not args.skip_warmup:
-        print("(+ 1 warm-up run per site)")
+        logger.info("(+ 1 warm-up run per site)")
     if args.parallel:
-        print(f"(max {args.site_parallelism} tool(s) per site simultaneously)")
-    print("=" * 60)
+        logger.info(f"(max {args.site_parallelism} tool(s) per site simultaneously)")
+    logger.info("=" * 60)
 
     # --- Checkpoint: attempt to resume a previous interrupted run ---
     checkpoint_path = _DEFAULT_CHECKPOINT
@@ -1525,21 +1536,21 @@ def main():
         resumed_base_dir = cp.get("base_dir")
         completed = sum(len(s) for s in resumed_results.values())
         total = len(available) * len(sites)
-        print(f"\n  Resuming from checkpoint: {completed}/{total} tool-site pairs already done.")
+        logger.info(f"\n  Resuming from checkpoint: {completed}/{total} tool-site pairs already done.")
     elif not args.no_resume:
         # No valid checkpoint — clean start
         pass
 
     # Phase 1: Discover URLs for each site (all tools get identical pages)
     phase1_start = time.time()
-    print("\n--- Phase 1: URL Discovery ---")
+    logger.info("\n--- Phase 1: URL Discovery ---")
     site_urls: dict[str, List[str]] = {}
     for site_name, site_config in sites.items():
         if site_name in resumed_urls and resumed_urls[site_name]:
             site_urls[site_name] = resumed_urls[site_name]
-            print(f"  {site_name}: {len(site_urls[site_name])} URLs (from checkpoint)")
+            logger.info(f"  {site_name}: {len(site_urls[site_name])} URLs (from checkpoint)")
         else:
-            print(f"  {site_name}: ", end="", flush=True)
+            logger.info(f"  {site_name}: discovering URLs...")
             urls = discover_urls(
                 site_name=site_name,
                 url=site_config["url"],
@@ -1548,7 +1559,7 @@ def main():
                 force_refresh=args.refresh_urls,
             )
             site_urls[site_name] = urls
-            print(f"{len(urls)} URLs")
+            logger.info(f"  {site_name}: {len(urls)} URLs")
     phase1_end = time.time()
 
     # Phase 2: Benchmark all tools on identical URL lists
@@ -1606,13 +1617,13 @@ def main():
 
             status = "✓" if not error else "✗"
             err_msg = f", {errs} error(s)" if errs else ""
-            print(f"\n  [{status}] Progress: {done}/{total} complete{err_msg} [{eta}]", flush=True)
+            logger.info(f"\n  [{status}] Progress: {done}/{total} complete{err_msg} [{eta}]")
 
             # Warn if a tool is failing repeatedly
             consec = _progress["tool_errors"][tool_name]
             if consec >= _TOOL_FAIL_THRESHOLD:
-                print(f"  ⚠  {tool_name} has failed {consec} sites in a row — "
-                      f"likely a systemic issue, skipping remaining sites for this tool.")
+                logger.warning(f"  {tool_name} has failed {consec} sites in a row -- "
+                               f"likely a systemic issue, skipping remaining sites for this tool.")
 
     def _tool_should_skip(tool_name: str) -> bool:
         """Return True if a tool has hit the consecutive failure threshold."""
@@ -1624,12 +1635,12 @@ def main():
         if site_name in results.get(tool_name, {}):
             r = results[tool_name][site_name]
             status = f"error: {r.error[:40]}" if r.error else f"{r.pages_median:.0f} pages, {r.time_median:.1f}s"
-            print(f"\n  {tool_name} → {site_name}: skipped (checkpoint: {status})")
+            logger.info(f"\n  {tool_name} -> {site_name}: skipped (checkpoint: {status})")
             return
 
         # Skip if this tool has failed too many sites in a row
         if _tool_should_skip(tool_name):
-            print(f"\n  {tool_name} → {site_name}: skipped (repeated failures)")
+            logger.info(f"\n  {tool_name} -> {site_name}: skipped (repeated failures)")
             _print_progress(tool_name, site_name, "skipped-repeated-failure")
             return
 
@@ -1638,17 +1649,17 @@ def main():
         urls = site_urls[site_name]
         tool_site_start = time.time()
 
-        print(f"\n  {tool_name} → {site_name} ({len(urls)} URLs):")
+        logger.info(f"\n  {tool_name} -> {site_name} ({len(urls)} URLs):")
 
         # Warm-up — skip for firecrawl on free tier (wastes API credits)
         skip_warmup = args.skip_warmup or (tool_name == "firecrawl" and firecrawl_tier == "free")
         if not skip_warmup:
-            print(f"    [{tool_name}/{site_name}] warm-up...", flush=True)
+            logger.info(f"    [{tool_name}/{site_name}] warm-up...")
             try:
                 run_single(tool_name, run_fn, site_name, site_config, base_dir,
                            url_list=urls, concurrency=args.concurrency)
             except Exception as exc:
-                print(f"    [{tool_name}/{site_name}] warm-up failed: {exc}")
+                logger.warning(f"    [{tool_name}/{site_name}] warm-up failed: {exc}")
 
         # Iterations
         runs = []
@@ -1656,10 +1667,10 @@ def main():
             result = run_single(tool_name, run_fn, site_name, site_config, base_dir,
                                 url_list=urls, concurrency=args.concurrency)
             if result.error:
-                print(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: error: {result.error[:60]}")
+                logger.warning(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: error: {result.error[:60]}")
             else:
-                print(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: "
-                      f"{result.pages} pages in {result.time_seconds:.1f}s ({result.pages_per_second:.1f} p/s)")
+                logger.info(f"    [{tool_name}/{site_name}] run {i+1}/{args.iterations}: "
+                            f"{result.pages} pages in {result.time_seconds:.1f}s ({result.pages_per_second:.1f} p/s)")
             runs.append(result)
 
         agg = aggregate_runs(runs, site_config)
@@ -1704,9 +1715,9 @@ def main():
 
         browser_avail = [t for t in available if t in BROWSER_TOOLS]
         http_avail = [t for t in available if t in HTTP_TOOLS]
-        print("\n--- Phase 2: Benchmarking (resource-aware parallel) ---")
-        print(f"  Browser lane (max 1 concurrent): {', '.join(browser_avail) or 'none'}")
-        print(f"  HTTP lane (unlimited): {', '.join(http_avail) or 'none'}")
+        logger.info("\n--- Phase 2: Benchmarking (resource-aware parallel) ---")
+        logger.info(f"  Browser lane (max 1 concurrent): {', '.join(browser_avail) or 'none'}")
+        logger.info(f"  HTTP lane (unlimited): {', '.join(http_avail) or 'none'}")
 
         browser_semaphore = threading.Semaphore(1)
         site_semaphores: dict[str, threading.Semaphore] = {
@@ -1736,31 +1747,31 @@ def main():
             for future in as_completed(futures):
                 exc = future.exception()
                 if exc:
-                    print(f"  Warning: benchmark task failed: {exc}")
+                    logger.warning(f"  benchmark task failed: {exc}")
     else:
         # Sequential mode — randomize tool order per site to eliminate
         # cache/CDN bias from fixed ordering.
-        print("\n--- Phase 2: Benchmarking (identical URLs per site, randomized tool order) ---")
+        logger.info("\n--- Phase 2: Benchmarking (identical URLs per site, randomized tool order) ---")
         for site_name in sites:
             tool_order = list(available)
             random.shuffle(tool_order)
-            print(f"  {site_name} tool order: {', '.join(tool_order)}")
+            logger.info(f"  {site_name} tool order: {', '.join(tool_order)}")
             for tool_name in tool_order:
                 _bench_tool_site(tool_name, site_name)
 
     phase2_end = time.time()
     run_end = time.time()
 
-    print("\n" + "=" * 60)
+    logger.info("\n" + "=" * 60)
     generate_comparison_report(results, available, args.output, concurrency=args.concurrency)
-    print(f"Report saved to: {args.output}")
+    logger.info(f"Report saved to: {args.output}")
 
     # All done — remove checkpoint file
     _remove_checkpoint(checkpoint_path)
-    print("Checkpoint cleared (run completed successfully).")
-    print(f"\nRun data saved to: {base_dir}")
-    print("\nTo score extraction quality (preamble, repeat rate, precision/recall):")
-    print("  python benchmarks/benchmark_quality.py")
+    logger.info("Checkpoint cleared (run completed successfully).")
+    logger.info(f"\nRun data saved to: {base_dir}")
+    logger.info("\nTo score extraction quality (preamble, repeat rate, precision/recall):")
+    logger.info("  python benchmarks/benchmark_quality.py")
 
     # Write run_metadata.json before saving
     metadata = {
@@ -1873,7 +1884,7 @@ def _load_checkpoint(path: str, args_dict: dict) -> Optional[dict]:
 
     # Settings must match — different iterations/concurrency/sites means start fresh
     if cp.get("args") != args_dict:
-        print("  Checkpoint found but settings differ — starting fresh.")
+        logger.info("  Checkpoint found but settings differ -- starting fresh.")
         return None
 
     return cp
@@ -1919,9 +1930,9 @@ def _save_run_data(base_dir: str) -> None:
     run_dest = os.path.join(runs_dir, f"run_{timestamp}")
     try:
         shutil.copytree(base_dir, run_dest)
-        print(f"Run data saved to: {run_dest}")
+        logger.info(f"Run data saved to: {run_dest}")
     except Exception as exc:
-        print(f"Warning: could not save run data: {exc}")
+        logger.warning(f"could not save run data: {exc}")
         shutil.rmtree(base_dir, ignore_errors=True)
         return
 
@@ -1936,8 +1947,9 @@ def _save_run_data(base_dir: str) -> None:
         oldest = existing_runs.pop(0)
         oldest_path = os.path.join(runs_dir, oldest)
         shutil.rmtree(oldest_path, ignore_errors=True)
-        print(f"Removed old run: {oldest}")
+        logger.info(f"Removed old run: {oldest}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

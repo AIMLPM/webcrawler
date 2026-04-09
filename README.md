@@ -143,21 +143,21 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 
 ### Benchmark results (8 tools, 8 sites, 92 queries)
 
-**Speed:** colly+md is fastest (5.8 pages/sec), scrapy+md second (5.2), markcrawl third (3.0). Firecrawl (self-hosted) is slowest at 0.8 pages/sec and only crawled 6 of 8 sites (react-dev and stripe-docs fail with connection resets). See [speed comparison](benchmarks/SPEED_COMPARISON.md).
+**Speed:** scrapy+md is fastest (9.1 pages/sec), colly+md second (5.8), markcrawl third (2.9). Firecrawl (self-hosted) is slowest at 0.8 pages/sec and only crawled 6 of 8 sites (react-dev and stripe-docs fail with connection resets). See [speed comparison](benchmarks/SPEED_COMPARISON.md).
 
 **Output cleanliness:** markcrawl has the lowest nav pollution (4 words of preamble per page vs 275-398 for others), at the cost of 84% recall vs 97% for crawlee. See [quality comparison](benchmarks/QUALITY_COMPARISON.md).
 
-**RAG answer quality:** markcrawl produces the highest LLM answer scores (3.91/5) with the fewest chunks per page (14.2). Firecrawl scores well on answer quality (4.04/5) but on a smaller query set (70 vs 92 queries). The gap between tools is small but consistent:
+**RAG answer quality:** markcrawl produces the highest LLM answer scores (3.91/5) with the fewest chunks per page (10.1). Firecrawl scores well on answer quality (4.04/5) but on a smaller query set (70 vs 92 queries). The gap between tools is small but consistent:
 
 | Tool | Chunks/page | Answer Quality (/5) | Annual cost (100K pages, 1K queries/day) |
 |---|---|---|---|
-| **markcrawl** | **14.2** | **3.91** | **$4,505** |
+| **markcrawl** | **10.1** | **3.91** | **$4,505** |
 | scrapy+md | 12.6 | 3.86 | $5,464 |
 | firecrawl | 13.0 | 4.04 | $5,835 |
 | crawl4ai | 16.9 | 3.82 | $6,960 |
-| colly+md | 25.9 | 3.83 | $7,418 |
-| playwright | 27.8 | 3.74 | $8,291 |
-| crawlee | 29.5 | 3.80 | $7,826 |
+| colly+md | 19.0 | 3.83 | $7,213 |
+| playwright | 19.8 | 3.74 | $7,320 |
+| crawlee | 21.1 | 3.80 | $7,467 |
 
 Fewer chunks = lower storage and embedding costs. Cleaner chunks = better answers with less context. For the complete cost analysis across all scales (100 to 1M pages) with full methodology, see [benchmarks/COST_AT_SCALE.md](benchmarks/COST_AT_SCALE.md).
 

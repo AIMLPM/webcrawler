@@ -67,6 +67,19 @@ See [Invariant checks](#invariant-checks) below for what this validates.
 
 - [ ] All invariants pass after your change
 
+### Step 3b: Run cross-report consistency checks
+
+```bash
+python benchmarks/self_improvement/check_cross_report_consistency.py
+```
+
+This validates that key numbers (speed rankings, chunks/page, answer quality,
+annual costs) are consistent across README, SPEED_COMPARISON.md,
+COST_AT_SCALE.md, and ANSWER_QUALITY.md. Any mismatch here is automatically
+a **CRITICAL** finding (see [MASTER.md severity escalation](MASTER.md#severity-escalation)).
+
+- [ ] All consistency checks pass after your change
+
 ### Step 4: Review the diff
 
 Before committing, review the full diff:
@@ -117,6 +130,20 @@ These are conditions that must ALWAYS be true. The script
 | C2 | `python -c "import markcrawl"` exits 0 | Package is importable |
 | C3 | `python benchmarks/lint_reports.py` exits 0 | Linter passes |
 
+### Cross-report consistency invariants
+
+Validated by `check_cross_report_consistency.py`. Any failure here is
+automatically **CRITICAL** (see [MASTER.md](MASTER.md#severity-escalation)).
+
+| ID | Check | Why |
+|----|-------|-----|
+| X1 | README speed rankings and pages/sec match SPEED_COMPARISON.md | Data integrity in most-read file |
+| X2 | README chunks/page and annual costs match COST_AT_SCALE.md | Data integrity in most-read file |
+| X3 | README answer quality scores match ANSWER_QUALITY.md | Data integrity in most-read file |
+| X4 | COST_AT_SCALE answer quality matches ANSWER_QUALITY.md | Cross-report data agreement |
+| X5 | README speed ranking order matches report sort order | Correct #1/#2/#3 claims |
+| X6 | README benchmark table includes all major tools | CLAUDE.md: show all tools |
+
 ---
 
 ## Feedback preservation process
@@ -140,9 +167,11 @@ When a future reviewer encounters a registry entry:
 
 ## What this does NOT protect against
 
-- **Logic bugs in benchmark scripts** — invariants check that reports exist
-  and have correct structure, not that the numbers are correct. Use Spec 07
-  (Report Data Quality) for that.
+- **Logic bugs in benchmark scripts** — invariants check structure and
+  cross-report consistency, but not that the underlying computations are
+  correct. `check_cross_report_consistency.py` catches when reports disagree
+  with each other, but not when they're all wrong in the same way. Use
+  Spec 07 (Report Data Quality) for that.
 - **Performance regressions** — no automated benchmark comparison. A change
   could make markcrawl slower without triggering any invariant.
 - **External changes** — if a dependency updates or a test site goes down,

@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import logging
 import math
 import os
 import re
@@ -40,6 +41,8 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from markcrawl.chunker import chunk_markdown  # noqa: E402
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -49,7 +52,7 @@ TOOLS = [
     "crawlee", "colly+md", "playwright", "firecrawl",
 ]
 
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-3-small")
 EMBEDDING_DIMENSIONS = 1536
 TOP_K = 50  # Retrieve top-50 candidates for reranking pipeline
 REPORT_AT_K = [1, 3, 5, 10, 20]  # Report hit rates at each K value
@@ -66,7 +69,7 @@ CHUNK_CONFIGS = [
 DEFAULT_CHUNK_CONFIG = (400, 50, "~512tok")  # Used when not running sensitivity
 
 # Cross-encoder reranking model
-RERANK_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RERANK_MODEL = os.environ.get("RERANK_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 RERANK_TOP_N = 20  # Rerank top-N from initial retrieval
 
 # BM25 + Embedding fusion weight (for RRF)
@@ -714,12 +717,12 @@ def _get_openai_client():
     try:
         from openai import OpenAI
     except ImportError:
-        print("ERROR: openai package required. Install with: pip install openai")
+        logger.error("openai package required. Install with: pip install openai")
         sys.exit(1)
 
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        print("ERROR: OPENAI_API_KEY environment variable not set")
+        logger.error("OPENAI_API_KEY environment variable not set")
         sys.exit(1)
 
     return OpenAI(api_key=api_key)
@@ -770,12 +773,29 @@ def _load_embed_cache(cache_key: str) -> Optional[List[List[float]]]:
     return None
 
 
+EMBED_CACHE_MAX_GB = float(os.environ.get("EMBED_CACHE_MAX_GB", "20"))
+
+
+def _evict_embed_cache() -> None:
+    """Remove oldest cache files until total size is under EMBED_CACHE_MAX_GB."""
+    if not EMBED_CACHE_DIR.is_dir():
+        return
+    max_bytes = EMBED_CACHE_MAX_GB * 1024 ** 3
+    files = sorted(EMBED_CACHE_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime)
+    total = sum(f.stat().st_size for f in files)
+    while total > max_bytes and files:
+        oldest = files.pop(0)
+        total -= oldest.stat().st_size
+        oldest.unlink(missing_ok=True)
+
+
 def _save_embed_cache(cache_key: str, vectors: List[List[float]]) -> None:
-    """Save embeddings to disk cache."""
+    """Save embeddings to disk cache with LRU eviction at EMBED_CACHE_MAX_GB."""
     EMBED_CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_file = EMBED_CACHE_DIR / f"{cache_key}.json"
     with open(cache_file, "w") as f:
         json.dump(vectors, f)
+    _evict_embed_cache()
 
 
 def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[List[float]]:
@@ -832,13 +852,12 @@ def embed_texts(client, texts: List[str], model: str = EMBEDDING_MODEL) -> List[
                 is_rate_limit = "429" in exc_str or "RateLimit" in type(exc).__name__
                 if is_rate_limit:
                     wait = min(2 ** attempt * 2, 60)
-                    print(f"    Rate limited (attempt {attempt+1}/{max_retries}), waiting {wait}s...",
-                          flush=True)
+                    logger.warning(f"    Rate limited (attempt {attempt+1}/{max_retries}), waiting {wait}s...")
                     time.sleep(wait)
                 elif attempt < max_retries - 1:
                     wait = 2 ** attempt * 2
-                    print(f"    Embed API error (attempt {attempt+1}/{max_retries}): {exc}")
-                    print(f"    Retrying in {wait}s...")
+                    logger.warning(f"    Embed API error (attempt {attempt+1}/{max_retries}): {exc}")
+                    logger.warning(f"    Retrying in {wait}s...")
                     time.sleep(wait)
                 else:
                     raise
@@ -951,9 +970,9 @@ def _get_reranker():
     global _reranker
     if _reranker is None:
         from sentence_transformers import CrossEncoder
-        print(f"  Loading reranker: {RERANK_MODEL}...")
+        logger.info(f"  Loading reranker: {RERANK_MODEL}...")
         _reranker = CrossEncoder(RERANK_MODEL)
-        print("  Reranker loaded.")
+        logger.info("  Reranker loaded.")
     return _reranker
 
 
@@ -1012,7 +1031,10 @@ def load_pages(jsonl_path: str) -> List[Dict]:
         for line in f:
             line = line.strip()
             if line:
-                pages.append(json.loads(line))
+                try:
+                    pages.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
     return pages
 
 
@@ -1192,11 +1214,11 @@ def run_retrieval_test(
     """
     # Embed all chunks
     chunk_texts = [c.text for c in chunks]
-    print(f"    Embedding {len(chunk_texts)} chunks for {tool}/{site}...")
+    logger.info(f"    Embedding {len(chunk_texts)} chunks for {tool}/{site}...")
     embed_start = time.time()
     vectors = embed_texts(client, chunk_texts)
     embed_time = time.time() - embed_start
-    print(f"    Embedded in {embed_time:.1f}s")
+    logger.info(f"    Embedded in {embed_time:.1f}s")
 
     for chunk, vec in zip(chunks, vectors):
         chunk.vector = vec
@@ -1209,7 +1231,7 @@ def run_retrieval_test(
     # Embed queries if not provided (batch all at once)
     if query_vectors is None:
         query_texts = [q["query"] for q in queries]
-        print(f"    Embedding {len(query_texts)} queries...")
+        logger.info(f"    Embedding {len(query_texts)} queries...")
         query_vectors = embed_texts(client, query_texts)
 
     # Run queries across all modes
@@ -1706,8 +1728,10 @@ def _save_checkpoint(run_name: str, tool: str, site: str, config_label: str, res
         })
 
     path = CHECKPOINT_DIR / f"{key}.json"
-    with open(path, "w") as f:
+    tmp_path = path.with_suffix(".json.tmp")
+    with open(tmp_path, "w") as f:
         json.dump(data, f)
+    tmp_path.replace(path)
 
 
 def _load_checkpoint(run_name: str, tool: str, site: str, config_label: str) -> Optional[ToolSiteRetrievalResult]:
@@ -1786,13 +1810,13 @@ def _run_benchmark_for_config(
         queries = TEST_QUERIES.get(site)
         if not queries:
             if verbose:
-                print(f"\n  Skipping {site}: no test queries defined")
+                logger.info(f"\n  Skipping {site}: no test queries defined")
             continue
 
         if verbose:
-            print(f"\n{'='*60}")
-            print(f"Site: {site} ({len(queries)} queries) [{config_label}]")
-            print(f"{'='*60}")
+            logger.info(f"\n{'='*60}")
+            logger.info(f"Site: {site} ({len(queries)} queries) [{config_label}]")
+            logger.info(f"{'='*60}")
 
         site_results: Dict[str, ToolSiteRetrievalResult] = {}
 
@@ -1806,7 +1830,7 @@ def _run_benchmark_for_config(
         if needs_embedding:
             query_texts = [q["query"] for q in queries]
             if verbose:
-                print(f"\n  Embedding {len(query_texts)} queries for {site} (shared across tools)...")
+                logger.info(f"\n  Embedding {len(query_texts)} queries for {site} (shared across tools)...")
             query_vectors = embed_texts(client, query_texts)
 
         for tool in available_tools:
@@ -1817,28 +1841,28 @@ def _run_benchmark_for_config(
                 if verbose:
                     emb = cached_result.mode_results.get("embedding")
                     h10 = emb.hits_at_k.get(10, 0) if emb else 0
-                    print(f"\n  {tool}: RESUMED from checkpoint — Hit@10: {h10}/{cached_result.total_queries}")
+                    logger.info(f"\n  {tool}: RESUMED from checkpoint -- Hit@10: {h10}/{cached_result.total_queries}")
                 continue
 
             jsonl_path = run_dir / tool / site / "pages.jsonl"
             if not jsonl_path.is_file() or jsonl_path.stat().st_size == 0:
                 if verbose:
-                    print(f"  {tool}: no data, skipping")
+                    logger.info(f"  {tool}: no data, skipping")
                 continue
 
             if verbose:
-                print(f"\n  {tool}:")
+                logger.info(f"\n  {tool}:")
             pages = load_pages(str(jsonl_path))
             if verbose:
-                print(f"    {len(pages)} pages loaded")
+                logger.info(f"    {len(pages)} pages loaded")
 
             chunks = chunk_pages(pages, tool, site, max_words=max_words, overlap_words=overlap_words, add_context_headers=add_context_headers)
             if verbose:
-                print(f"    {len(chunks)} chunks created")
+                logger.info(f"    {len(chunks)} chunks created")
 
             if not chunks:
                 if verbose:
-                    print("    WARNING: no chunks created, skipping")
+                    logger.warning("    no chunks created, skipping")
                 continue
 
             result = run_retrieval_test(client, chunks, queries, tool, site, config_label, query_vectors)
@@ -1852,10 +1876,10 @@ def _run_benchmark_for_config(
                 reranked = result.mode_results.get("reranked")
                 if emb:
                     h10 = emb.hits_at_k.get(10, 0)
-                    print(f"    Embedding  Hit@10: {h10}/{result.total_queries} ({h10/result.total_queries:.0%})  MRR: {emb.mrr:.3f}")
+                    logger.info(f"    Embedding  Hit@10: {h10}/{result.total_queries} ({h10/result.total_queries:.0%})  MRR: {emb.mrr:.3f}")
                 if reranked:
                     h10 = reranked.hits_at_k.get(10, 0)
-                    print(f"    Reranked   Hit@10: {h10}/{result.total_queries} ({h10/result.total_queries:.0%})  MRR: {reranked.mrr:.3f}")
+                    logger.info(f"    Reranked   Hit@10: {h10}/{result.total_queries} ({h10/result.total_queries:.0%})  MRR: {reranked.mrr:.3f}")
 
         all_results[site] = site_results
 
@@ -1889,10 +1913,10 @@ def main():
         import shutil
         if CHECKPOINT_DIR.is_dir():
             shutil.rmtree(CHECKPOINT_DIR)
-            print("Cleared retrieval checkpoints.")
+            logger.info("Cleared retrieval checkpoints.")
         if EMBED_CACHE_DIR.is_dir():
             shutil.rmtree(EMBED_CACHE_DIR)
-            print("Cleared embedding cache.")
+            logger.info("Cleared embedding cache.")
 
     runs_dir = BENCH_DIR / "runs"
 
@@ -1902,10 +1926,10 @@ def main():
         run_dir = find_latest_run(runs_dir)
 
     if not run_dir or not run_dir.is_dir():
-        print(f"ERROR: No benchmark run found at {run_dir}")
+        logger.error(f"No benchmark run found at {run_dir}")
         sys.exit(1)
 
-    print(f"Using benchmark run: {run_dir.name}")
+    logger.info(f"Using benchmark run: {run_dir.name}")
 
     # Determine sites and tools to test
     sites = args.sites.split(",") if args.sites else list(TEST_QUERIES.keys())
@@ -1926,26 +1950,26 @@ def main():
         if has_any_data:
             available_tools.append(tool)
         else:
-            print(f"  Skipping {tool}: no data in this run")
+            logger.info(f"  Skipping {tool}: no data in this run")
 
     if not available_tools:
-        print("ERROR: No tools have data for the selected sites")
+        logger.error("No tools have data for the selected sites")
         sys.exit(1)
 
-    print(f"Tools with data: {', '.join(available_tools)}")
-    print(f"Sites: {', '.join(sites)}")
-    print(f"Retrieval modes: {', '.join(RETRIEVAL_MODES)}")
+    logger.info(f"Tools with data: {', '.join(available_tools)}")
+    logger.info(f"Sites: {', '.join(sites)}")
+    logger.info(f"Retrieval modes: {', '.join(RETRIEVAL_MODES)}")
 
     # Initialize OpenAI client
     client = _get_openai_client()
 
     # Verify API works with a tiny test
-    print("Verifying OpenAI API key...")
+    logger.info("Verifying OpenAI API key...")
     try:
         embed_texts(client, ["test"])
-        print("  OK")
+        logger.info("  OK")
     except Exception as exc:
-        print(f"  FAILED: {exc}")
+        logger.error(f"  FAILED: {exc}")
         sys.exit(1)
 
     # Run primary benchmark (default chunk config)
@@ -1965,9 +1989,9 @@ def main():
                 # Reuse primary results
                 chunk_sensitivity_results[label] = all_results
             else:
-                print(f"\n\n{'#'*60}")
-                print(f"# Chunk sensitivity: {label} (max_words={mw}, overlap={ow})")
-                print(f"{'#'*60}")
+                logger.info(f"\n\n{'#'*60}")
+                logger.info(f"# Chunk sensitivity: {label} (max_words={mw}, overlap={ow})")
+                logger.info(f"{'#'*60}")
                 chunk_sensitivity_results[label] = _run_benchmark_for_config(
                     client, run_dir, sites, available_tools,
                     mw, ow, label, verbose=True,
@@ -1980,16 +2004,16 @@ def main():
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(report)
-    print(f"\nRetrieval report written to: {output_path}")
+    logger.info(f"\nRetrieval report written to: {output_path}")
 
     # Print summary
-    print("\n" + "=" * 60)
-    print("SUMMARY (all retrieval modes)")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("SUMMARY (all retrieval modes)")
+    logger.info("=" * 60)
     for mode in RETRIEVAL_MODES:
-        print(f"\n  --- {mode.upper()} ---")
+        logger.info(f"\n  --- {mode.upper()} ---")
         k_header = " | ".join(f"Hit@{k:>2}" for k in REPORT_AT_K)
-        print(f"  {'Tool':>15}  {k_header}  |  MRR")
+        logger.info(f"  {'Tool':>15}  {k_header}  |  MRR")
         for tool in available_tools:
             total_queries = 0
             agg_hits: Dict[int, int] = {k: 0 for k in REPORT_AT_K}
@@ -2011,8 +2035,9 @@ def main():
             for k in REPORT_AT_K:
                 h = agg_hits[k]
                 k_vals.append(f"{h}/{total_queries} ({h/total_queries:.0%})")
-            print(f"  {tool:>15}  {'  '.join(k_vals)}  |  {mrr:.3f}")
+            logger.info(f"  {tool:>15}  {'  '.join(k_vals)}  |  {mrr:.3f}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from pathlib import Path
 
@@ -35,6 +36,8 @@ from quality_scorer import (  # noqa: E402
     score_density,
     score_signals,
 )
+
+logger = logging.getLogger(__name__)
 
 TOOLS = ["markcrawl", "crawl4ai", "crawl4ai-raw", "scrapy+md", "crawlee", "colly+md", "playwright", "firecrawl"]
 SITES = ["quotes-toscrape", "books-toscrape", "fastapi-docs", "python-docs"]
@@ -85,7 +88,10 @@ def _fix_colly_jsonl(run_dir: Path, site: str) -> int:
         line = line.strip()
         if not line:
             continue
-        page = json.loads(line)
+        try:
+            page = json.loads(line)
+        except json.JSONDecodeError:
+            continue
         current_url = page.get("url", "")
         fixed_url = current_url
 
@@ -104,7 +110,9 @@ def _fix_colly_jsonl(run_dir: Path, site: str) -> int:
         fixed_lines.append(json.dumps(page, ensure_ascii=False))
 
     if changed:
-        jsonl_path.write_text("\n".join(fixed_lines) + "\n", encoding="utf-8")
+        tmp_path = jsonl_path.with_suffix(".jsonl.tmp")
+        tmp_path.write_text("\n".join(fixed_lines) + "\n", encoding="utf-8")
+        tmp_path.replace(jsonl_path)
 
     return changed
 
@@ -119,7 +127,7 @@ def score_run(run_dir: Path) -> dict[str, dict[str, list[PageQuality]]]:
         # Fix colly URLs before loading
         fixed = _fix_colly_jsonl(run_dir, site)
         if fixed:
-            print(f"  colly+md / {site}: corrected {fixed} URLs")
+            logger.info(f"  colly+md / {site}: corrected {fixed} URLs")
 
         # Load all tools' output indexed by URL
         tool_outputs_by_url: dict[str, dict[str, str]] = {}
@@ -133,7 +141,10 @@ def score_run(run_dir: Path) -> dict[str, dict[str, list[PageQuality]]]:
                     raw = raw.strip()
                     if not raw:
                         continue
-                    page = json.loads(raw)
+                    try:
+                        page = json.loads(raw)
+                    except json.JSONDecodeError:
+                        continue
                     url = page.get("url", "").rstrip("/")
                     text = page.get("text", "")
                     if url and text:
@@ -165,7 +176,7 @@ def score_run(run_dir: Path) -> dict[str, dict[str, list[PageQuality]]]:
 
         total = sum(len(p) for p in quality_results[site].values())
         present = [t for t in TOOLS if quality_results[site].get(t)]
-        print(f"  {site}: scored {total} pages across {len(present)} tools")
+        logger.info(f"  {site}: scored {total} pages across {len(present)} tools")
 
     return quality_results
 
@@ -195,13 +206,14 @@ def main() -> None:
                      "Run benchmark_all_tools.py first.")
         run_dir = run_dirs[-1]
 
-    print(f"Scoring quality from run: {run_dir.name}")
+    logger.info(f"Scoring quality from run: {run_dir.name}")
     quality_results = score_run(run_dir)
 
     report = generate_quality_report(quality_results, TOOLS)
     Path(args.output).write_text(report, encoding="utf-8")
-    print(f"\nQuality report written to: {args.output}")
+    logger.info(f"\nQuality report written to: {args.output}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

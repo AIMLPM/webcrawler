@@ -21,6 +21,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
+import os
 import re
 import sys
 import time
@@ -47,12 +49,14 @@ from benchmarks.benchmark_retrieval import (  # noqa: E402
 )
 from markcrawl.chunker import chunk_markdown  # noqa: E402
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-ANSWER_MODEL = "gpt-4o-mini"  # Model for generating answers
-JUDGE_MODEL = "gpt-4o-mini"   # Model for judging answers
+ANSWER_MODEL = os.environ.get("ANSWER_MODEL", "gpt-4o-mini")
+JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "gpt-4o-mini")
 TOP_K_FOR_ANSWER = 10         # Chunks sent to the answer model
 CHECKPOINT_DIR = BENCH_DIR / "answer_quality_checkpoints"
 
@@ -216,8 +220,11 @@ def _save_checkpoint(run_name: str, tool: str, site: str, results: List[AnswerRe
         }
         for r in results
     ]
-    with open(CHECKPOINT_DIR / f"{key}.json", "w") as f:
+    path = CHECKPOINT_DIR / f"{key}.json"
+    tmp_path = path.with_suffix(".json.tmp")
+    with open(tmp_path, "w") as f:
         json.dump(data, f)
+    tmp_path.replace(path)
 
 
 def _load_checkpoint(run_name: str, tool: str, site: str) -> Optional[List[AnswerResult]]:
@@ -268,7 +275,7 @@ def run_answer_quality_test(
         return []
 
     # Embed chunks
-    print(f"    Embedding {len(chunk_texts)} chunks...")
+    logger.info(f"    Embedding {len(chunk_texts)} chunks...")
     chunk_vectors = embed_texts(client, chunk_texts)
     vec_matrix = chunk_vectors
 
@@ -312,7 +319,7 @@ def run_answer_quality_test(
         results.append(result)
 
         status = f"{overall:.1f}/5"
-        print(f"      Q{qi+1}: {status}  {query_text[:55]}...")
+        logger.info(f"      Q{qi+1}: {status}  {query_text[:55]}...")
 
     return results
 
@@ -463,16 +470,16 @@ def main():
     run_dir = runs_dir / args.run if args.run else find_latest_run(runs_dir)
 
     if not run_dir or not run_dir.is_dir():
-        print(f"ERROR: No benchmark run found at {run_dir}")
+        logger.error(f"No benchmark run found at {run_dir}")
         sys.exit(1)
 
-    print(f"Using benchmark run: {run_dir.name}")
+    logger.info(f"Using benchmark run: {run_dir.name}")
 
     if args.fresh:
         import shutil
         if CHECKPOINT_DIR.is_dir():
             shutil.rmtree(CHECKPOINT_DIR)
-            print("Cleared answer quality checkpoints.")
+            logger.info("Cleared answer quality checkpoints.")
 
     sites = args.sites.split(",") if args.sites else [s for s in TEST_QUERIES.keys()]
     tools = args.tools.split(",") if args.tools else TOOLS
@@ -488,18 +495,18 @@ def main():
                 break
     available_tools = list(dict.fromkeys(available_tools))  # dedupe preserving order
 
-    print(f"Tools: {', '.join(available_tools)}")
-    print(f"Sites: {', '.join(sites)}")
+    logger.info(f"Tools: {', '.join(available_tools)}")
+    logger.info(f"Sites: {', '.join(sites)}")
 
     client = _get_openai_client()
 
     # Verify API
-    print("Verifying OpenAI API...")
+    logger.info("Verifying OpenAI API...")
     try:
         embed_texts(client, ["test"])
-        print("  OK")
+        logger.info("  OK")
     except Exception as exc:
-        print(f"  FAILED: {exc}")
+        logger.error(f"  FAILED: {exc}")
         sys.exit(1)
 
     # Count total work
@@ -508,8 +515,8 @@ def main():
         if (run_dir / tool / site / "pages.jsonl").is_file()
     )
     total_queries = sum(len(TEST_QUERIES.get(s, [])) for s in sites)
-    print(f"\n{total_combos} tool×site combos, {total_queries} queries per tool")
-    print(f"Estimated API cost: ~${total_queries * len(available_tools) * 0.002:.2f}")
+    logger.info(f"\n{total_combos} tool*site combos, {total_queries} queries per tool")
+    logger.info(f"Estimated API cost: ~${total_queries * len(available_tools) * 0.002:.2f}")
 
     all_results: Dict[str, Dict[str, List[AnswerResult]]] = {}
     run_name = run_dir.name
@@ -519,9 +526,9 @@ def main():
         if not queries:
             continue
 
-        print(f"\n{'='*60}")
-        print(f"Site: {site} ({len(queries)} queries)")
-        print(f"{'='*60}")
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Site: {site} ({len(queries)} queries)")
+        logger.info(f"{'='*60}")
 
         site_results: Dict[str, List[AnswerResult]] = {}
 
@@ -534,7 +541,7 @@ def main():
         )
         if needs_work:
             query_texts = [q["query"] for q in queries]
-            print(f"  Embedding {len(query_texts)} queries...")
+            logger.info(f"  Embedding {len(query_texts)} queries...")
             query_vectors = embed_texts(client, query_texts)
 
         for tool in available_tools:
@@ -543,16 +550,16 @@ def main():
             if cached is not None:
                 site_results[tool] = cached
                 avg = sum(r.overall for r in cached) / len(cached)
-                print(f"\n  {tool}: RESUMED — avg score {avg:.2f}/5")
+                logger.info(f"\n  {tool}: RESUMED -- avg score {avg:.2f}/5")
                 continue
 
             jsonl_path = run_dir / tool / site / "pages.jsonl"
             if not jsonl_path.is_file() or jsonl_path.stat().st_size == 0:
                 continue
 
-            print(f"\n  {tool}:")
+            logger.info(f"\n  {tool}:")
             pages = load_pages(str(jsonl_path))
-            print(f"    {len(pages)} pages")
+            logger.info(f"    {len(pages)} pages")
 
             results = run_answer_quality_test(
                 client, pages, queries, tool, site, query_vectors,
@@ -562,7 +569,7 @@ def main():
                 site_results[tool] = results
                 _save_checkpoint(run_name, tool, site, results)
                 avg = sum(r.overall for r in results) / len(results)
-                print(f"    Average: {avg:.2f}/5")
+                logger.info(f"    Average: {avg:.2f}/5")
 
         all_results[site] = site_results
 
@@ -570,13 +577,13 @@ def main():
     report = generate_report(all_results, available_tools)
     with open(args.output, "w") as f:
         f.write(report)
-    print(f"\nReport written to: {args.output}")
+    logger.info(f"\nReport written to: {args.output}")
 
     # Print summary
-    print("\n" + "=" * 60)
-    print("ANSWER QUALITY SUMMARY")
-    print("=" * 60)
-    print(f"{'Tool':>15} | {'Correct':>8} | {'Relevant':>8} | {'Complete':>8} | {'Useful':>8} | {'Overall':>8}")
+    logger.info("\n" + "=" * 60)
+    logger.info("ANSWER QUALITY SUMMARY")
+    logger.info("=" * 60)
+    logger.info(f"{'Tool':>15} | {'Correct':>8} | {'Relevant':>8} | {'Complete':>8} | {'Useful':>8} | {'Overall':>8}")
     for tool in available_tools:
         all_tool = []
         for sr in all_results.values():
@@ -584,7 +591,7 @@ def main():
         if not all_tool:
             continue
         n = len(all_tool)
-        print(
+        logger.info(
             f"{tool:>15} | "
             f"{sum(r.correctness for r in all_tool)/n:>8.2f} | "
             f"{sum(r.relevance for r in all_tool)/n:>8.2f} | "
@@ -595,4 +602,5 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

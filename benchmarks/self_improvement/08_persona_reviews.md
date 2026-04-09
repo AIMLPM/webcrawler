@@ -125,144 +125,187 @@ They care about outcomes, not internals.
 
 ---
 
+## Zero-findings accountability
+
+If a persona review produces **zero ISSUEs and zero SUGGESTIONs**, the reviewer
+must include a brief justification explaining why nothing was found. This
+prevents rubber-stamp reviews.
+
+**Acceptable justifications:**
+- "All items checked; no issues found because [specific reason]"
+- "Items X and Y are now covered by automated checks (check_invariants.py,
+  check_cross_report_consistency.py); remaining items verified manually"
+- "Previous audit fixed the issues this persona catches; verified they
+  remain fixed"
+
+**Not acceptable:**
+- "Looks good" (no evidence of checking)
+- Omitting the persona section entirely
+
+This rule was added after the April 2026 audit, where Spec 08 predicted
+2-4 suggestions but produced zero fixes. The zero-result outcome was
+ambiguous: either the review wasn't thorough enough, or everything was
+genuinely fine. This rule removes the ambiguity.
+
+---
+
 ## Per-spec checklists
+
+Items marked **(AUTO)** are now covered by `check_invariants.py`,
+`lint_reports.py`, or `check_cross_report_consistency.py`. The reviewer
+can skip these -- they exist here for reference only. Focus review time
+on items not covered by automation.
 
 ### Spec 01: MarkCrawl Code Review
 
 **Junior Developer:**
-- [ ] Could I debug this if it broke? Are error messages clear?
-- [ ] Are there comments explaining the "why" for non-obvious code?
-- [ ] Are setup instructions complete? (install, configure, run)
+- [ ] Run `markcrawl --help` -- is the output clear enough to build a
+  command without reading the README?
+- [ ] Trigger a common error (bad URL, missing flag) -- does the error
+  message tell you what to fix, or just show a traceback?
+- [ ] Read `setup.py` / `pyproject.toml` -- are all dependencies pinned
+  to compatible ranges?
 
 **Principal Engineer:**
-- [ ] Would I approve this PR? What would I flag?
-- [ ] Are the error handling patterns consistent and appropriate?
-- [ ] Is there test coverage for the critical paths?
-- [ ] Are there any security concerns (injection, SSRF, path traversal)?
-- [ ] Is the code maintainable by someone unfamiliar with the project?
+- [ ] Check `ruff` output -- are there any unresolved lint issues?
+- [ ] Grep for `except Exception` and `except:` -- are they justified
+  or masking bugs?
+- [ ] Check test coverage for the crawl loop, sitemap discovery, and
+  markdown conversion (the three critical paths)
+- [ ] Grep for `subprocess`, `eval`, `exec`, `os.system` -- any
+  injection risks?
 
 ---
 
 ### Spec 02: Benchmark Code Review
 
 **Junior Developer:**
-- [ ] Could I debug this if it broke? Are error messages clear?
-- [ ] Are there comments explaining the "why" for non-obvious code?
-- [ ] If I need to add a new tool to the benchmark, is the process obvious?
-- [ ] Are setup instructions complete? (install, configure, run)
+- [ ] Can you add a new tool by following the pattern of existing tools?
+  Identify the specific files and functions you'd need to modify.
+- [ ] Run a benchmark script with `--help` -- are the flags documented?
+- [ ] Read an error message from a failed crawl -- does it identify
+  which tool and site failed?
 
 **Principal Engineer:**
-- [ ] Would I approve this PR? What would I flag?
-- [ ] Are the error handling patterns consistent and appropriate?
-- [ ] Is there test coverage for the critical paths?
-- [ ] Are there any security concerns (injection, SSRF, path traversal)?
-- [ ] Is the code maintainable by someone unfamiliar with the project?
+- [ ] Check that all `json.loads()` on JSONL files have try/except
+  JSONDecodeError **(AUTO: covered by code review in Spec 02 checklist)**
+- [ ] Check that all checkpoint writes use atomic temp+replace
+- [ ] Check that model names are env-configurable (grep for hardcoded
+  model strings like "gpt-4o")
+- [ ] Check that `print()` is not used for progress output (should be
+  `logging`)
 
 ---
 
 ### Spec 03: Docker Infrastructure Review
 
 **Principal Engineer:**
-- [ ] Would I approve this PR? What would I flag?
-- [ ] Are the error handling patterns consistent and appropriate?
-- [ ] Is the code maintainable by someone unfamiliar with the project?
-- [ ] What's the blast radius of a crash at each point in the pipeline?
-- [ ] How does the system behave under resource pressure (disk full, OOM)?
+- [ ] Check base images are pinned to specific digests or versions
+- [ ] Check that containers run as non-root
+- [ ] Identify what happens if a container crashes mid-crawl -- is data
+  lost or recoverable?
+- [ ] Check resource limits (memory, CPU) are set in docker-compose
 
 ---
 
 ### Spec 04: Report Style Compliance
 
 **LLM Agent:**
-- [ ] Can I extract the key finding from the first paragraph without
-  understanding the methodology?
-- [ ] If a user asks me "which crawler should I use?", can I answer
-  from the summary table alone?
-- [ ] Are acronyms (MRR, RRF, BM25) explained on first use?
-- [ ] If I cite a number from this report, is there enough context
-  that the citation makes sense standalone?
+- [ ] Read only the first paragraph of each report -- can you state the
+  main finding without reading further? If not, the one-line answer fails.
+- [ ] Find every abbreviation (MRR, RRF, BM25, NDCG, etc.) -- is each
+  one defined before or at the point of first use?
+- [ ] Pick a number from a summary table and try to cite it standalone
+  (e.g., "markcrawl scores 3.91/5") -- does it make sense without the
+  surrounding paragraph?
 
 **Junior Developer:**
-- [ ] Do I understand what the numbers mean without a statistics background?
-- [ ] Is the scoring scale explained? (What does 3.91/5 mean -- is that good?)
-- [ ] Can I reproduce the benchmark on my machine with the given instructions?
-- [ ] Are tool recommendations clear? ("If you need X, use Y")
+- [ ] Read ANSWER_QUALITY.md -- do you understand what 3.91/5 means
+  before seeing the summary table? Is the scale explained?
+- [ ] Read COST_AT_SCALE.md -- can you find your scenario (small
+  project, mid-size, large)? Are the dollar amounts believable?
+- [ ] Read the methodology section of any report -- could you reproduce
+  the benchmark on your machine?
 
 **Product Manager:**
-- [ ] Is the value proposition clear from the summary table?
-- [ ] Can I map the cost analysis to my team's scale?
-  (100 pages? 10K pages? 1M pages?)
-- [ ] Are the benchmark claims credible? Would a competitor poke holes?
-- [ ] Is there a clear "when to use markcrawl vs alternatives" takeaway?
-- [ ] Are trade-offs framed honestly? (Overclaiming kills trust)
+- [ ] Read the summary table of each report -- is the cheapest / best /
+  fastest tool immediately obvious?
+- [ ] Check COST_AT_SCALE scenarios -- are they named in terms a PM
+  would use ("startup", "mid-size SaaS", "enterprise")?
+- [ ] Read the "what this means" paragraph -- does it acknowledge
+  trade-offs, or does it only highlight where markcrawl wins?
 
 ---
 
 ### Spec 05: Cross-Report Data Consistency
 
 **Principal Engineer:**
-- [ ] Can I verify every number in the summary table from the source data?
-- [ ] Are the aggregation formulas correct? (weighted vs unweighted means)
-- [ ] Is the benchmark methodology fair to all tools?
-- [ ] Are known limitations documented honestly, or hidden?
-- [ ] Would I trust these numbers enough to present to my leadership?
+- [ ] **(AUTO)** `check_cross_report_consistency.py` passes
+- [ ] Verify aggregation formulas: is SPEED's overall pages/sec a
+  weighted total (total_pages / total_time) or a mean of per-site rates?
+- [ ] Check that COST_AT_SCALE methodology section formulas produce the
+  numbers in its tables (spot-check one tool at one scale)
+- [ ] Check firecrawl's page count caveat is consistent across reports
+  (e.g., "70 queries on 6 sites" should appear in both AQ and COST)
 
 **Product Manager:**
-- [ ] Are the benchmark claims credible? Would a competitor poke holes?
-- [ ] Are trade-offs framed honestly? (Overclaiming kills trust)
-- [ ] Are savings expressed in terms I can put in a slide?
-  ("$X/year saved" not "1.21x chunk ratio")
+- [ ] Are savings expressed as both absolute dollars and percentages?
+- [ ] Does every cost claim link to the assumptions behind it?
+- [ ] Could a competitor reasonably dispute any headline claim?
 
 ---
 
 ### Spec 06: Resilience & Restart
 
 **Junior Developer:**
-- [ ] If my laptop dies mid-benchmark, what do I lose?
-- [ ] Is the recovery procedure documented? (Not just "re-run" -- what about
-  partial data, stale checkpoints?)
-- [ ] Are error messages from interrupted runs helpful?
+- [ ] Read the benchmark README or script comments -- is there a clear
+  answer to "what do I lose if I Ctrl-C mid-run?"
+- [ ] After a simulated interrupt, does `--resume` work? (Check that
+  checkpoint loading code handles partial files.)
 
 **Principal Engineer:**
-- [ ] What's the blast radius of a crash at each point in the pipeline?
-- [ ] Are writes atomic? Can corruption happen?
-- [ ] Is there a disaster recovery path? (Not just "re-run everything")
-- [ ] How does the system behave under resource pressure (disk full, OOM)?
+- [ ] Grep for file writes -- are they all using temp+replace (atomic)?
+- [ ] Check embed cache eviction -- is there a size limit? What happens
+  when disk fills?
+- [ ] Check signal handling -- does SIGINT flush partial results or
+  corrupt them?
 
 ---
 
 ### Spec 07: Report Data Quality
 
 **Junior Developer:**
-- [ ] Do I understand what the numbers mean without a statistics background?
-- [ ] Can I reproduce the benchmark on my machine with the given instructions?
-- [ ] Are tool recommendations clear? ("If you need X, use Y")
+- [ ] Read the known-gaps table -- does every gap have an explanation?
+- [ ] Look at a per-site breakdown -- are there any 0-page or
+  suspiciously round numbers?
 
 **Principal Engineer:**
-- [ ] Can I verify every number in the summary table from the source data?
-- [ ] Are the aggregation formulas correct? (weighted vs unweighted means)
-- [ ] Is the benchmark methodology fair to all tools?
-- [ ] Are known limitations documented honestly, or hidden?
-- [ ] Would I trust these numbers enough to present to my leadership?
+- [ ] Spot-check page counts: pick 2 tool+site combos and verify the
+  report number matches `wc -l` on the source JSONL file
+- [ ] Check for identical metrics between different tools on the same
+  site -- this is suspicious unless explained (e.g., same markdownify)
+- [ ] Verify that firecrawl's partial coverage is flagged consistently
+  (page count, query count, "not directly comparable" caveat)
 
 **Product Manager:**
-- [ ] Is the value proposition clear from the summary table?
-- [ ] Are the benchmark claims credible? Would a competitor poke holes?
-- [ ] Is the cheapest option clearly identified with honest caveats?
+- [ ] Are known limitations presented honestly, or buried in footnotes?
+- [ ] If a tool beats markcrawl on a metric, is it acknowledged
+  prominently (not just in a footnote)?
 
 ---
 
 ### README & Docs
 
 **LLM Agent:**
-- [ ] If a user says "scrape this one page for me," can I find the
-  right command within 10 seconds of reading?
-- [ ] Are common flag combinations shown as recipes?
-- [ ] Does `--help` output match the README documentation?
-- [ ] Does the "When NOT to use" section cover the actual failure modes
-  I'd encounter?
-- [ ] If I try the obvious command and it fails (e.g., sitemap hijacking),
-  does the output or docs tell me the fix?
+- [ ] Read only the README. Then write the command to scrape a single
+  JS-rendered page. Did you find `--no-sitemap --max-pages 1 --render-js`
+  without trial and error?
+- [ ] **(AUTO)** Check that `--no-sitemap` recipe exists (R2 invariant)
+- [ ] Run `markcrawl --help` and compare against the README CLI table --
+  are all flags documented in both places?
+- [ ] Read the "When NOT to use" section -- does it cover the actual
+  failure modes (sitemap hijacking, anti-bot blocking, SPAs without
+  static routes)?
 
 **LLM Agent recipe checklist** -- do these use cases have clear examples?
 
@@ -281,24 +324,23 @@ They care about outcomes, not internals.
 | Crawl behind a proxy | `--proxy http://proxy:8080` | |
 | Crawl a React/Vue SPA | `--render-js` | |
 
-**Additional recipe ideas to consider:**
-- Scraping a YouTube channel page (the real case study above)
-- Crawling a site with an aggressive sitemap (GitHub, YouTube)
-- Crawling a site and uploading to Supabase in one pipeline
-
 **Junior Developer:**
-- [ ] Can I go from zero to working output in under 5 minutes?
-- [ ] Does the Quickstart work on a fresh machine?
-- [ ] Is every CLI flag described with enough context to know when I'd use it?
-- [ ] If I get an error, does the README help me fix it?
+- [ ] Follow the Quickstart from scratch. Does `pip install markcrawl`
+  then the example command produce output you understand?
+- [ ] Read the comparison table in `<details>` -- is it clear which tool
+  to pick for your use case?
+- [ ] Find the benchmark results -- do the numbers make sense without
+  reading the detailed reports?
 
 **Product Manager:**
-- [ ] In 30 seconds, can I understand what this tool does and why I'd use it?
-- [ ] Is the comparison table (in `<details>`) fair and complete?
-- [ ] Does the roadmap signal active maintenance?
-- [ ] Are the cost numbers realistic and up to date?
-- [ ] Would I forward this README to my engineering team as-is?
-- [ ] Does COST_AT_SCALE show my scenario? (startup, mid-size, enterprise)
+- [ ] Read the first 3 lines of the README. Can you explain what this
+  tool does to a colleague?
+- [ ] **(AUTO)** Benchmark summary data matches source reports
+  (check_cross_report_consistency.py)
+- [ ] Does the README show honest trade-offs (speed ranking where
+  markcrawl is third, not first)?
+- [ ] Would you forward this README to your engineering team as-is? If
+  not, what would you change?
 
 ---
 
@@ -306,11 +348,14 @@ They care about outcomes, not internals.
 
 1. Pick the spec you want to review
 2. Find the spec's section in [Per-spec checklists](#per-spec-checklists) above
-3. Go through each persona's checklist items for that spec
-4. Flag findings as:
+3. Skip items marked **(AUTO)** -- they are covered by automated scripts
+4. Go through each remaining checklist item for each persona
+5. Flag findings as:
    - **PASS** -- meets the persona's expectations
    - **ISSUE** -- needs improvement (describe what and why)
    - **SUGGESTION** -- nice-to-have improvement
+6. **If zero ISSUEs and zero SUGGESTIONs:** add a justification
+   (see [Zero-findings accountability](#zero-findings-accountability))
 
 Example output:
 ```
@@ -324,6 +369,8 @@ LLM Agent:
 Junior Developer:
   PASS: Scoring scale explained before tables
   PASS: Reproduction instructions are complete
+  Zero findings justified: Previous audit (2026-04-08) fixed the scoring
+  scale issue and reproduction instructions. Verified both still present.
 
 Product Manager:
   PASS: Trade-offs are honest
@@ -340,3 +387,8 @@ When adding a new spec to the self-improvement folder:
 3. Add a new section under [Per-spec checklists](#per-spec-checklists) with
    the relevant persona checklist items grouped together
 4. Update MASTER.md
+
+When adding a new automated check:
+1. Mark the corresponding manual checklist item with **(AUTO)**
+2. Note which script covers it
+3. Keep the item in the checklist for reference, but reviewers can skip it

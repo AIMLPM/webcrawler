@@ -70,8 +70,14 @@ async def _run():
         if len(url_list) == 1 and url_list[0] == url:
             await context.enqueue_links()
 
-    await crawler.run(url_list[:max_pages])
+    try:
+        await crawler.run(url_list[:max_pages])
+    except Exception as e:
+        print(f"crawlee error: {e}", file=sys.stderr)
 
 
-asyncio.run(_run())
+try:
+    asyncio.run(_run())
+except Exception as e:
+    print(f"crawlee fatal error: {e}", file=sys.stderr)
 print(pages_saved)

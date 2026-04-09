@@ -27,16 +27,18 @@ See [METHODOLOGY.md](METHODOLOGY.md) for full methodology.
 
 ## Tools tested
 
-| Tool | Available | Notes |
+| Tool | Fetch method | Notes |
 |---|---|---|
-| markcrawl | Yes | requests + BeautifulSoup + markdownify — [AIMLPM/markcrawl](https://github.com/AIMLPM/markcrawl) |
-| crawl4ai | Yes | Playwright + arun_many() batch concurrency — [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) |
-| crawl4ai-raw | Yes | Playwright + sequential arun(), default config (out-of-box baseline) |
-| scrapy+md | Yes | Scrapy async + markdownify — [scrapy/scrapy](https://github.com/scrapy/scrapy) |
-| crawlee | Yes | Playwright + markdownify — [apify/crawlee-python](https://github.com/apify/crawlee-python) |
-| colly+md | Yes | Go fetch (Colly) + Python markdownify — [gocolly/colly](https://github.com/gocolly/colly) |
-| playwright | Yes | Raw Playwright baseline + markdownify (no framework) |
-| firecrawl | Yes | Self-hosted Docker (API+worker+Redis+Playwright) — [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) |
+| markcrawl | HTTP (requests) | BeautifulSoup + markdownify — [AIMLPM/markcrawl](https://github.com/AIMLPM/markcrawl) |
+| crawl4ai | JS (Playwright) | arun_many() batch concurrency — [unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) |
+| crawl4ai-raw | JS (Playwright) | sequential arun(), default config (out-of-box baseline) |
+| scrapy+md | HTTP (async) | Scrapy + markdownify — [scrapy/scrapy](https://github.com/scrapy/scrapy) |
+| crawlee | JS (Playwright) | Playwright + markdownify — [apify/crawlee-python](https://github.com/apify/crawlee-python) |
+| colly+md | HTTP (Go) | Colly + Python markdownify — [gocolly/colly](https://github.com/gocolly/colly) |
+| playwright | JS (Playwright) | Raw Playwright baseline + markdownify (no framework) |
+| firecrawl | JS (Playwright) | Self-hosted Docker (API+worker+Redis) — [firecrawl/firecrawl](https://github.com/firecrawl/firecrawl) |
+
+> **Why HTTP tools are faster:** Tools using plain HTTP (markcrawl, scrapy+md, colly+md) skip browser startup and JavaScript execution, making them 2-5x faster than Playwright-based tools on static content. The trade-off: they can't render JS-heavy SPAs.
 
 ## Results by site
 

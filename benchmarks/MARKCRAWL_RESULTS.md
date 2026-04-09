@@ -4,7 +4,7 @@
 
 > **Looking for the head-to-head comparison vs Crawl4AI and Scrapy?** See [SPEED_COMPARISON.md](SPEED_COMPARISON.md).
 
-This report measures MarkCrawl's own performance and extraction quality across 7 test sites. No other tools are involved — this is a self-assessment of speed, content quality, and output completeness.
+MarkCrawl achieves 5.99 pages/sec overall, extracting 227 pages across 7 test sites with 100% title extraction and zero junk detection. This report measures MarkCrawl's own performance and extraction quality — no other tools are involved.
 
 Generated: 2026-04-05 03:46:44 UTC
 

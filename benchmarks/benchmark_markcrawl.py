@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
 import re
 import shutil
@@ -33,6 +34,8 @@ from typing import List
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from markcrawl.core import crawl
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Benchmark sites — known public sites with predictable content
@@ -217,7 +220,10 @@ def analyze_jsonl(jsonl_path: str) -> dict:
         for line in f:
             line = line.strip()
             if line:
-                pages.append(json.loads(line))
+                try:
+                    pages.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
 
     if not pages:
         return {
@@ -287,7 +293,7 @@ def run_site_benchmark(name: str, config: dict, output_base: str) -> SiteResult:
     expected_min = config["expected_min_pages"]
     tier = config.get("tier", "small")
 
-    print(f"  [{tier}] Crawling {name} ({url}, max={max_pages})...", end=" ", flush=True)
+    logger.info(f"  [{tier}] Crawling {name} ({url}, max={max_pages})...")
 
     errors = []
     mem_tracker = MemoryTracker(interval=0.5)
@@ -313,7 +319,7 @@ def run_site_benchmark(name: str, config: dict, output_base: str) -> SiteResult:
     elapsed = time.time() - start
     pps = pages_saved / elapsed if elapsed > 0 else 0
 
-    print(f"{pages_saved} pages in {elapsed:.1f}s ({pps:.1f} p/s)")
+    logger.info(f"    {pages_saved} pages in {elapsed:.1f}s ({pps:.1f} p/s)")
 
     # Analyze output quality
     jsonl_path = os.path.join(out_dir, "pages.jsonl")
@@ -545,13 +551,13 @@ def main():
         site_names = [s.strip() for s in args.sites.split(",")]
         sites = {k: v for k, v in BENCHMARK_SITES.items() if k in site_names}
         if not sites:
-            print(f"No valid sites found. Available: {', '.join(BENCHMARK_SITES.keys())}")
+            logger.error(f"No valid sites found. Available: {', '.join(BENCHMARK_SITES.keys())}")
             sys.exit(1)
     else:
         sites = BENCHMARK_SITES
 
-    print(f"MarkCrawl Benchmark — {len(sites)} site(s)")
-    print("=" * 50)
+    logger.info(f"MarkCrawl Benchmark -- {len(sites)} site(s)")
+    logger.info("=" * 50)
 
     # Create temp output directory
     output_base = tempfile.mkdtemp(prefix="markcrawl_bench_")
@@ -561,15 +567,15 @@ def main():
         result = run_site_benchmark(name, config, output_base)
         results.append(result)
 
-    print()
-    print("=" * 50)
+    logger.info("")
+    logger.info("=" * 50)
 
     # Generate report
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
     generate_report(results, args.output)
 
-    print(f"Report saved to: {args.output}")
-    print()
+    logger.info(f"Report saved to: {args.output}")
+    logger.info("")
 
     # Print summary to stdout
     total_pages = sum(r.pages_saved for r in results)
@@ -577,14 +583,15 @@ def main():
     avg_title = sum(r.title_extraction_rate for r in results) / len(results) if results else 0
     avg_citation = sum(r.citation_present_rate for r in results) / len(results) if results else 0
 
-    print(f"Total pages: {total_pages}")
-    print(f"Junk detections: {total_junk}")
-    print(f"Avg title rate: {avg_title:.0%}")
-    print(f"Avg citation rate: {avg_citation:.0%}")
+    logger.info(f"Total pages: {total_pages}")
+    logger.info(f"Junk detections: {total_junk}")
+    logger.info(f"Avg title rate: {avg_title:.0%}")
+    logger.info(f"Avg citation rate: {avg_citation:.0%}")
 
     # Cleanup
     shutil.rmtree(output_base, ignore_errors=True)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

@@ -26,6 +26,12 @@ Run `python benchmarks/lint_reports.py` before committing any benchmark report
 changes. The linter checks: style version tag, one-line answer, cross-references,
 all-tool inclusion, bold markcrawl row, no emojis, and methodology link.
 
+Run `python benchmarks/self_improvement/check_cross_report_consistency.py` before
+committing any changes that affect benchmark numbers in the README or reports.
+This checks that speed rankings, chunks/page, answer quality, and annual costs
+are consistent across README, SPEED_COMPARISON.md, COST_AT_SCALE.md, and
+ANSWER_QUALITY.md. Any mismatch is a **CRITICAL** finding.
+
 When updating the style guide itself:
 1. Increment the version (e.g., `v2` to `v3`) and update the date in the
    version line above.
@@ -117,9 +123,13 @@ Every benchmark report should follow this structure:
 2. **One-line answer** — directly answer the question in 1-2 sentences. Don't
    describe what the report measures — state the finding. Example: "Yes, but
    modestly" not "This benchmark measures answer quality across 7 tools."
+   The first sentence must contain a concrete result (a number, ranking, or
+   verdict). If the report is a self-benchmark, lead with the headline metric
+   (e.g., "MarkCrawl achieves 5.99 pages/sec across 227 pages").
 3. **Context for the numbers** — before the first table, explain what the metrics
    mean in plain language. A reader who has never seen "Hit@K" or "MRR" should
-   understand the table without scrolling elsewhere.
+   understand the table without scrolling elsewhere. Every abbreviation (MRR,
+   RRF, BM25, etc.) must be defined on first use.
 4. **Summary table** — all tools, ranked by primary metric. This is the first
    data a reader should see.
 5. **Narrative interpretation** — what do the results mean? Call out honest
@@ -211,6 +221,33 @@ reports. When any benchmark report changes in a way that affects headline number
 - State honest trade-offs (e.g., "markcrawl is third on speed but first on
   completeness"). Don't only show metrics where markcrawl wins.
 - Link to each detailed report so readers can drill in.
+- **Cross-check every number** in the README against its source report before
+  committing. Specifically verify: speed rankings and pages/sec values match
+  SPEED_COMPARISON.md overall summary, chunks/page values match
+  COST_AT_SCALE.md methodology table, and annual cost values match
+  COST_AT_SCALE.md scenario B table. Never hand-type numbers from memory.
+- The README table must use the same rounding as the source reports. Copy
+  values directly; do not re-round or reformat.
+
+## Benchmark code standards
+
+These rules apply to all `benchmark_*.py` scripts:
+
+- **JSONL loading must be resilient.** Always wrap `json.loads()` in a
+  try/except `JSONDecodeError` block when reading JSONL files. Skip corrupt
+  lines rather than crashing.
+- **Checkpoint writes must be atomic.** Write to a `.tmp` file, then use
+  `Path.replace()` or `os.replace()` to atomically move it into place. Never
+  write directly to the final checkpoint path.
+- **Source data is read-only.** Never open `pages.jsonl` files in write mode.
+  If a fix (like colly URL normalization) must rewrite a file, write to a
+  temp file first and atomically replace.
+- **Model names must be env-configurable.** Define model constants with
+  `os.environ.get("ENV_VAR", "default")` so users can swap models without
+  editing code.
+- **Use logging, not print.** Benchmark scripts should use `import logging`
+  with `logger = logging.getLogger(__name__)` for progress and debug output.
+  Reserve `print()` for final report output only.
 
 ## Self-improvement safeguards
 
@@ -223,6 +260,7 @@ you can document why the feedback no longer applies.
 After any self-improvement change, run:
 ```bash
 python benchmarks/self_improvement/check_invariants.py
+python benchmarks/self_improvement/check_cross_report_consistency.py
 ```
 
 See `benchmarks/self_improvement/09_safeguards.md` for the full process.

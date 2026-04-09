@@ -45,10 +45,11 @@ done
 
 | Tool | Site | Expected gap | Reason |
 |------|------|-------------|--------|
-| firecrawl | react-dev | ~19% of others | Anti-bot detection (self-hosted limitation) |
+| firecrawl | react-dev | 0 usable pages (43 empty-content entries) | Anti-bot detection returns empty pages |
 | firecrawl | stripe-docs | ~98% of others | 7 pages OOM (V8 heap limit) |
 | scrapy+md | python-docs | ~86% of others | HTTP-only, some pages need JS |
 | crawlee | stripe-docs | ~55% of others | Playwright timeout on some pages |
+| crawlee | react-dev | ~32% of others | Playwright partial render (70 of 221 pages) |
 
 If a gap is NOT in this table, investigate before accepting it.
 
