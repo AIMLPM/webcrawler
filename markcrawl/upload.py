@@ -93,8 +93,9 @@ def upload(
     for page in pages:
         # Use section-aware chunking for Markdown, word-count for plain text
         page_text = page.get("text", "")
+        page_title = page.get("title", "") or None
         if page.get("path", "").endswith(".md") or page_text.startswith("#"):
-            chunks = chunk_markdown(page_text, max_words=max_words, overlap_words=overlap_words)
+            chunks = chunk_markdown(page_text, max_words=max_words, overlap_words=overlap_words, page_title=page_title)
         else:
             chunks = chunk_text(page_text, max_words=max_words, overlap_words=overlap_words)
         for chunk in chunks:

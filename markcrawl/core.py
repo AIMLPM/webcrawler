@@ -39,6 +39,8 @@ from .extract_content import (
     compact_blank_lines,  # noqa: F401 — public re-export
     default_progress,
     html_to_markdown,
+    html_to_markdown_ensemble,  # noqa: F401 — public re-export
+    html_to_markdown_trafilatura,  # noqa: F401 — public re-export
     html_to_text,
 )
 from .fetch import (
@@ -95,12 +97,14 @@ class CrawlEngine:
         proxy: Optional[str],
         show_progress: bool,
         content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
+        extractor: str = "default",
     ):
         self.out_dir = out_dir
         self.fmt = fmt
         self.ext = "md" if fmt == "markdown" else "txt"
         self.min_words = min_words
         self.content_extractor = content_extractor
+        self.extractor = extractor
         self.delay = delay
         self.timeout = timeout
         self.concurrency = concurrency
@@ -121,6 +125,12 @@ class CrawlEngine:
         self._pw_context = None
         self._pw_lock = threading.Lock()
         if render_js:
+            if self.concurrency > 1:
+                self.progress(
+                    f"[warn] --render-js forces concurrency=1 "
+                    f"(Playwright is single-threaded, requested {self.concurrency})"
+                )
+                self.concurrency = 1
             self.pw_instance, self.pw_browser = _get_playwright_browser(proxy=proxy)
             self._pw_context = self.pw_browser.new_context(user_agent=self.effective_ua)
             # Block non-essential resources — we only need HTML for markdown
@@ -225,7 +235,12 @@ class CrawlEngine:
         if self.content_extractor:
             title, content = self.content_extractor(response.text)
         elif self.fmt == "markdown":
-            title, content, links = html_to_markdown(response.text, base_url=url)
+            if self.extractor == "trafilatura":
+                title, content, links = html_to_markdown_trafilatura(response.text, base_url=url)
+            elif self.extractor == "ensemble":
+                title, content, links = html_to_markdown_ensemble(response.text, base_url=url)
+            else:
+                title, content, links = html_to_markdown(response.text, base_url=url)
         else:
             title, content, links = html_to_text(response.text, base_url=url)
 
@@ -409,6 +424,7 @@ def crawl(
     proxy: Optional[str] = None,
     resume: bool = False,
     content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
+    extractor: str = "default",
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
 
@@ -435,6 +451,10 @@ def crawl(
         content_extractor: Optional custom function that takes raw HTML and
             returns a ``(title, content)`` tuple. When provided, this replaces
             the built-in extraction (html_to_markdown / html_to_text).
+        extractor: Built-in extraction backend -- ``"default"`` (BS4 + markdownify),
+            ``"trafilatura"`` (higher recall), or ``"ensemble"`` (runs both,
+            picks best per page). Trafilatura options require
+            ``pip install trafilatura``.
 
     Returns:
         A :class:`CrawlResult` with the count of saved pages, output
@@ -472,6 +492,7 @@ def crawl(
         proxy=proxy,
         show_progress=show_progress,
         content_extractor=content_extractor,
+        extractor=extractor,
     )
 
     base_url = norm_url(base_url)

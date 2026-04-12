@@ -148,3 +148,47 @@ class TestChunkMarkdown:
         text = "First paragraph with enough words.\n\nSecond paragraph with enough words.\n\nThird paragraph."
         chunks = chunk_markdown(text, max_words=8)
         assert len(chunks) >= 2
+
+    def test_heading_carried_forward_on_paragraph_split(self):
+        # A section too large to fit in one chunk should carry its heading
+        paragraphs = [f"Paragraph {i} " + " ".join(["word"] * 20) for i in range(4)]
+        text = "## API Reference\n\n" + "\n\n".join(paragraphs)
+        chunks = chunk_markdown(text, max_words=30)
+        assert len(chunks) > 1
+        # First chunk naturally has the heading
+        assert chunks[0].text.startswith("## API Reference")
+        # Subsequent chunks should also carry the heading
+        for chunk in chunks[1:]:
+            assert "## API Reference" in chunk.text
+
+    def test_heading_carried_forward_on_word_split(self):
+        # A single huge paragraph under a heading
+        huge = " ".join(["word"] * 200)
+        text = f"## Big Section\n\n{huge}"
+        chunks = chunk_markdown(text, max_words=50, overlap_words=10)
+        assert len(chunks) > 1
+        # All chunks should carry the heading
+        for chunk in chunks:
+            assert "## Big Section" in chunk.text
+
+    def test_page_title_prepended(self):
+        text = (
+            "# Intro\n\nSome content here with enough words to fill a chunk.\n\n"
+            "## Details\n\nMore content here with additional words for the second chunk."
+        )
+        chunks = chunk_markdown(text, max_words=15, page_title="FastAPI Docs")
+        assert len(chunks) >= 2
+        for chunk in chunks:
+            assert chunk.text.startswith("[Page: FastAPI Docs]")
+
+    def test_page_title_single_chunk(self):
+        text = "# Title\n\nShort paragraph."
+        chunks = chunk_markdown(text, max_words=100, page_title="My Page")
+        assert len(chunks) == 1
+        assert chunks[0].text.startswith("[Page: My Page]")
+        assert "# Title" in chunks[0].text
+
+    def test_no_page_title_no_prefix(self):
+        text = "# Title\n\nShort paragraph."
+        chunks = chunk_markdown(text, max_words=100)
+        assert not chunks[0].text.startswith("[Page:")

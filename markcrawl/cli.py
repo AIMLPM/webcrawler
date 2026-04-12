@@ -85,6 +85,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Resume a previously interrupted crawl from saved state",
     )
+    parser.add_argument(
+        "--extractor",
+        choices=["default", "trafilatura", "ensemble"],
+        default="default",
+        help="Content extraction backend (default: BS4+markdownify, trafilatura: higher recall, ensemble: best-of-both per page)",
+    )
     return parser
 
 
@@ -108,6 +114,7 @@ def main() -> None:
         concurrency=args.concurrency,
         proxy=args.proxy,
         resume=args.resume,
+        extractor=args.extractor,
     )
 
     print(f"Saved {result.pages_saved} page(s) to: {result.output_dir}")

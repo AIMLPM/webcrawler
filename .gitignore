@@ -24,6 +24,9 @@ env/
 .env
 .env.*
 
+# Claude Code (private plans, memory)
+.claude/
+
 # Local output
 output/
 *.jsonl

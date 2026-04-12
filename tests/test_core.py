@@ -187,6 +187,146 @@ class TestHtmlToMarkdown:
         assert links == set()
 
 
+class TestTitleFallback:
+    def test_og_title_fallback(self):
+        html = '<html><head><meta property="og:title" content="OG Title"></head><body><main><p>Content</p></main></body></html>'
+        title, _, _ = html_to_markdown(html)
+        assert title == "OG Title"
+
+    def test_h1_fallback(self):
+        html = "<html><body><main><h1>Heading Title</h1><p>Content</p></main></body></html>"
+        title, _, _ = html_to_markdown(html)
+        assert title == "Heading Title"
+
+    def test_meta_title_fallback(self):
+        html = '<html><head><meta name="title" content="Meta Title"></head><body><main><p>Content</p></main></body></html>'
+        title, _, _ = html_to_markdown(html)
+        assert title == "Meta Title"
+
+    def test_title_tag_takes_precedence(self):
+        html = '<html><head><title>Real Title</title><meta property="og:title" content="OG"></head><body><main><h1>H1</h1></main></body></html>'
+        title, _, _ = html_to_markdown(html)
+        assert title == "Real Title"
+
+    def test_empty_title_tag_falls_through(self):
+        html = '<html><head><title></title><meta property="og:title" content="Fallback"></head><body><main><p>X</p></main></body></html>'
+        title, _, _ = html_to_markdown(html)
+        assert title == "Fallback"
+
+
+class TestCodeLanguageDetection:
+    def test_language_prefix_class(self):
+        html = '<html><body><main><pre><code class="language-python">print(1)</code></pre></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "```python" in content
+
+    def test_hljs_prefix_class(self):
+        html = '<html><body><main><pre><code class="hljs-javascript">var x</code></pre></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "```javascript" in content
+
+    def test_no_class_no_language(self):
+        html = "<html><body><main><pre><code>plain code</code></pre></main></body></html>"
+        _, content, _ = html_to_markdown(html)
+        assert "```\n" in content
+        assert "plain code" in content
+
+
+class TestContextAwareStripping:
+    def test_aside_inside_main_preserved(self):
+        html = '<html><body><main><p>Content</p><aside>Sidebar info</aside></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Sidebar info" in content
+
+    def test_aside_outside_main_stripped(self):
+        html = '<html><body><aside>Nav sidebar</aside><main><p>Content</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Nav sidebar" not in content
+
+    def test_header_inside_article_preserved(self):
+        html = '<html><body><article><header><h1>Article Title</h1></header><p>Body text</p></article></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Article Title" in content
+
+    def test_header_outside_main_stripped(self):
+        html = '<html><body><header>Site Header</header><main><p>Content</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Site Header" not in content
+
+    def test_nav_always_stripped_even_inside_main(self):
+        html = '<html><body><main><nav>Breadcrumb</nav><p>Content</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Breadcrumb" not in content
+
+    def test_footer_always_stripped(self):
+        html = '<html><body><main><footer>Page footer</footer><p>Content</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "Page footer" not in content
+
+
+class TestTrafilaturaExtractor:
+    def test_extracts_content(self):
+        from markcrawl.core import html_to_markdown_trafilatura
+
+        html = """<html><head><title>API Guide</title></head><body>
+        <nav><a href="/">Home</a></nav>
+        <main>
+        <h1>Getting Started</h1>
+        <p>This guide walks you through setting up the API client and making your first request to the service.</p>
+        <h2>Installation</h2>
+        <p>Install the package with pip install example-sdk and configure your API key in the environment.</p>
+        </main>
+        <footer>Copyright 2026</footer>
+        </body></html>"""
+        title, content, links = html_to_markdown_trafilatura(html)
+        assert title == "API Guide"
+        assert "Getting Started" in content
+        assert "API client" in content
+        assert "Copyright" not in content
+
+    def test_extracts_links(self):
+        from markcrawl.core import html_to_markdown_trafilatura
+
+        html = '<html><body><main><a href="/about">About</a><p>Content with enough words for extraction.</p></main></body></html>'
+        _, _, links = html_to_markdown_trafilatura(html, base_url="https://example.com/")
+        assert "https://example.com/about" in links
+
+    def test_returns_title_even_without_title_tag(self):
+        from markcrawl.core import html_to_markdown_trafilatura
+
+        html = '<html><head><meta property="og:title" content="OG Title"></head><body><main><p>Content here with enough words for the extractor to work properly.</p></main></body></html>'
+        title, _, _ = html_to_markdown_trafilatura(html)
+        assert title == "OG Title"
+
+
+class TestEnsembleExtractor:
+    def test_returns_content(self):
+        from markcrawl.core import html_to_markdown_ensemble
+
+        html = """<html><head><title>Test</title></head><body>
+        <nav><a href="/">Home</a></nav>
+        <main><h1>Title</h1>
+        <p>Real content with enough words for extraction to work properly in both extractors.</p>
+        </main></body></html>"""
+        title, content, links = html_to_markdown_ensemble(html)
+        assert "Title" in content
+        assert "Real content" in content
+
+    def test_picks_higher_scoring_extraction(self):
+        from markcrawl.extract_content import _score_extraction
+
+        # Good extraction: prose with headings
+        good = "# API Guide\n\nThis is a detailed guide to the API with multiple sentences. It covers authentication, rate limiting, and error handling."
+        # Bad extraction: nav junk
+        bad = "[Home](/) | [About](/about) | [Contact](/contact)"
+        assert _score_extraction(good) > _score_extraction(bad)
+
+    def test_score_empty_is_zero(self):
+        from markcrawl.extract_content import _score_extraction
+
+        assert _score_extraction("") == 0.0
+
+
 class TestHtmlToText:
     def test_extracts_title(self):
         title, _, _ = html_to_text(SAMPLE_HTML)
@@ -391,6 +531,33 @@ class TestCrawlIntegration:
             row = json.loads(f.readline())
         assert row["title"] == "Custom Title"
         assert "Custom extracted content" in row["text"]
+
+
+# ---------------------------------------------------------------------------
+# Playwright concurrency guard
+# ---------------------------------------------------------------------------
+
+class TestPlaywrightConcurrencyGuard:
+    def test_render_js_caps_concurrency_to_one(self):
+        """render_js=True should force concurrency=1 regardless of requested value."""
+        import tempfile
+        from unittest.mock import patch
+
+        from markcrawl.core import CrawlEngine
+
+        out_dir = tempfile.mkdtemp()
+        with patch("markcrawl.core._get_playwright_browser") as mock_pw:
+            mock_browser = MagicMock()
+            mock_context = MagicMock()
+            mock_browser.new_context.return_value = mock_context
+            mock_pw.return_value = (MagicMock(), mock_browser)
+
+            engine = CrawlEngine(
+                out_dir=out_dir, fmt="markdown", min_words=5, delay=0,
+                timeout=15, concurrency=5, include_subdomains=False,
+                user_agent="test", render_js=True, proxy=None, show_progress=False,
+            )
+            assert engine.concurrency == 1
 
 
 # ---------------------------------------------------------------------------
