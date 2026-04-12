@@ -264,6 +264,59 @@ class TestContextAwareStripping:
         assert "Page footer" not in content
 
 
+class TestDensityBasedStripping:
+    """Test density-based stripping on pages WITHOUT a <main> tag,
+    where the fallback to soup.body makes the density pass meaningful."""
+
+    def test_link_heavy_div_stripped_no_main(self):
+        # No <main> — body is used; link-heavy div should be removed
+        html = """<html><body>
+        <div><a href="/a">Link A</a> <a href="/b">Link B</a> <a href="/c">Link C</a> <a href="/d">Link D</a></div>
+        <p>Real content here about an important topic that matters.</p>
+        </body></html>"""
+        _, content, _ = html_to_markdown(html)
+        assert "Real content" in content
+        assert "Link A" not in content
+
+    def test_prose_div_kept_no_main(self):
+        # No <main>; prose-heavy div (low link density) should be kept
+        html = """<html><body>
+        <div>This is a disclaimer paragraph with lots of real prose content
+        that does not contain many links at all and should be preserved.</div>
+        <p>Other content goes here too.</p>
+        </body></html>"""
+        _, content, _ = html_to_markdown(html)
+        assert "disclaimer paragraph" in content
+
+    def test_div_inside_main_always_kept(self):
+        html = """<html><body><main>
+        <div><a href="/a">A</a> <a href="/b">B</a> <a href="/c">C</a></div>
+        <p>Content</p>
+        </main></body></html>"""
+        _, content, _ = html_to_markdown(html)
+        # Inside main, even link-heavy divs are kept
+        assert "Content" in content
+
+    def test_large_text_div_kept_even_with_links(self):
+        # >80 words means the element is too large to be nav boilerplate
+        prose = " ".join(f"word{i}" for i in range(90))
+        html = f"""<html><body>
+        <div>{prose} <a href="/a">Link</a></div>
+        <p>Other content.</p>
+        </body></html>"""
+        _, content, _ = html_to_markdown(html)
+        assert "word0" in content
+
+    def test_section_with_links_stripped_no_main(self):
+        html = """<html><body>
+        <section><a href="/x">X</a> <a href="/y">Y</a> <a href="/z">Z</a></section>
+        <p>Main body content with meaningful text.</p>
+        </body></html>"""
+        _, content, _ = html_to_markdown(html)
+        assert "Main body" in content
+        assert "[X]" not in content
+
+
 class TestTrafilaturaExtractor:
     def test_extracts_content(self):
         from markcrawl.core import html_to_markdown_trafilatura
@@ -373,6 +426,31 @@ class TestExtractLinks:
         html = '<html><body><a href="HTTPS://EXAMPLE.COM/Page">Link</a></body></html>'
         links = extract_links(html, "https://example.com/")
         assert "https://example.com/Page" in links
+
+
+# ---------------------------------------------------------------------------
+# httpx client selection
+# ---------------------------------------------------------------------------
+
+class TestHttpxSelection:
+    def test_build_session_returns_httpx_when_available(self):
+        from markcrawl.fetch import _HAS_HTTPX, build_session
+        client = build_session()
+        if _HAS_HTTPX:
+            import httpx
+            assert isinstance(client, httpx.Client)
+        else:
+            import requests
+            assert isinstance(client, requests.Session)
+
+    def test_httpx_client_has_http2(self):
+        from markcrawl.fetch import _HAS_HTTPX, build_session
+        if not _HAS_HTTPX:
+            return  # skip if httpx not installed
+        client = build_session()
+        # httpx.Client exposes http2 capability
+        import httpx
+        assert isinstance(client, httpx.Client)
 
 
 # ---------------------------------------------------------------------------

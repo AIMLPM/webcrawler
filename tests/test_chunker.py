@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from markcrawl.chunker import chunk_markdown, chunk_text
+from markcrawl.chunker import _estimate_adaptive_max_words, _find_sentence_boundary, chunk_markdown, chunk_text
 
 
 class TestChunkText:
@@ -192,3 +192,121 @@ class TestChunkMarkdown:
         text = "# Title\n\nShort paragraph."
         chunks = chunk_markdown(text, max_words=100)
         assert not chunks[0].text.startswith("[Page:")
+
+
+class TestSentenceBoundary:
+    def test_finds_period_boundary(self):
+        words = "The quick brown fox jumped. The lazy dog slept. More words here now".split()
+        # words: [The(0) quick(1) brown(2) fox(3) jumped.(4) The(5) lazy(6) dog(7) slept.(8) More(9) ...]
+        # target=10, search back: words[9]="More" no, words[8]="slept." yes → return 9
+        result = _find_sentence_boundary(words, 10, window=5)
+        assert result == 9
+
+    def test_finds_question_mark(self):
+        words = "Is this working? Yes it is working fine now".split()
+        result = _find_sentence_boundary(words, 6, window=5)
+        # words[2] is "working?" — boundary at index 3
+        assert result == 3
+
+    def test_finds_exclamation(self):
+        words = "Watch out! The bridge is falling down quickly now".split()
+        result = _find_sentence_boundary(words, 7, window=5)
+        # words[1] is "out!" — boundary at index 2
+        assert result == 2
+
+    def test_strips_trailing_quote(self):
+        words = ['He', 'said', '"hello."', 'Then', 'he', 'left', 'quickly', 'after']
+        result = _find_sentence_boundary(words, 6, window=5)
+        # words[2] is '"hello."' — stripped gives 'hello.' ends in .
+        assert result == 3
+
+    def test_no_boundary_returns_target(self):
+        words = "one two three four five six seven eight nine ten".split()
+        result = _find_sentence_boundary(words, 8, window=5)
+        assert result == 8
+
+    def test_respects_min_pos(self):
+        words = "Done. one two three four five six seven".split()
+        # "Done." is at index 0, boundary at 1, but min_pos=3
+        result = _find_sentence_boundary(words, 6, window=10, min_pos=3)
+        assert result == 6  # Falls back to target
+
+    def test_chunk_text_snaps_to_sentence(self):
+        # Build text where sentence boundary falls within the search window
+        s1 = "The quick brown fox jumped over the lazy dog."  # 9 words
+        s2 = "Another sentence with several words in it."  # 7 words
+        s3 = "A third sentence that continues on and on."  # 9 words
+        text = f"{s1} {s2} {s3}"
+        chunks = chunk_text(text, max_words=12, overlap_words=2)
+        # First chunk should end at a sentence boundary (9 or 16 words)
+        # With max_words=12, target is 12, search back finds "dog." at 9
+        assert chunks[0].text.endswith("dog.")
+
+    def test_chunk_text_all_content_preserved(self):
+        sentences = [f"Sentence number {i} has some words in it." for i in range(10)]
+        text = " ".join(sentences)
+        chunks = chunk_text(text, max_words=20, overlap_words=3)
+        # All sentences should appear somewhere in the chunks
+        all_text = " ".join(c.text for c in chunks)
+        for i in range(10):
+            assert f"Sentence number {i}" in all_text
+
+    def test_chunk_text_no_sentence_enders_still_works(self):
+        # Text with no sentence-ending punctuation falls back to word boundary
+        words = [f"w{i}" for i in range(50)]
+        text = " ".join(words)
+        chunks = chunk_text(text, max_words=20, overlap_words=3)
+        assert len(chunks) > 1
+        assert "w0" in chunks[0].text
+        assert "w49" in chunks[-1].text
+
+
+class TestAdaptiveChunking:
+    def test_code_heavy_gets_smaller_chunks(self):
+        # Mostly code blocks, minimal prose
+        code_text = "# API Reference\n\n" + "\n\n".join(
+            f"```python\ndef func_{i}(x, y):\n    result = x + y * {i}\n    return result\n```"
+            for i in range(20)
+        )
+        result = _estimate_adaptive_max_words(code_text, base=400)
+        # Code-heavy → should be below base
+        assert result < 400
+
+    def test_narrative_gets_larger_chunks(self):
+        # Long prose paragraphs, no code, no lists, few headings
+        prose = "# Introduction\n\n" + "\n\n".join(
+            f"This is paragraph {i} of a long article about a complex topic that "
+            "requires careful explanation and nuanced discussion with many details "
+            "woven into the narrative that builds understanding over multiple sentences."
+            for i in range(8)
+        )
+        result = _estimate_adaptive_max_words(prose, base=400)
+        # Narrative → should be above base (low density)
+        assert result >= 400
+
+    def test_list_heavy_gets_smaller_chunks(self):
+        # Almost entirely list items
+        list_text = "# Config\n\n## Options\n\n" + "\n".join(
+            f"- option_{i}: value" for i in range(50)
+        ) + "\n\n## Flags\n\n" + "\n".join(
+            f"- flag_{i}: on" for i in range(50)
+        )
+        result = _estimate_adaptive_max_words(list_text, base=400)
+        assert result < 400
+
+    def test_floor_at_100(self):
+        # Even extreme density shouldn't go below 100
+        extreme = "```\n" + "\n".join("x" for _ in range(100)) + "\n```"
+        result = _estimate_adaptive_max_words(extreme, base=100)
+        assert result >= 100
+
+    def test_adaptive_flag_changes_chunk_count(self):
+        # Code-heavy content should produce more (smaller) chunks with adaptive=True
+        code_text = "# API\n\n" + "\n\n".join(
+            f"```python\ndef func_{i}():\n    return {i}\n```\n\nDescription {i} with enough words to fill up space."
+            for i in range(15)
+        )
+        fixed = chunk_markdown(code_text, max_words=400, adaptive=False)
+        adaptive = chunk_markdown(code_text, max_words=400, adaptive=True)
+        # Adaptive should produce at least as many chunks (smaller size → more chunks)
+        assert len(adaptive) >= len(fixed)

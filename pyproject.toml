@@ -54,6 +54,9 @@ mcp = [
 langchain = [
   "langchain-core>=0.2.0",
 ]
+http2 = [
+  "httpx[http2]>=0.27.0",
+]
 all = [
   "playwright>=1.40.0",
   "trafilatura>=2.0.0",
@@ -63,6 +66,7 @@ all = [
   "supabase>=2.0.0",
   "mcp[cli]>=1.0.0",
   "langchain-core>=0.2.0",
+  "httpx[http2]>=0.27.0",
 ]
 
 [project.urls]

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>API Reference - ExampleSDK</title>
+<meta property="og:title" content="API Reference">
+</head>
+<body>
+<nav><a href="/">Home</a> <a href="/docs">Docs</a> <a href="/api">API</a> <a href="/blog">Blog</a></nav>
+<header><div class="logo">ExampleSDK</div></header>
+<div class="sidebar"><a href="/api/auth">Authentication</a> <a href="/api/users">Users</a> <a href="/api/billing">Billing</a> <a href="/api/webhooks">Webhooks</a></div>
+<main>
+<h1>API Reference</h1>
+<p>The ExampleSDK API uses REST conventions with JSON request and response bodies. All endpoints require authentication via Bearer token.</p>
+
+<h2>Authentication</h2>
+<p>Include your API key in the Authorization header:</p>
+<pre><code class="language-bash">curl -H "Authorization: Bearer sk_live_xxxxx" https://api.example.com/v1/users</code></pre>
+
+<h3>Generating API Keys</h3>
+<p>Navigate to Settings → API Keys in your dashboard. Each key has configurable scopes and expiration dates. Production keys should have minimal permissions.</p>
+
+<h2>Users</h2>
+<h3>Create a User</h3>
+<pre><code class="language-python">import examplesdk
+
+client = examplesdk.Client(api_key="sk_live_xxxxx")
+user = client.users.create(
+    email="alice@example.com",
+    name="Alice Johnson",
+    role="admin"
+)
+print(user.id)  # "usr_abc123"
+</code></pre>
+
+<h3>List Users</h3>
+<p>Retrieve a paginated list of users in your organization. Results are sorted by creation date, newest first.</p>
+<pre><code class="language-python">users = client.users.list(limit=20, offset=0)
+for user in users.data:
+    print(f"{user.name} ({user.email})")
+</code></pre>
+
+<h3>Update a User</h3>
+<p>Only the fields provided in the request body will be updated. All other fields remain unchanged.</p>
+<pre><code class="language-json">{
+  "name": "Alice Johnson-Smith",
+  "role": "superadmin",
+  "metadata": {"department": "engineering"}
+}</code></pre>
+
+<h2>Error Handling</h2>
+<p>The API returns standard HTTP status codes. Errors include a JSON body with <code>code</code> and <code>message</code> fields:</p>
+<pre><code class="language-json">{
+  "error": {
+    "code": "invalid_api_key",
+    "message": "The API key provided is expired or invalid."
+  }
+}</code></pre>
+<p>Common error codes:</p>
+<ul>
+<li><code>401 Unauthorized</code> — Invalid or missing API key</li>
+<li><code>403 Forbidden</code> — Insufficient permissions for this endpoint</li>
+<li><code>404 Not Found</code> — The requested resource does not exist</li>
+<li><code>429 Too Many Requests</code> — Rate limit exceeded, retry after the Retry-After header</li>
+</ul>
+</main>
+<footer><p>© 2026 ExampleSDK Inc. All rights reserved.</p><a href="/terms">Terms</a> <a href="/privacy">Privacy</a></footer>
+</body>
+</html>

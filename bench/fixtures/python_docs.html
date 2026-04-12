@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>itertools — Functions creating iterators for efficient looping</title></head>
+<body>
+<nav class="main-nav">
+<a href="/">Python</a> <a href="/docs">Documentation</a> <a href="/downloads">Downloads</a>
+<a href="/community">Community</a> <a href="/about">About</a>
+</nav>
+<div class="breadcrumb"><a href="/docs">Docs</a> » <a href="/docs/library">Library Reference</a> » <a href="/docs/library/functional">Functional Programming</a> » itertools</div>
+
+<main>
+<h1>itertools — Functions creating iterators for efficient looping</h1>
+<p>This module implements a number of iterator building blocks inspired by constructs from APL, Haskell, and SML. Each has been recast in a form suitable for Python.</p>
+
+<p>The module standardizes a core set of fast, memory efficient tools that are useful by themselves or in combination. Together, they form an "iterator algebra" making it possible to construct specialized tools succinctly and efficiently in pure Python.</p>
+
+<h2>Infinite iterators</h2>
+<table>
+<tr><th>Iterator</th><th>Arguments</th><th>Results</th><th>Example</th></tr>
+<tr><td><code>count()</code></td><td>start, [step]</td><td>start, start+step, start+2*step, ...</td><td><code>count(10) → 10 11 12 13 14 ...</code></td></tr>
+<tr><td><code>cycle()</code></td><td>p</td><td>p0, p1, ... plast, p0, p1, ...</td><td><code>cycle('ABCD') → A B C D A B C D ...</code></td></tr>
+<tr><td><code>repeat()</code></td><td>elem [,n]</td><td>elem, elem, elem, ... endlessly or up to n times</td><td><code>repeat(10, 3) → 10 10 10</code></td></tr>
+</table>
+
+<h2>Iterators terminating on the shortest input sequence</h2>
+<table>
+<tr><th>Iterator</th><th>Arguments</th><th>Results</th></tr>
+<tr><td><code>chain()</code></td><td>p, q, ...</td><td>p0, p1, ... plast, q0, q1, ...</td></tr>
+<tr><td><code>compress()</code></td><td>data, selectors</td><td>(d[0] if s[0]), (d[1] if s[1]), ...</td></tr>
+<tr><td><code>islice()</code></td><td>seq, [start,] stop [, step]</td><td>elements from seq[start:stop:step]</td></tr>
+<tr><td><code>starmap()</code></td><td>func, seq</td><td>func(*seq[0]), func(*seq[1]), ...</td></tr>
+</table>
+
+<h2>itertools.chain</h2>
+<p><code>itertools.chain(*iterables)</code></p>
+<p>Make an iterator that returns elements from the first iterable until it is exhausted, then proceeds to the next iterable, until all of the iterables are exhausted. Used for treating consecutive sequences as a single sequence. Roughly equivalent to:</p>
+<pre><code class="language-python">def chain(*iterables):
+    # chain('ABC', 'DEF') → A B C D E F
+    for it in iterables:
+        for element in it:
+            yield element
+</code></pre>
+
+<h2>itertools.groupby</h2>
+<p><code>itertools.groupby(iterable, key=None)</code></p>
+<p>Make an iterator that returns consecutive keys and groups from the iterable. The key is a function computing a key value for each element. If not supplied or is None, key defaults to an identity function and returns the element unchanged. Generally, the iterable needs to already be sorted on the same key function for the groupings to work out as expected.</p>
+<pre><code class="language-python">from itertools import groupby
+
+data = [("animal", "bear"), ("animal", "duck"), ("plant", "cactus"), ("vehicle", "speed boat")]
+for key, group in groupby(data, lambda x: x[0]):
+    print(key, list(group))
+# animal [('animal', 'bear'), ('animal', 'duck')]
+# plant [('plant', 'cactus')]
+# vehicle [('vehicle', 'speed boat')]
+</code></pre>
+
+<h2>itertools.product</h2>
+<p><code>itertools.product(*iterables, repeat=1)</code></p>
+<p>Cartesian product of input iterables. Roughly equivalent to nested for-loops in a generator expression. For example, <code>product(A, B)</code> returns the same as <code>((x,y) for x in A for y in B)</code>.</p>
+<pre><code class="language-python">from itertools import product
+list(product('AB', range(3)))
+# [('A', 0), ('A', 1), ('A', 2), ('B', 0), ('B', 1), ('B', 2)]
+</code></pre>
+</main>
+
+<aside class="sidebar">
+<h3>Quick Links</h3>
+<a href="/docs/library/functools">functools</a>
+<a href="/docs/library/operator">operator</a>
+<a href="/docs/library/collections">collections</a>
+</aside>
+<footer><p>© Python Software Foundation</p><a href="/terms">Terms</a></footer>
+</body>
+</html>

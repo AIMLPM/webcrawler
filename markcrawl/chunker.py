@@ -63,7 +63,13 @@ def chunk_text(
     chunks: List[str] = []
     start = 0
     while start < len(words):
-        end = start + max_words
+        end = min(start + max_words, len(words))
+        if end < len(words):
+            # Snap to the nearest sentence boundary (search back up to 20% of chunk)
+            window = max(max_words // 5, 10)
+            adjusted = _find_sentence_boundary(words, end, window=window, min_pos=start + 1)
+            if adjusted > start:
+                end = adjusted
         chunks.append(" ".join(words[start:end]))
         if end >= len(words):
             break
@@ -78,6 +84,73 @@ def chunk_text(
 # ---------------------------------------------------------------------------
 
 _HEADING_RE = re.compile(r"^(#{1,6})\s+", re.MULTILINE)
+_SENTENCE_ENDERS = frozenset(".!?")
+
+
+def _find_sentence_boundary(words: list[str], target: int, window: int = 50, min_pos: int = 1) -> int:
+    """Find the nearest sentence-ending word, searching backward from *target*.
+
+    Looks for words ending in ``.``, ``!``, or ``?`` (ignoring trailing
+    quotes/brackets).  Returns the split-point index (one past the
+    sentence-ending word) so that ``words[:result]`` ends on a complete
+    sentence.  Falls back to *target* if no boundary is found within
+    *window* words or if the result would be before *min_pos*.
+    """
+    earliest = max(target - window, min_pos)
+    for i in range(target, earliest - 1, -1):
+        word = words[i - 1]
+        stripped = word.rstrip("\"')]}>")
+        if stripped and stripped[-1] in _SENTENCE_ENDERS:
+            return i
+    return target
+
+
+_LIST_RE = re.compile(r"^\s*(?:[-*]|\d+\.)\s", re.MULTILINE)
+
+
+def _estimate_adaptive_max_words(text: str, base: int = 400) -> int:
+    """Estimate optimal chunk size based on content density.
+
+    Dense technical content (code blocks, many headings, lists) gets
+    smaller chunks for more precise retrieval.  Narrative prose gets
+    larger chunks for better context preservation.
+
+    Returns an adjusted *max_words* in the range ``[0.75*base, 1.25*base]``.
+    """
+    lines = text.splitlines()
+    total_lines = max(len(lines), 1)
+    total_words = max(len(text.split()), 1)
+
+    # Code density: fraction of lines inside fenced code blocks
+    in_code = False
+    code_lines = 0
+    for line in lines:
+        if line.strip().startswith("```"):
+            in_code = not in_code
+            continue
+        if in_code:
+            code_lines += 1
+    code_ratio = code_lines / total_lines
+
+    # Heading density: headings per 100 words
+    heading_count = len(_HEADING_RE.findall(text))
+    heading_density = heading_count / (total_words / 100) if total_words >= 100 else heading_count
+
+    # List density: fraction of lines that are list items
+    list_lines = len(_LIST_RE.findall(text))
+    list_ratio = list_lines / total_lines
+
+    # Density score: higher → more technical → smaller chunks
+    # Amplify each signal so that moderately dense content is detected
+    density_score = (
+        min(code_ratio * 2.0, 1.0) * 0.4
+        + min(heading_density / 2.0, 1.0) * 0.3
+        + min(list_ratio * 1.5, 1.0) * 0.3
+    )
+
+    # Map [0, 1] → multiplier [1.25, 0.65]
+    multiplier = 1.25 - density_score * 0.6
+    return max(int(base * multiplier), 100)
 
 
 def _extract_section_heading(text: str) -> str:
@@ -130,6 +203,7 @@ def chunk_markdown(
     max_words: int = 400,
     overlap_words: int = 50,
     page_title: str | None = None,
+    adaptive: bool = False,
 ) -> List[Chunk]:
     """Split Markdown text into semantically coherent chunks.
 
@@ -141,6 +215,10 @@ def chunk_markdown(
        lines (paragraph boundaries).
     3. **Word count** — if a single paragraph still exceeds *max_words*,
        fall back to :func:`chunk_text` word-count splitting with overlap.
+
+    When *adaptive* is ``True``, *max_words* is automatically adjusted
+    based on content density: code-heavy and reference-style content
+    gets smaller chunks, narrative prose gets larger chunks.
 
     When a section is split into multiple chunks, the section heading is
     carried forward to each subsequent chunk so that retrieval context is
@@ -165,6 +243,9 @@ def chunk_markdown(
     text = text.strip()
     if not text:
         return []
+
+    if adaptive:
+        max_words = _estimate_adaptive_max_words(text, base=max_words)
 
     if _word_count(text) <= max_words:
         chunk_text_val = text

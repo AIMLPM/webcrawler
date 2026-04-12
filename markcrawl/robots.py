@@ -2,25 +2,23 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 from urllib import robotparser
 
-import requests
 
-
-def parse_robots_txt(session: requests.Session, robots_url: str) -> Tuple[robotparser.RobotFileParser, str]:
+def parse_robots_txt(session: Any, robots_url: str) -> Tuple[robotparser.RobotFileParser, str]:
     """Fetch and parse robots.txt, returning both the parser and raw text."""
     rp = robotparser.RobotFileParser()
     try:
         response = session.get(robots_url, timeout=10)
         content = response.text if response.ok else ""
-    except requests.RequestException:
+    except Exception:
         content = ""
     rp.parse(content.splitlines())
     return rp, content
 
 
-def discover_sitemaps(session: requests.Session, base: str, robots_text: Optional[str] = None) -> List[str]:
+def discover_sitemaps(session: Any, base: str, robots_text: Optional[str] = None) -> List[str]:
     """Find sitemap URLs declared in the site's ``robots.txt``."""
     import urllib.parse as up
 
@@ -31,7 +29,7 @@ def discover_sitemaps(session: requests.Session, base: str, robots_text: Optiona
             if not response.ok:
                 return []
             robots_text = response.text
-        except requests.RequestException:
+        except Exception:
             return []
 
     sitemaps: List[str] = []
@@ -44,7 +42,7 @@ def discover_sitemaps(session: requests.Session, base: str, robots_text: Optiona
 
 
 def parse_sitemap_xml(
-    session: requests.Session,
+    session: Any,
     url: str,
     timeout: int,
     *,

@@ -1,16 +1,29 @@
-"""HTTP fetching — session construction, requests-based fetch, and Playwright rendering."""
+"""HTTP fetching — session construction, fetch, and Playwright rendering.
+
+When ``httpx`` is installed (``pip install markcrawl[http2]``), the module
+uses :class:`httpx.Client` with HTTP/2 support for better performance.
+Otherwise it falls back to :mod:`requests` transparently.
+"""
 from __future__ import annotations
 
 import logging
 import os
+import time as _time
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from .exceptions import MarkcrawlDependencyError
+
+try:
+    import httpx as _httpx
+    _HAS_HTTPX = True
+except ImportError:
+    _httpx = None  # type: ignore[assignment]
+    _HAS_HTTPX = False
 
 try:
     import certifi
@@ -23,10 +36,80 @@ DEFAULT_UA = (
     "Python-requests"
 )
 
+_RETRY_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
+
 logger = logging.getLogger(__name__)
 
 
-def build_session(
+# ---------------------------------------------------------------------------
+# httpx client (preferred when installed)
+# ---------------------------------------------------------------------------
+
+def _build_httpx_client(
+    user_agent: str = DEFAULT_UA,
+    proxy: Optional[str] = None,
+    pool_size: int = 10,
+) -> Any:
+    """Create an ``httpx.Client`` with HTTP/2 and connection pooling."""
+    import ssl as _ssl
+
+    # Check if h2 is available for HTTP/2
+    try:
+        import h2  # noqa: F401
+        http2 = True
+    except ImportError:
+        http2 = False
+
+    limits = _httpx.Limits(
+        max_connections=pool_size,
+        max_keepalive_connections=pool_size,
+    )
+
+    # Build SSL context (avoids deprecated verify=<str>)
+    if isinstance(CERT_PATH, str):
+        ssl_ctx = _ssl.create_default_context(cafile=CERT_PATH)
+        verify: Any = ssl_ctx
+    else:
+        verify = CERT_PATH
+
+    client = _httpx.Client(
+        http2=http2,
+        limits=limits,
+        headers={
+            "User-Agent": user_agent,
+            "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
+        },
+        verify=verify,
+        proxy=proxy,
+        follow_redirects=True,
+    )
+    return client
+
+
+def _fetch_httpx(client: Any, url: str, timeout: int) -> Optional[Any]:
+    """Fetch with httpx including retry logic for transient errors."""
+    max_retries = 3
+    backoff = 0.5
+    last_resp = None
+    for attempt in range(max_retries + 1):
+        try:
+            resp = client.get(url, timeout=timeout)
+            last_resp = resp
+            if resp.status_code not in _RETRY_STATUS_CODES or attempt == max_retries:
+                return resp
+        except _httpx.HTTPError as exc:
+            if attempt == max_retries:
+                logger.warning("Fetch error for %s: %s", url, exc)
+                return None
+        _time.sleep(backoff * (2 ** attempt))
+    return last_resp
+
+
+# ---------------------------------------------------------------------------
+# requests session (fallback)
+# ---------------------------------------------------------------------------
+
+def _build_requests_session(
     user_agent: str = DEFAULT_UA,
     proxy: Optional[str] = None,
     pool_size: int = 10,
@@ -48,7 +131,7 @@ def build_session(
         connect=3,
         read=3,
         backoff_factor=0.5,
-        status_forcelist=[429, 500, 502, 503, 504],
+        status_forcelist=list(_RETRY_STATUS_CODES),
         allowed_methods=["GET", "HEAD"],
     )
     adapter = HTTPAdapter(
@@ -81,8 +164,8 @@ def _fix_encoding(response: requests.Response) -> None:
         response.encoding = response.apparent_encoding
 
 
-def fetch(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
-    """Perform an HTTP GET request, returning the response or ``None`` on failure."""
+def _fetch_requests(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
+    """Fetch with requests."""
     try:
         resp = session.get(url, timeout=timeout, allow_redirects=True)
         _fix_encoding(resp)
@@ -90,6 +173,33 @@ def fetch(session: requests.Session, url: str, timeout: int) -> Optional[request
     except requests.RequestException as exc:
         logger.warning("Fetch error for %s: %s", url, exc)
         return None
+
+
+# ---------------------------------------------------------------------------
+# Public API — auto-selects httpx or requests
+# ---------------------------------------------------------------------------
+
+def build_session(
+    user_agent: str = DEFAULT_UA,
+    proxy: Optional[str] = None,
+    pool_size: int = 10,
+) -> Any:
+    """Create an HTTP client pre-configured for crawling.
+
+    Prefers :mod:`httpx` with HTTP/2 when installed (``pip install
+    markcrawl[http2]``), otherwise falls back to :mod:`requests`.
+    """
+    if _HAS_HTTPX:
+        logger.debug("Using httpx client (HTTP/2 %s)", "enabled" if _httpx else "disabled")
+        return _build_httpx_client(user_agent=user_agent, proxy=proxy, pool_size=pool_size)
+    return _build_requests_session(user_agent=user_agent, proxy=proxy, pool_size=pool_size)
+
+
+def fetch(session: Any, url: str, timeout: int) -> Optional[Any]:
+    """Perform an HTTP GET request, returning the response or ``None`` on failure."""
+    if _HAS_HTTPX and isinstance(session, _httpx.Client):
+        return _fetch_httpx(session, url, timeout)
+    return _fetch_requests(session, url, timeout)
 
 
 # ---------------------------------------------------------------------------

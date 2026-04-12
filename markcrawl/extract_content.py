@@ -61,6 +61,16 @@ def _extract_title(soup: BeautifulSoup) -> str:
     return ""
 
 
+def _link_density(el) -> float:
+    """Fraction of an element's text that lives inside ``<a>`` tags."""
+    text = el.get_text(strip=True)
+    text_len = len(text)
+    if text_len == 0:
+        return 1.0
+    link_text = sum(len(a.get_text(strip=True)) for a in el.find_all("a"))
+    return link_text / text_len
+
+
 def clean_dom_for_content(soup: BeautifulSoup) -> None:
     for tag in soup.find_all(EXCLUDE_TAGS):
         tag.decompose()
@@ -79,6 +89,17 @@ def clean_dom_for_content(soup: BeautifulSoup) -> None:
             el.decompose()
         except Exception:
             pass
+    # Density-based pass: remove div/section elements outside main/article
+    # that are link-heavy and text-light (untagged navigation, sidebars)
+    for el in soup.find_all({"div", "section"}):
+        if el.find_parent(["main", "article"]):
+            continue
+        text = el.get_text(strip=True)
+        word_count = len(text.split())
+        if word_count > 80:
+            continue
+        if _link_density(el) > 0.5:
+            el.decompose()
 
 
 def compact_blank_lines(text: str, max_blank_streak: int = 2) -> str:

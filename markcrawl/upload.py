@@ -95,7 +95,7 @@ def upload(
         page_text = page.get("text", "")
         page_title = page.get("title", "") or None
         if page.get("path", "").endswith(".md") or page_text.startswith("#"):
-            chunks = chunk_markdown(page_text, max_words=max_words, overlap_words=overlap_words, page_title=page_title)
+            chunks = chunk_markdown(page_text, max_words=max_words, overlap_words=overlap_words, page_title=page_title, adaptive=True)
         else:
             chunks = chunk_text(page_text, max_words=max_words, overlap_words=overlap_words)
         for chunk in chunks:
