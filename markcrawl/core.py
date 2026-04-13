@@ -127,10 +127,20 @@ def smart_sample_urls(
 
 
 @dataclass
+class PageData:
+    """A single crawled page — available via ``CrawlResult.pages``."""
+    url: str
+    title: str
+    content: str
+    filename: str
+
+
+@dataclass
 class CrawlResult:
     pages_saved: int
     output_dir: str
     index_file: str
+    pages: List[PageData]
 
 
 # ---------------------------------------------------------------------------
@@ -229,6 +239,7 @@ class CrawlEngine:
         self.total_planned: Optional[int] = None
         self.interrupted: bool = False
         self._cluster_map: Dict[str, Tuple[str, int, bool]] = {}
+        self.collected_pages: List[PageData] = []
 
         # Paths
         self.jsonl_path = os.path.join(out_dir, "pages.jsonl")
@@ -391,6 +402,10 @@ class CrawlEngine:
         url = page_data["url"]
         filename = self.write_page(page_data)
         jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"]))
+        self.collected_pages.append(PageData(
+            url=url, title=page_data["title"],
+            content=page_data["content"], filename=filename,
+        ))
         self.saved_count += 1
         # Flush every 10 pages to reduce syscalls while still protecting against data loss
         if self.saved_count % 10 == 0:
@@ -612,6 +627,7 @@ class AsyncCrawlEngine:
         self.total_planned: Optional[int] = None
         self.interrupted: bool = False
         self._cluster_map: Dict[str, Tuple[str, int, bool]] = {}
+        self.collected_pages: List[PageData] = []
 
         # Paths
         self.jsonl_path = os.path.join(out_dir, "pages.jsonl")
@@ -781,6 +797,10 @@ class AsyncCrawlEngine:
         url = page_data["url"]
         filename = self.write_page(page_data)
         jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"]))
+        self.collected_pages.append(PageData(
+            url=url, title=page_data["title"],
+            content=page_data["content"], filename=filename,
+        ))
         self.saved_count += 1
         if self.saved_count % 10 == 0:
             jsonl_file.flush()
@@ -1139,7 +1159,7 @@ def _crawl_sync(
         for u in urls:
             print(u)
         engine.progress(f"[dry-run] {len(urls)} URL(s) discovered — exiting without fetching")
-        return CrawlResult(pages_saved=0, output_dir=out_dir, index_file=engine.jsonl_path)
+        return CrawlResult(pages_saved=0, output_dir=out_dir, index_file=engine.jsonl_path, pages=[])
 
     # Interrupt handler — save state on Ctrl+C
     original_sigint = signal.getsignal(signal.SIGINT)
@@ -1170,7 +1190,7 @@ def _crawl_sync(
             os.remove(engine.state_path)
 
     logger.info("Saved %s HTML page(s) to %s", engine.saved_count, out_dir)
-    return CrawlResult(pages_saved=engine.saved_count, output_dir=out_dir, index_file=engine.jsonl_path)
+    return CrawlResult(pages_saved=engine.saved_count, output_dir=out_dir, index_file=engine.jsonl_path, pages=engine.collected_pages)
 
 
 def _crawl_async(
@@ -1290,7 +1310,7 @@ def _crawl_async(
             for u in urls:
                 print(u)
             engine.progress(f"[dry-run] {len(urls)} URL(s) discovered — exiting without fetching")
-            return CrawlResult(pages_saved=0, output_dir=out_dir, index_file=engine.jsonl_path)
+            return CrawlResult(pages_saved=0, output_dir=out_dir, index_file=engine.jsonl_path, pages=[])
 
         # Interrupt handler
         original_sigint = signal.getsignal(signal.SIGINT)
@@ -1321,6 +1341,6 @@ def _crawl_async(
                 os.remove(engine.state_path)
 
         logger.info("Saved %s HTML page(s) to %s", engine.saved_count, out_dir)
-        return CrawlResult(pages_saved=engine.saved_count, output_dir=out_dir, index_file=engine.jsonl_path)
+        return CrawlResult(pages_saved=engine.saved_count, output_dir=out_dir, index_file=engine.jsonl_path, pages=engine.collected_pages)
 
     return asyncio.run(_run())

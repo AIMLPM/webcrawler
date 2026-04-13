@@ -212,6 +212,23 @@ def clean_dom_for_content(soup: BeautifulSoup) -> None:
         link_text = a.get_text(strip=True)
         if len(link_text.split()) <= 5 and _CTA_PATH_RE.search(href):
             a.decompose()
+    # Preserve image alt text and figcaptions before markdownify strips imgs.
+    for fig in soup.find_all("figure"):
+        caption = fig.find("figcaption")
+        caption_text = caption.get_text(strip=True) if caption else ""
+        img = fig.find("img")
+        alt = img.get("alt", "").strip() if img else ""
+        text = caption_text or alt
+        if text:
+            fig.replace_with(soup.new_string(f"[Image: {text}]"))
+        else:
+            fig.decompose()
+    for img in soup.find_all("img"):
+        alt = img.get("alt", "").strip()
+        if alt:
+            img.replace_with(soup.new_string(f"[Image: {alt}]"))
+        else:
+            img.decompose()
 
 
 def compact_blank_lines(text: str, max_blank_streak: int = 2) -> str:
@@ -271,7 +288,7 @@ def html_to_markdown(html: str, base_url: Optional[str] = None) -> Tuple[str, st
     if _HAS_MARKDOWNIFY:
         converter = MarkdownConverter(
             heading_style="ATX",
-            strip=["img"],
+            strip=[],
             wrap=False,
             bullets="*",
             escape_asterisks=False,

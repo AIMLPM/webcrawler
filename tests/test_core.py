@@ -186,6 +186,23 @@ class TestHtmlToMarkdown:
         _, _, links = html_to_markdown(html)
         assert links == set()
 
+    def test_preserves_img_alt_text(self):
+        html = '<html><body><main><p>Before</p><img src="x.png" alt="Architecture diagram"><p>After</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "[Image: Architecture diagram]" in content
+
+    def test_strips_img_without_alt(self):
+        html = '<html><body><main><p>Content</p><img src="spacer.gif"><p>More</p></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "spacer" not in content
+        assert "Content" in content
+
+    def test_preserves_figcaption_over_alt(self):
+        html = '<html><body><main><figure><img src="x.png" alt="Alt text"><figcaption>Caption text</figcaption></figure></main></body></html>'
+        _, content, _ = html_to_markdown(html)
+        assert "[Image: Caption text]" in content
+        assert "Alt text" not in content
+
 
 class TestTitleFallback:
     def test_og_title_fallback(self):

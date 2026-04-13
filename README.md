@@ -192,11 +192,11 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 
 ### Benchmark results (7 tools, 8 sites, 93 queries)
 
-**Speed:** markcrawl is fastest (14.0 pages/sec), scrapy+md second (9.3), colly+md third (6.6). Playwright-based tools (crawl4ai, crawlee) average 1.4-2.0 pages/sec. See [speed comparison](https://github.com/AIMLPM/llm-crawler-benchmarks/blob/main/reports/SPEED_COMPARISON.md).
+**Speed:** markcrawl is fastest (14.0 pages/sec), scrapy+md second (9.3), colly+md third (6.6). Playwright-based tools average 1.4-2.0 pages/sec.
 
-**Output cleanliness:** markcrawl has the lowest nav pollution (4 words of preamble per page vs 275-398 for others), at the cost of 84% recall vs 97% for crawlee. See [quality comparison](https://github.com/AIMLPM/llm-crawler-benchmarks/blob/main/reports/QUALITY_COMPARISON.md).
+**Output cleanliness:** markcrawl has the lowest nav pollution (4 words vs 275-398 for others) — less junk in your embeddings.
 
-**RAG answer quality:** markcrawl produces the highest LLM answer scores (3.91/5) with the fewest chunks per page (10.1). Firecrawl scores well on answer quality (4.04/5) but on a smaller query set (70 vs 92 queries). The gap between tools is small but consistent:
+**RAG answer quality:** markcrawl produces the highest LLM answer scores (3.91/5) with the fewest chunks per page (10.1), cutting embedding and storage costs roughly in half vs crawlee.
 
 | Tool | Chunks/page | Answer Quality (/5) | Annual cost (100K pages, 1K queries/day) |
 |---|---|---|---|
@@ -208,9 +208,7 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 | playwright | 19.8 | 3.74 | $7,320 |
 | crawlee | 21.1 | 3.80 | $7,467 |
 
-Fewer chunks = lower storage and embedding costs. Cleaner chunks = better answers with less context. For the complete cost analysis across all scales (100 to 1M pages) with full methodology, see [COST_AT_SCALE.md](https://github.com/AIMLPM/llm-crawler-benchmarks/blob/main/reports/COST_AT_SCALE.md).
-
-See also: [Retrieval quality](https://github.com/AIMLPM/llm-crawler-benchmarks/blob/main/reports/RETRIEVAL_COMPARISON.md) | [Answer quality](https://github.com/AIMLPM/llm-crawler-benchmarks/blob/main/reports/ANSWER_QUALITY.md)
+Full benchmark data: [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Methodology & reproduction: [llm-crawler-benchmarks](https://github.com/AIMLPM/llm-crawler-benchmarks)
 </details>
 
 ## Installation
