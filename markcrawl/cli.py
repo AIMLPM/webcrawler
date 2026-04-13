@@ -99,6 +99,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Glob pattern to exclude URL paths (e.g. '/job/*'). Can be repeated.",
     )
     parser.add_argument(
+        "--include-path",
+        action="append",
+        default=[],
+        metavar="PATTERN",
+        help="Glob pattern to include URL paths (e.g. '/blog/*'). Only matching paths are crawled. Can be repeated.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Discover URLs (via sitemap/links) and print them without fetching content",
@@ -128,6 +135,7 @@ def main() -> None:
         resume=args.resume,
         extractor=args.extractor,
         exclude_paths=args.exclude_path or None,
+        include_paths=args.include_path or None,
         dry_run=args.dry_run,
     )
 

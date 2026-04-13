@@ -109,6 +109,7 @@ class CrawlEngine:
         content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
         extractor: str = "default",
         exclude_paths: Optional[List[str]] = None,
+        include_paths: Optional[List[str]] = None,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -123,6 +124,7 @@ class CrawlEngine:
         self.proxy = proxy
         self.show_progress = show_progress
         self.exclude_paths = exclude_paths or []
+        self.include_paths = include_paths or []
 
         self.effective_ua = user_agent or DEFAULT_UA
         self.session = build_session(
@@ -169,6 +171,7 @@ class CrawlEngine:
         self.seen_content: Set[str] = set()
         self.visited_for_links: Set[str] = set()
         self.seeds: List[str] = []
+        self._seed_urls: Set[str] = set()
         self.saved_count: int = 0
         self.total_planned: Optional[int] = None
         self.interrupted: bool = False
@@ -221,11 +224,19 @@ class CrawlEngine:
         return same_scope(url, base_netloc, self.include_subdomains)
 
     def path_excluded(self, url: str) -> bool:
-        """Check whether *url*'s path matches any ``exclude_paths`` glob pattern."""
-        if not self.exclude_paths:
-            return False
+        """Check whether *url*'s path is excluded by path filters.
+
+        A URL is excluded when it matches any ``exclude_paths`` pattern,
+        or when ``include_paths`` is set and it matches none of them.
+        Seed URLs (base URL fallback) bypass include filtering so we can
+        still discover links from the entry point.
+        """
         path = up.urlsplit(url).path
-        return any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths)
+        if self.exclude_paths and any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths):
+            return True
+        if self.include_paths and not any(fnmatch.fnmatch(path, pat) for pat in self.include_paths):
+            return url not in self._seed_urls
+        return False
 
     # -- Fetching -----------------------------------------------------------
 
@@ -491,6 +502,7 @@ class AsyncCrawlEngine:
         content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
         extractor: str = "default",
         exclude_paths: Optional[List[str]] = None,
+        include_paths: Optional[List[str]] = None,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -505,6 +517,7 @@ class AsyncCrawlEngine:
         self.proxy = proxy
         self.show_progress = show_progress
         self.exclude_paths = exclude_paths or []
+        self.include_paths = include_paths or []
 
         self.effective_ua = user_agent or DEFAULT_UA
         self.session = build_async_session(
@@ -537,6 +550,7 @@ class AsyncCrawlEngine:
         self.seen_content: Set[str] = set()
         self.visited_for_links: Set[str] = set()
         self.seeds: List[str] = []
+        self._seed_urls: Set[str] = set()
         self.saved_count: int = 0
         self.total_planned: Optional[int] = None
         self.interrupted: bool = False
@@ -575,11 +589,19 @@ class AsyncCrawlEngine:
         return same_scope(url, base_netloc, self.include_subdomains)
 
     def path_excluded(self, url: str) -> bool:
-        """Check whether *url*'s path matches any ``exclude_paths`` glob pattern."""
-        if not self.exclude_paths:
-            return False
+        """Check whether *url*'s path is excluded by path filters.
+
+        A URL is excluded when it matches any ``exclude_paths`` pattern,
+        or when ``include_paths`` is set and it matches none of them.
+        Seed URLs (base URL fallback) bypass include filtering so we can
+        still discover links from the entry point.
+        """
         path = up.urlsplit(url).path
-        return any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths)
+        if self.exclude_paths and any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths):
+            return True
+        if self.include_paths and not any(fnmatch.fnmatch(path, pat) for pat in self.include_paths):
+            return url not in self._seed_urls
+        return False
 
     # -- Fetching -----------------------------------------------------------
 
@@ -845,6 +867,7 @@ def crawl(
     content_extractor: Optional[Callable[[str], Tuple[str, str]]] = None,
     extractor: str = "default",
     exclude_paths: Optional[List[str]] = None,
+    include_paths: Optional[List[str]] = None,
     dry_run: bool = False,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
@@ -878,6 +901,9 @@ def crawl(
             ``pip install trafilatura``.
         exclude_paths: List of glob patterns to exclude by URL path
             (e.g. ``["/job/*", "/careers/*"]``).
+        include_paths: List of glob patterns to *include* by URL path.
+            When set, only URLs matching at least one pattern are crawled
+            (e.g. ``["/blog/*", "/pricing"]``).  Exclude takes priority.
         dry_run: Only run URL discovery (sitemap + initial page links),
             print the URL list, and exit without fetching content.
 
@@ -918,7 +944,7 @@ def crawl(
             user_agent=user_agent, concurrency=concurrency,
             proxy=proxy, resume=resume, content_extractor=content_extractor,
             extractor=extractor, exclude_paths=exclude_paths,
-            dry_run=dry_run,
+            include_paths=include_paths, dry_run=dry_run,
         )
 
     return _crawl_sync(
@@ -929,7 +955,8 @@ def crawl(
         user_agent=user_agent, render_js=render_js,
         concurrency=concurrency, proxy=proxy, resume=resume,
         content_extractor=content_extractor, extractor=extractor,
-        exclude_paths=exclude_paths, dry_run=dry_run,
+        exclude_paths=exclude_paths, include_paths=include_paths,
+        dry_run=dry_run,
     )
 
 
@@ -952,6 +979,7 @@ def _crawl_sync(
     content_extractor: Optional[Callable[[str], Tuple[str, str]]],
     extractor: str,
     exclude_paths: Optional[List[str]] = None,
+    include_paths: Optional[List[str]] = None,
     dry_run: bool = False,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
@@ -970,6 +998,7 @@ def _crawl_sync(
         content_extractor=content_extractor,
         extractor=extractor,
         exclude_paths=exclude_paths,
+        include_paths=include_paths,
     )
 
     base_url = norm_url(base_url)
@@ -1009,6 +1038,7 @@ def _crawl_sync(
 
         if not engine.to_visit:
             engine.to_visit.append(base_url)
+            engine._seed_urls.add(base_url)
             engine.progress("[info] no sitemap seeds available; using base URL as crawl seed")
 
     # --- Dry run: print discovered URLs and exit ---
@@ -1070,6 +1100,7 @@ def _crawl_async(
     content_extractor: Optional[Callable[[str], Tuple[str, str]]],
     extractor: str,
     exclude_paths: Optional[List[str]] = None,
+    include_paths: Optional[List[str]] = None,
     dry_run: bool = False,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
@@ -1089,6 +1120,7 @@ def _crawl_async(
             content_extractor=content_extractor,
             extractor=extractor,
             exclude_paths=exclude_paths,
+            include_paths=include_paths,
         )
 
         nonlocal base_url
@@ -1139,6 +1171,7 @@ def _crawl_async(
 
             if not engine.to_visit:
                 engine.to_visit.append(base_url)
+                engine._seed_urls.add(base_url)
                 engine.progress("[info] no sitemap seeds available; using base URL as crawl seed")
 
         # --- Dry run: print discovered URLs and exit ---

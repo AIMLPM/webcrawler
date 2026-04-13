@@ -137,6 +137,14 @@ markcrawl --base https://example.com --dry-run | wc -l
 markcrawl --base https://example.com --dry-run | grep "/job/"
 ```
 
+**Only crawl specific sections** (blog + pricing, ignore everything else):
+
+```bash
+markcrawl --base https://example.com \
+  --include-path "/blog/*" --include-path "/pricing" \
+  --max-pages 200 --out ./output --show-progress
+```
+
 **Safe crawl of a job board** (dry-run + exclude):
 
 ```bash

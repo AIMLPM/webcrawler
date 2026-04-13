@@ -71,6 +71,7 @@ COMMON FLAGS:
   --user-agent STRING Override default user agent
   --no-sitemap        Disable sitemap discovery, use link-following only
   --exclude-path PAT  Glob pattern to exclude URL paths (e.g. "/job/*"). Repeatable.
+  --include-path PAT  Glob pattern to include URL paths (e.g. "/blog/*"). Only matching paths are crawled. Repeatable.
   --dry-run           Discover URLs and print them without fetching content
   --extractor BACKEND "default", "trafilatura", or "ensemble"
 
@@ -180,6 +181,10 @@ GOAL: "The site has thousands of junk pages" or "skip job listings" or "exclude 
 WORKFLOW: Use --exclude-path (glob patterns against URL paths)
   markcrawl --base URL --out ./output --exclude-path "/job/*" --exclude-path "/careers/*" --show-progress
   # Can repeat --exclude-path for multiple patterns
+
+GOAL: "Only crawl specific sections" or "just the blog and pricing pages"
+WORKFLOW: Use --include-path (only matching paths are crawled)
+  markcrawl --base URL --out ./output --include-path "/blog/*" --include-path "/pricing" --show-progress
 
 GOAL: "How many pages will this crawl?" or "preview before crawling"
 WORKFLOW: Use --dry-run to list URLs without fetching
