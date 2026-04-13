@@ -3,7 +3,7 @@
 
 > **Summary:** Across 6 open-source crawlers tested on 8 sites, MarkCrawl is the fastest (14.0 pages/sec), produces the cleanest output (15 words of nav pollution vs 133+ for others), generates the fewest chunks (22,132 total, 2.1x fewer than crawlee), the lowest total RAG pipeline cost at every scale tested.
 >
-> **Where MarkCrawl is not first:**  Answer quality is 5th (4.30/5, scrapy+md leads at 4.41).   Retrieval Hit@5 is 6th (86% vs 91% for scrapy+md).   Content recall is 7th (64% vs 97% for crawlee).
+> **Where MarkCrawl is not first:**  Answer quality is 5th (4.30/5, scrapy+md leads at 4.41).   Retrieval Hit@5 is 6th (86% vs 91% for scrapy+md).   Content recall is 7th (64% vs 97% for playwright).
 
 *Last run: April 2026. Reproducible via [llm-crawler-benchmarks](https://github.com/AIMLPM/llm-crawler-benchmarks).*
 
@@ -35,7 +35,7 @@ MarkCrawl uses native async I/O (httpx) with concurrent fetching and process-poo
 
 Nav pollution = boilerplate words (navigation, footer, cookie banners) that leak into extracted content. Lower is better — less junk means cleaner embeddings and fewer wasted tokens.
 
-The tradeoff: crawlee captures 97% of page content but includes ~2,207 words of boilerplate per page. MarkCrawl captures 64% with 15 words of pollution. For RAG pipelines, the cleaner output produces better embeddings despite the lower recall.
+The tradeoff: playwright captures 97% of page content but includes ~2,037 words of boilerplate per page. MarkCrawl captures 64% with 15 words of pollution. For RAG pipelines, the cleaner output produces better embeddings despite the lower recall.
 
 ## RAG answer quality
 
