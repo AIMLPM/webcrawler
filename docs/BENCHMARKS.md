@@ -45,7 +45,7 @@ The tradeoff: crawlee captures 97% of page content but includes ~400 words of bo
 | playwright | 19.8 | 3.74 | 74% | 82% |
 | crawlee | 21.1 | 3.80 | 85% | 87% |
 
-*FireCrawl scored on a smaller query set (70 vs 92 queries) due to incomplete crawl coverage.
+*FireCrawl's self-hosted version did not complete crawls on all 8 sites across multiple attempts, reducing its query coverage to 70/92. Its answer quality score (4.04) is on this smaller set and is not directly comparable to tools that completed all sites.
 
 **Reading this table:**
 - **Chunks/page** — fewer = less redundancy, lower embedding costs. MarkCrawl produces 2x fewer chunks than crawlee for the same sites.
