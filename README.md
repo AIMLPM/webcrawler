@@ -194,7 +194,7 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 
 **Speed:** markcrawl is fastest (14.0 pages/sec), scrapy+md second (9.3). Playwright-based tools average 1.4-2.1 pages/sec.
 
-**Output cleanliness:** markcrawl has the lowest nav pollution (15 words vs 133+ for others) — less junk in your embeddings.
+**Output cleanliness:** 
 
 **RAG answer quality:** markcrawl scores 4.30/5 on answer quality with the fewest chunks (22,132 total, 2.1x fewer than the most), keeping embedding costs low.
 
