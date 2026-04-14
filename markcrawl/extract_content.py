@@ -367,7 +367,7 @@ def _has_substantial_content(el) -> bool:
     return False
 
 
-def clean_dom_for_content(soup: BeautifulSoup, page_type: str = "generic") -> None:
+def clean_dom_for_content(soup: BeautifulSoup, page_type: str = "generic", keep_images: bool = False) -> None:
     keep_nav = _TYPE_KEEP_NAV.get(page_type, False)
     keep_aside = _TYPE_KEEP_ASIDE.get(page_type, False)
 
@@ -435,23 +435,46 @@ def clean_dom_for_content(soup: BeautifulSoup, page_type: str = "generic") -> No
         link_text = a.get_text(strip=True)
         if len(link_text.split()) <= 5 and _CTA_PATH_RE.search(href):
             a.decompose()
-    # Preserve image alt text and figcaptions before markdownify strips imgs.
-    for fig in soup.find_all("figure"):
-        caption = fig.find("figcaption")
-        caption_text = caption.get_text(strip=True) if caption else ""
-        img = fig.find("img")
-        alt = img.get("alt", "").strip() if img else ""
-        text = caption_text or alt
-        if text:
-            fig.replace_with(soup.new_string(f"[Image: {text}]"))
-        else:
-            fig.decompose()
-    for img in soup.find_all("img"):
-        alt = img.get("alt", "").strip()
-        if alt:
-            img.replace_with(soup.new_string(f"[Image: {alt}]"))
-        else:
-            img.decompose()
+    # Image handling — two modes:
+    # keep_images=True (--download-images): resolve src to absolute URLs,
+    #   flatten figures into plain <img> tags, and let markdownify produce
+    #   ![alt](url) syntax.  The caller downloads images and rewrites paths.
+    # keep_images=False (default): replace images with [Image: alt] text
+    #   placeholders and discard images without alt text.
+    if keep_images:
+        for fig in soup.find_all("figure"):
+            caption = fig.find("figcaption")
+            caption_text = caption.get_text(strip=True) if caption else ""
+            img = fig.find("img")
+            if img:
+                if caption_text:
+                    img["alt"] = caption_text
+                if caption:
+                    caption.decompose()
+                fig.unwrap()
+            else:
+                fig.decompose()
+        for img in soup.find_all("img"):
+            src = img.get("src", "").strip()
+            if not src:
+                img.decompose()
+    else:
+        for fig in soup.find_all("figure"):
+            caption = fig.find("figcaption")
+            caption_text = caption.get_text(strip=True) if caption else ""
+            img = fig.find("img")
+            alt = img.get("alt", "").strip() if img else ""
+            text = caption_text or alt
+            if text:
+                fig.replace_with(soup.new_string(f"[Image: {text}]"))
+            else:
+                fig.decompose()
+        for img in soup.find_all("img"):
+            alt = img.get("alt", "").strip()
+            if alt:
+                img.replace_with(soup.new_string(f"[Image: {alt}]"))
+            else:
+                img.decompose()
 
 
 def compact_blank_lines(text: str, max_blank_streak: int = 2) -> str:
@@ -499,12 +522,20 @@ def _extract_links_from_soup(soup: BeautifulSoup, base_url: Optional[str]) -> Se
     return links
 
 
-def html_to_markdown(html: str, base_url: Optional[str] = None) -> Tuple[str, str, Set[str]]:
+def html_to_markdown(
+    html: str,
+    base_url: Optional[str] = None,
+    keep_images: bool = False,
+) -> Tuple[str, str, Set[str]]:
     """Convert raw HTML to cleaned Markdown text.
 
     Returns ``(title, markdown, links)`` where *links* is the set of
     normalised ``<a href>`` URLs found in the document.  Extracting links
     during the same parse avoids a second BeautifulSoup pass.
+
+    When *keep_images* is True, ``<img>`` tags are preserved so that
+    markdownify produces ``![alt](src)`` references.  The caller is
+    responsible for downloading images and rewriting paths.
 
     Extraction enrichment:
     - Meta description is prepended as a summary line when available.
@@ -515,7 +546,7 @@ def html_to_markdown(html: str, base_url: Optional[str] = None) -> Tuple[str, st
     soup = BeautifulSoup(html, _PARSER)
     title, meta_desc, structured, links = _extract_metadata(soup, base_url)
     page_type = classify_page(soup, url=base_url or "")
-    clean_dom_for_content(soup, page_type=page_type)
+    clean_dom_for_content(soup, page_type=page_type, keep_images=keep_images)
     main = (
         soup.find("main")
         or soup.find(attrs={"role": "main"})

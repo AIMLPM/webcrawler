@@ -49,6 +49,12 @@ from .extract_content import (
     html_to_markdown_trafilatura,  # noqa: F401 — public re-export
     html_to_text,
 )
+from .images import (
+    ASSETS_DIR,
+    download_images as _download_images,
+    extract_image_urls,
+    rewrite_image_paths,
+)
 from .fetch import (
     DEFAULT_UA,
     PlaywrightResponse,  # noqa: F401 — public re-export
@@ -177,6 +183,8 @@ class CrawlEngine:
         extractor: str = "default",
         exclude_paths: Optional[List[str]] = None,
         include_paths: Optional[List[str]] = None,
+        download_images: bool = False,
+        min_image_size: int = 5000,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -192,6 +200,8 @@ class CrawlEngine:
         self.show_progress = show_progress
         self.exclude_paths = exclude_paths or []
         self.include_paths = include_paths or []
+        self.download_images = download_images
+        self.min_image_size = min_image_size
 
         self.effective_ua = user_agent or DEFAULT_UA
         self.session = build_session(
@@ -218,8 +228,9 @@ class CrawlEngine:
                 self.concurrency = 1
             self.pw_instance, self.pw_browser = _get_playwright_browser(proxy=proxy)
             self._pw_context = self.pw_browser.new_context(user_agent=self.effective_ua)
-            # Block non-essential resources — we only need HTML for markdown
-            self._pw_context.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico}", lambda route: route.abort())
+            if not download_images:
+                # Block image resources — we only need HTML for markdown
+                self._pw_context.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico}", lambda route: route.abort())
             self._pw_context.route("**/*.{css,less,scss}", lambda route: route.abort())
             self._pw_context.route("**/*.{woff,woff2,ttf,otf,eot}", lambda route: route.abort())
             self.progress("[info] Playwright browser launched for JS rendering")
@@ -353,6 +364,7 @@ class CrawlEngine:
             return None
 
         links: Set[str] = set()
+        keep_imgs = self.download_images and self.fmt == "markdown"
         if self.content_extractor:
             title, content = self.content_extractor(response.text)
         elif self.fmt == "markdown":
@@ -363,7 +375,7 @@ class CrawlEngine:
             elif self.extractor == "readerlm":
                 title, content, links = html_to_markdown_readerlm(response.text, base_url=url)
             else:
-                title, content, links = html_to_markdown(response.text, base_url=url)
+                title, content, links = html_to_markdown(response.text, base_url=url, keep_images=keep_imgs)
         else:
             title, content, links = html_to_text(response.text, base_url=url)
 
@@ -372,6 +384,21 @@ class CrawlEngine:
         if len(content.split()) < self.min_words:
             self.progress(f"[skip] too little content: {url}")
             return None
+
+        # Download images and rewrite markdown paths
+        images: List[str] = []
+        if keep_imgs:
+            image_pairs = extract_image_urls(content)
+            if image_pairs:
+                assets_dir = os.path.join(self.out_dir, ASSETS_DIR)
+                url_map = _download_images(
+                    self.session, image_pairs, assets_dir,
+                    self.timeout, self.min_image_size,
+                )
+                if url_map:
+                    content = rewrite_image_paths(content, url_map)
+                    images = [f"{ASSETS_DIR}/{fn}" for fn in url_map.values()]
+                    self.progress(f"[img ] downloaded {len(url_map)} image(s) for {url}")
 
         content_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
         if content_hash in self.seen_content:
@@ -383,7 +410,7 @@ class CrawlEngine:
             return None
         self.seen_content.add(content_hash)
 
-        return {"url": url, "title": title, "content": content, "links": links}
+        return {"url": url, "title": title, "content": content, "links": links, "images": images}
 
     def build_citation(self, title: str, url: str) -> str:
         site_name = up.urlsplit(url).netloc
@@ -408,7 +435,7 @@ class CrawlEngine:
             output_file.write(header + meta + content + "\n")
         return filename
 
-    def build_jsonl_row(self, url: str, title: str, filename: str, content: str) -> str:
+    def build_jsonl_row(self, url: str, title: str, filename: str, content: str, images: Optional[List[str]] = None) -> str:
         row = {
             "url": url,
             "title": title,
@@ -418,6 +445,8 @@ class CrawlEngine:
             "tool": "markcrawl",
             "text": content,
         }
+        if images:
+            row["images"] = images
         if url in self._cluster_map:
             pattern, cluster_size, is_templated = self._cluster_map[url]
             row["pattern"] = pattern
@@ -429,7 +458,8 @@ class CrawlEngine:
         """Write page file, append JSONL row, increment counter."""
         url = page_data["url"]
         filename = self.write_page(page_data)
-        jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"]))
+        images = page_data.get("images")
+        jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"], images=images))
         self.collected_pages.append(PageData(
             url=url, title=page_data["title"],
             content=page_data["content"], filename=filename,
@@ -570,6 +600,7 @@ except ImportError:
 
 def _extract_content_worker(
     html_text: str, url: str, fmt: str, extractor: str,
+    keep_images: bool = False,
 ) -> Optional[Tuple[str, str, Set[str]]]:
     """Extract content from HTML — runs in a :class:`ProcessPoolExecutor`.
 
@@ -584,7 +615,7 @@ def _extract_content_worker(
             elif extractor == "readerlm":
                 return html_to_markdown_readerlm(html_text, base_url=url)
             else:
-                return html_to_markdown(html_text, base_url=url)
+                return html_to_markdown(html_text, base_url=url, keep_images=keep_images)
         else:
             return html_to_text(html_text, base_url=url)
     except Exception:
@@ -620,6 +651,8 @@ class AsyncCrawlEngine:
         extractor: str = "default",
         exclude_paths: Optional[List[str]] = None,
         include_paths: Optional[List[str]] = None,
+        download_images: bool = False,
+        min_image_size: int = 5000,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -627,6 +660,8 @@ class AsyncCrawlEngine:
         self.min_words = min_words
         self.content_extractor = content_extractor
         self.extractor = extractor
+        self.download_images = download_images
+        self.min_image_size = min_image_size
         self.delay = delay
         self.timeout = timeout
         self.concurrency = concurrency
@@ -678,6 +713,11 @@ class AsyncCrawlEngine:
         self._dedup: Optional[PersistentDedup] = None
         # Link prioritization scorer
         self._scorer: Optional[LinkScorer] = None
+
+        # Sync session for image downloads (async httpx can't be used in sync context)
+        self._img_session = build_session(
+            user_agent=self.effective_ua, proxy=proxy,
+        ) if download_images else None
 
         # Paths
         self.jsonl_path = os.path.join(out_dir, "pages.jsonl")
@@ -759,6 +799,7 @@ class AsyncCrawlEngine:
             self.progress(f"[skip] non-HTML content: {url}")
             return None
 
+        keep_imgs = self.download_images and self.fmt == "markdown"
         links: Set[str] = set()
         if self.content_extractor:
             title, content = self.content_extractor(response.text)
@@ -770,7 +811,7 @@ class AsyncCrawlEngine:
             elif self.extractor == "readerlm":
                 title, content, links = html_to_markdown_readerlm(response.text, base_url=url)
             else:
-                title, content, links = html_to_markdown(response.text, base_url=url)
+                title, content, links = html_to_markdown(response.text, base_url=url, keep_images=keep_imgs)
         else:
             title, content, links = html_to_text(response.text, base_url=url)
 
@@ -813,15 +854,17 @@ class AsyncCrawlEngine:
             title, content = self.content_extractor(html_text)
             return title, content, set()
 
+        keep_imgs = self.download_images and self.fmt == "markdown"
         if self._executor:
             loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(
                 self._executor,
                 _extract_content_worker, html_text, url, self.fmt, self.extractor,
+                keep_imgs,
             )
             return result
 
-        return _extract_content_worker(html_text, url, self.fmt, self.extractor)
+        return _extract_content_worker(html_text, url, self.fmt, self.extractor, keep_images=keep_imgs)
 
     def build_citation(self, title: str, url: str) -> str:
         site_name = up.urlsplit(url).netloc
@@ -844,7 +887,7 @@ class AsyncCrawlEngine:
             output_file.write(header + meta + content + "\n")
         return filename
 
-    def build_jsonl_row(self, url: str, title: str, filename: str, content: str) -> str:
+    def build_jsonl_row(self, url: str, title: str, filename: str, content: str, images: Optional[List[str]] = None) -> str:
         row = {
             "url": url,
             "title": title,
@@ -854,6 +897,8 @@ class AsyncCrawlEngine:
             "tool": "markcrawl",
             "text": content,
         }
+        if images:
+            row["images"] = images
         if url in self._cluster_map:
             pattern, cluster_size, is_templated = self._cluster_map[url]
             row["pattern"] = pattern
@@ -864,7 +909,8 @@ class AsyncCrawlEngine:
     def save_page(self, page_data: Dict, jsonl_file) -> None:
         url = page_data["url"]
         filename = self.write_page(page_data)
-        jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"]))
+        images = page_data.get("images")
+        jsonl_file.write(self.build_jsonl_row(url, page_data["title"], filename, page_data["content"], images=images))
         self.collected_pages.append(PageData(
             url=url, title=page_data["title"],
             content=page_data["content"], filename=filename,
@@ -978,6 +1024,7 @@ class AsyncCrawlEngine:
             extracted = await asyncio.gather(*extract_tasks, return_exceptions=True)
 
             # Phase 3: dedup + save + discover (sequential, fast)
+            keep_imgs = self.download_images and self.fmt == "markdown"
             for url, result in zip(batch, extracted):
                 if isinstance(result, (Exception, type(None))):
                     if isinstance(result, Exception):
@@ -989,6 +1036,21 @@ class AsyncCrawlEngine:
                     self.progress(f"[skip] too little content: {url}")
                     continue
 
+                # Download images and rewrite markdown paths
+                images: List[str] = []
+                if keep_imgs and self._img_session:
+                    image_pairs = extract_image_urls(content)
+                    if image_pairs:
+                        assets_dir = os.path.join(self.out_dir, ASSETS_DIR)
+                        url_map = _download_images(
+                            self._img_session, image_pairs, assets_dir,
+                            self.timeout, self.min_image_size,
+                        )
+                        if url_map:
+                            content = rewrite_image_paths(content, url_map)
+                            images = [f"{ASSETS_DIR}/{fn}" for fn in url_map.values()]
+                            self.progress(f"[img ] downloaded {len(url_map)} image(s) for {url}")
+
                 content_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
                 if content_hash in self.seen_content:
                     self.progress(f"[skip] duplicate content: {url}")
@@ -998,7 +1060,7 @@ class AsyncCrawlEngine:
                     continue
                 self.seen_content.add(content_hash)
 
-                page_data = {"url": url, "title": title, "content": content, "links": links}
+                page_data = {"url": url, "title": title, "content": content, "links": links, "images": images}
                 self.save_page(page_data, jsonl_file)
                 self.discover_links(url, links, base_netloc)
 
@@ -1040,6 +1102,8 @@ def crawl(
     sample_threshold: int = 20,
     cross_dedup: bool = False,
     prioritize_links: bool = False,
+    download_images: bool = False,
+    min_image_size: int = 5000,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
 
@@ -1083,6 +1147,11 @@ def crawl(
             (default: 5).  Only used when ``smart_sample=True``.
         sample_threshold: Clusters with more URLs than this are considered
             templated and sampled (default: 20).
+        download_images: Download images from the content area and save
+            to an ``assets/`` subdirectory.  Markdown output uses local
+            paths instead of ``[Image: alt]`` placeholders.
+        min_image_size: Minimum image file size in bytes (default: 5000).
+            Smaller images (icons, spacers) are skipped.
 
     Returns:
         A :class:`CrawlResult` with the count of saved pages, output
@@ -1126,6 +1195,8 @@ def crawl(
             sample_threshold=sample_threshold,
             cross_dedup=cross_dedup,
             prioritize_links=prioritize_links,
+            download_images=download_images,
+            min_image_size=min_image_size,
         )
 
     return _crawl_sync(
@@ -1140,6 +1211,7 @@ def crawl(
         dry_run=dry_run, smart_sample=smart_sample,
         sample_size=sample_size, sample_threshold=sample_threshold,
         cross_dedup=cross_dedup, prioritize_links=prioritize_links,
+        download_images=download_images, min_image_size=min_image_size,
     )
 
 
@@ -1169,6 +1241,8 @@ def _crawl_sync(
     sample_threshold: int = 20,
     cross_dedup: bool = False,
     prioritize_links: bool = False,
+    download_images: bool = False,
+    min_image_size: int = 5000,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
     engine = CrawlEngine(
@@ -1187,6 +1261,8 @@ def _crawl_sync(
         extractor=extractor,
         exclude_paths=exclude_paths,
         include_paths=include_paths,
+        download_images=download_images,
+        min_image_size=min_image_size,
     )
 
     base_url = norm_url(base_url)
@@ -1315,6 +1391,8 @@ def _crawl_async(
     sample_threshold: int = 20,
     cross_dedup: bool = False,
     prioritize_links: bool = False,
+    download_images: bool = False,
+    min_image_size: int = 5000,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 
@@ -1334,6 +1412,8 @@ def _crawl_async(
             extractor=extractor,
             exclude_paths=exclude_paths,
             include_paths=include_paths,
+            download_images=download_images,
+            min_image_size=min_image_size,
         )
 
         nonlocal base_url

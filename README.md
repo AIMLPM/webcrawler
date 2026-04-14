@@ -198,6 +198,23 @@ markcrawl --base https://bigsite.com --out ./bigsite \
   --smart-sample --sample-size 5 --sample-threshold 20 --show-progress
 ```
 
+**Download images alongside content** (photography blogs, product pages):
+
+```bash
+# Crawl a photography blog and save images from the content area
+markcrawl --base https://photography-blog.example.com --out ./photos \
+  --download-images --max-pages 50 --show-progress
+# Output:
+#   ./photos/assets/mountain-abc123.jpg
+#   ./photos/assets/sunset-def456.png
+#   ./photos/post-1__a1b2c3.md  ← Markdown with ![alt](assets/filename.ext) refs
+#   ./photos/pages.jsonl         ← index includes "images" array per page
+
+# Adjust minimum image size to skip thumbnails (default: 5000 bytes)
+markcrawl --base https://example.com/gallery --out ./gallery \
+  --download-images --min-image-size 20000 --show-progress
+```
+
 **Resume an interrupted crawl:**
 
 ```bash
@@ -347,6 +364,8 @@ Navigation, footer, cookie banners, and scripts are stripped. Only the main cont
 | `--cross-dedup` | Skip pages already seen in previous crawls to the same output directory |
 | `--prioritize-links` | Score discovered links by predicted content yield — crawl high-value pages first |
 | `--extractor` | Content extraction backend: `default`, `trafilatura`, `ensemble`, or `readerlm` |
+| `--download-images` | Download images from the content area to `assets/` and use local paths in Markdown |
+| `--min-image-size` | Minimum image file size in bytes to keep (default: `5000`). Smaller images are skipped |
 </details>
 
 ## Optional: structured extraction

@@ -121,6 +121,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Glob pattern to include URL paths (e.g. '/blog/*'). Only matching paths are crawled. Can be repeated.",
     )
     parser.add_argument(
+        "--download-images",
+        action="store_true",
+        help="Download images from within the extracted content area and save to an assets/ subdirectory. "
+        "Markdown output uses local paths (assets/filename.ext) instead of [Image: alt] placeholders.",
+    )
+    parser.add_argument(
+        "--min-image-size",
+        type=int,
+        default=5000,
+        help="Minimum image file size in bytes to keep (default: 5000). Smaller images (icons, spacers) are skipped.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Discover URLs (via sitemap/links) and print them without fetching content",
@@ -185,6 +197,8 @@ def main() -> None:
         sample_threshold=args.sample_threshold,
         cross_dedup=args.cross_dedup,
         prioritize_links=args.prioritize_links,
+        download_images=args.download_images,
+        min_image_size=args.min_image_size,
     )
 
     if not args.dry_run:
