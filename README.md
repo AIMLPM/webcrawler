@@ -239,20 +239,20 @@ Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep bro
 
 ### Benchmark results (6 tools, April 2026)
 
-**Speed:** markcrawl is fastest (14.0 pages/sec), scrapy+md second (9.3). Playwright-based tools average 1.4-2.1 pages/sec.
+**Speed:** markcrawl is fastest (12.1 pages/sec), scrapy+md second (9.5). Playwright-based tools average 1.4-2.1 pages/sec.
 
-**Output cleanliness:** markcrawl has the lowest nav pollution (15 words vs 133+ for others) — less junk in your embeddings.
+**Output cleanliness:** markcrawl has the lowest nav pollution (14 words vs 208+ for others) — less junk in your embeddings.
 
-**RAG answer quality:** markcrawl scores 4.30/5 on answer quality with the fewest chunks (22,132 total, 2.1x fewer than the most), keeping embedding costs low.
+**RAG answer quality:** markcrawl scores 4.52/5 on answer quality with the fewest chunks (27,051 total, 3.0x fewer than the most), keeping embedding costs low.
 
 | Tool | Chunks/page | Answer Quality (/5) | Annual cost (100K pages, 1K queries/day) |
 |---|---|---|---|
-| **markcrawl** | **15.2** | **4.30** | **$4,505** |
-| scrapy+md | 16.4 | 4.41 | $5,464 |
-| crawl4ai | 22.5 | 4.26 | $6,960 |
-| colly+md | 29.5 | 4.29 | $7,213 |
-| playwright | 31.9 | 4.38 | $7,320 |
-| crawlee | 32.7 | 4.33 | $7,467 |
+| **markcrawl** | **18.6** | **4.52** | **$4,505** |
+| scrapy+md | 29.0 | 4.03 | $5,464 |
+| crawl4ai | 33.2 | 4.43 | $6,960 |
+| colly+md | 55.3 | 4.53 | $7,213 |
+| playwright | 50.6 | 4.42 | $7,320 |
+| crawlee | 51.0 | 4.52 | $7,467 |
 
 Full benchmark data: [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Methodology: [llm-crawler-benchmarks](https://github.com/AIMLPM/llm-crawler-benchmarks)
 </details>
