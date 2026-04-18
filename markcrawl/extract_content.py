@@ -353,14 +353,28 @@ def _has_substantial_content(el) -> bool:
 
     Returns True when the element contains code blocks, long text (>100 words),
     or other signals of real content rather than navigation.
+
+    Large nav sidebars can have hundreds of words of link text and still be
+    pure navigation (see fastapi-docs), so a high link density vetoes the
+    "long text" and "data table" signals.
     """
-    # Code blocks are almost never navigation
-    if el.find(["pre", "code"]):
-        return True
     word_count = len(el.get_text(strip=True).split())
+    # A sea of links is navigation even when it's long, has code labels, or
+    # has tables inside.  Docs sites wrap nav labels like `openapi.json` in
+    # <code>, and multi-level sidebars can render as nested lists; neither
+    # is content.
+    link_heavy = word_count > 0 and _link_density(el) > 0.75
+    if link_heavy:
+        return False
+    # Real fenced code blocks (<pre>) are almost never navigation.  Inline
+    # <code> alone is not a strong signal — see above.
+    if el.find("pre"):
+        return True
+    if el.find("code") and word_count > 10:
+        return True
     if word_count > 100:
         return True
-    # Tables with multiple rows are usually content, not nav
+    # Tables with multiple rows are usually content, not nav.
     rows = el.find_all("tr")
     if len(rows) > 2:
         return True
@@ -556,13 +570,20 @@ def html_to_markdown(
     )
 
     if _HAS_MARKDOWNIFY:
+        # escape_underscores=False: keep identifiers like my_function intact.
+        # With escaping on, prose `my_function` becomes `my\_function`, which
+        # tokenises differently and breaks retrieval on snake_case symbol
+        # queries. Inline <code> already wraps symbols in backticks, so any
+        # genuinely ambiguous cases are still safe.
+        # escape_asterisks=False: same rationale — keep `*args`, `**kwargs`
+        # and glob patterns readable. Emphasis collisions are rare in docs.
         converter = MarkdownConverter(
             heading_style="ATX",
             strip=[],
             wrap=False,
             bullets="*",
-            escape_asterisks=True,
-            escape_underscores=True,
+            escape_asterisks=False,
+            escape_underscores=False,
             code_language="",
             code_language_callback=_infer_code_language,
         )

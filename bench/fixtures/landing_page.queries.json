@@ -1,0 +1,30 @@
+[
+  {
+    "query": "What does CloudDeploy do?",
+    "answer_span": "automates your deployment pipeline"
+  },
+  {
+    "query": "How does CloudDeploy prevent downtime on failed deployments?",
+    "answer_span": "automatic health checks"
+  },
+  {
+    "query": "How do canary releases work in CloudDeploy?",
+    "answer_span": "Route a percentage of traffic"
+  },
+  {
+    "query": "Which cloud providers does CloudDeploy support?",
+    "answer_span": "AWS, GCP, Azure"
+  },
+  {
+    "query": "What happens when I open a pull request?",
+    "answer_span": "preview environment"
+  },
+  {
+    "query": "How many companies use CloudDeploy?",
+    "answer_span": "2,000 companies"
+  },
+  {
+    "query": "What's the average deployment success rate?",
+    "answer_span": "99.97%"
+  }
+]

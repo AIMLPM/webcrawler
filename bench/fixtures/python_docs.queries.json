@@ -1,0 +1,30 @@
+[
+  {
+    "query": "What languages inspired the itertools module?",
+    "answer_span": "APL, Haskell, and SML"
+  },
+  {
+    "query": "How does itertools.count work?",
+    "answer_span": "start, start+step"
+  },
+  {
+    "query": "What does itertools.cycle do?",
+    "answer_span": "cycle('ABCD')"
+  },
+  {
+    "query": "What does itertools.chain do when an iterable is exhausted?",
+    "answer_span": "proceeds to the next iterable"
+  },
+  {
+    "query": "What does groupby require about its input?",
+    "answer_span": "already be sorted"
+  },
+  {
+    "query": "How does compress decide which elements to keep?",
+    "answer_span": "(d[0] if s[0])"
+  },
+  {
+    "query": "What does islice mimic from normal Python?",
+    "answer_span": "seq[start:stop:step]"
+  }
+]

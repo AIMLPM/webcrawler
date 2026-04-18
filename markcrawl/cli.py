@@ -154,6 +154,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=20,
         help="Clusters larger than this are considered templated and sampled (default: 20, used with --smart-sample)",
     )
+    parser.add_argument(
+        "--i18n-filter",
+        action="store_true",
+        help="Skip URLs under locale path segments (e.g. /fr/, /de-DE/, /zh-Hans/) — generic, no per-domain config. "
+        "Improves RAG retrieval MRR when the primary-language content is what you want to index.",
+    )
+    parser.add_argument(
+        "--title-at-top",
+        action="store_true",
+        help="Prepend '# {title}' to the text field of every JSONL row when not already present. "
+        "Part of the top-MRR RAG recipe in llm-crawler-benchmarks.",
+    )
     return parser
 
 
@@ -199,6 +211,8 @@ def main() -> None:
         prioritize_links=args.prioritize_links,
         download_images=args.download_images,
         min_image_size=args.min_image_size,
+        i18n_filter=args.i18n_filter,
+        title_at_top=args.title_at_top,
     )
 
     if not args.dry_run:

@@ -1,0 +1,30 @@
+[
+  {
+    "query": "What does the author say about clean module boundaries?",
+    "answer_span": "Clean module boundaries"
+  },
+  {
+    "query": "At what team size do microservices start making sense?",
+    "answer_span": "30-40 engineers"
+  },
+  {
+    "query": "How many requests per day does the author's monolith handle?",
+    "answer_span": "50 million requests per day"
+  },
+  {
+    "query": "Why would compliance require microservices?",
+    "answer_span": "PCI, HIPAA, or SOC2"
+  },
+  {
+    "query": "What operational tax do microservices introduce?",
+    "answer_span": "another deployment pipeline"
+  },
+  {
+    "query": "What questions should replace 'should we use microservices'?",
+    "answer_span": "What specific problem are we solving"
+  },
+  {
+    "query": "How much infrastructure complexity increase should teams expect?",
+    "answer_span": "2-3x increase"
+  }
+]

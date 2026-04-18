@@ -49,12 +49,6 @@ from .extract_content import (
     html_to_markdown_trafilatura,  # noqa: F401 — public re-export
     html_to_text,
 )
-from .images import (
-    ASSETS_DIR,
-    download_images as _download_images,
-    extract_image_urls,
-    rewrite_image_paths,
-)
 from .fetch import (
     DEFAULT_UA,
     PlaywrightResponse,  # noqa: F401 — public re-export
@@ -64,6 +58,14 @@ from .fetch import (
     fetch,
     fetch_async,
     fetch_with_playwright,
+)
+from .images import (
+    ASSETS_DIR,
+    extract_image_urls,
+    rewrite_image_paths,
+)
+from .images import (
+    download_images as _download_images,
 )
 from .link_scorer import LinkScorer
 from .robots import (
@@ -185,6 +187,8 @@ class CrawlEngine:
         include_paths: Optional[List[str]] = None,
         download_images: bool = False,
         min_image_size: int = 5000,
+        i18n_filter: bool = False,
+        title_at_top: bool = False,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -197,6 +201,8 @@ class CrawlEngine:
         self.concurrency = concurrency
         self.include_subdomains = include_subdomains
         self.proxy = proxy
+        self.i18n_filter = i18n_filter
+        self.title_at_top = title_at_top
         self.show_progress = show_progress
         self.exclude_paths = exclude_paths or []
         self.include_paths = include_paths or []
@@ -329,6 +335,10 @@ class CrawlEngine:
         Seed URLs (base URL fallback) bypass include filtering so we can
         still discover links from the entry point.
         """
+        if self.i18n_filter:
+            from .analyzer import i18n_path_excluded
+            if i18n_path_excluded(url):
+                return True
         path = up.urlsplit(url).path
         if self.exclude_paths and any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths):
             return True
@@ -436,6 +446,9 @@ class CrawlEngine:
         return filename
 
     def build_jsonl_row(self, url: str, title: str, filename: str, content: str, images: Optional[List[str]] = None) -> str:
+        text = content
+        if self.title_at_top and title and not text.lstrip().startswith("# "):
+            text = f"# {title}\n\n{text}"
         row = {
             "url": url,
             "title": title,
@@ -443,7 +456,7 @@ class CrawlEngine:
             "crawled_at": self.crawl_timestamp,
             "citation": self.build_citation(title or "Untitled", url),
             "tool": "markcrawl",
-            "text": content,
+            "text": text,
         }
         if images:
             row["images"] = images
@@ -653,6 +666,8 @@ class AsyncCrawlEngine:
         include_paths: Optional[List[str]] = None,
         download_images: bool = False,
         min_image_size: int = 5000,
+        i18n_filter: bool = False,
+        title_at_top: bool = False,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -670,6 +685,8 @@ class AsyncCrawlEngine:
         self.show_progress = show_progress
         self.exclude_paths = exclude_paths or []
         self.include_paths = include_paths or []
+        self.i18n_filter = i18n_filter
+        self.title_at_top = title_at_top
 
         self.effective_ua = user_agent or DEFAULT_UA
         self.session = build_async_session(
@@ -773,6 +790,10 @@ class AsyncCrawlEngine:
         Seed URLs (base URL fallback) bypass include filtering so we can
         still discover links from the entry point.
         """
+        if self.i18n_filter:
+            from .analyzer import i18n_path_excluded
+            if i18n_path_excluded(url):
+                return True
         path = up.urlsplit(url).path
         if self.exclude_paths and any(fnmatch.fnmatch(path, pat) for pat in self.exclude_paths):
             return True
@@ -888,6 +909,9 @@ class AsyncCrawlEngine:
         return filename
 
     def build_jsonl_row(self, url: str, title: str, filename: str, content: str, images: Optional[List[str]] = None) -> str:
+        text = content
+        if self.title_at_top and title and not text.lstrip().startswith("# "):
+            text = f"# {title}\n\n{text}"
         row = {
             "url": url,
             "title": title,
@@ -895,7 +919,7 @@ class AsyncCrawlEngine:
             "crawled_at": self.crawl_timestamp,
             "citation": self.build_citation(title or "Untitled", url),
             "tool": "markcrawl",
-            "text": content,
+            "text": text,
         }
         if images:
             row["images"] = images
@@ -1104,6 +1128,8 @@ def crawl(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
 
@@ -1197,6 +1223,8 @@ def crawl(
             prioritize_links=prioritize_links,
             download_images=download_images,
             min_image_size=min_image_size,
+            i18n_filter=i18n_filter,
+            title_at_top=title_at_top,
         )
 
     return _crawl_sync(
@@ -1212,6 +1240,7 @@ def crawl(
         sample_size=sample_size, sample_threshold=sample_threshold,
         cross_dedup=cross_dedup, prioritize_links=prioritize_links,
         download_images=download_images, min_image_size=min_image_size,
+        i18n_filter=i18n_filter, title_at_top=title_at_top,
     )
 
 
@@ -1243,6 +1272,8 @@ def _crawl_sync(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
     engine = CrawlEngine(
@@ -1263,6 +1294,8 @@ def _crawl_sync(
         include_paths=include_paths,
         download_images=download_images,
         min_image_size=min_image_size,
+        i18n_filter=i18n_filter,
+        title_at_top=title_at_top,
     )
 
     base_url = norm_url(base_url)
@@ -1393,6 +1426,8 @@ def _crawl_async(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 
@@ -1414,6 +1449,8 @@ def _crawl_async(
             include_paths=include_paths,
             download_images=download_images,
             min_image_size=min_image_size,
+            i18n_filter=i18n_filter,
+            title_at_top=title_at_top,
         )
 
         nonlocal base_url

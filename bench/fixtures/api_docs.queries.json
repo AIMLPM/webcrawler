@@ -1,0 +1,34 @@
+[
+  {
+    "query": "How do I authenticate with the API?",
+    "answer_span": "Bearer token"
+  },
+  {
+    "query": "Where do I generate a new API key?",
+    "answer_span": "Navigate to Settings"
+  },
+  {
+    "query": "How do I create a new user in Python?",
+    "answer_span": "client.users.create"
+  },
+  {
+    "query": "How do I get a paginated list of users?",
+    "answer_span": "client.users.list"
+  },
+  {
+    "query": "What happens to fields I don't include in an update?",
+    "answer_span": "All other fields remain unchanged"
+  },
+  {
+    "query": "What status code is returned for an invalid API key?",
+    "answer_span": "401 Unauthorized"
+  },
+  {
+    "query": "What header tells me when to retry after hitting rate limits?",
+    "answer_span": "Retry-After"
+  },
+  {
+    "query": "What fields are in an API error response?",
+    "answer_span": "code` and `message"
+  }
+]

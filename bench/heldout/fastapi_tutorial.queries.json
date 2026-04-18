@@ -1,0 +1,30 @@
+[
+  {
+    "query": "What's the simplest FastAPI file?",
+    "answer_span": "from fastapi import FastAPI"
+  },
+  {
+    "query": "How do I run the FastAPI development server?",
+    "answer_span": "fastapi dev"
+  },
+  {
+    "query": "What decorator do I use for a GET endpoint?",
+    "answer_span": "@app.get"
+  },
+  {
+    "query": "Where can I see the interactive API documentation?",
+    "answer_span": "/docs"
+  },
+  {
+    "query": "What is OpenAPI used for in FastAPI?",
+    "answer_span": "OpenAPI schema"
+  },
+  {
+    "query": "How do I configure the app entrypoint?",
+    "answer_span": "pyproject.toml"
+  },
+  {
+    "query": "What's the alternative interactive docs URL?",
+    "answer_span": "/redoc"
+  }
+]

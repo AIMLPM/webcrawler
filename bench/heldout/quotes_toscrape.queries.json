@@ -1,0 +1,30 @@
+[
+  {
+    "query": "Who said the world is a process of our thinking?",
+    "answer_span": "Albert Einstein"
+  },
+  {
+    "query": "What did J.K. Rowling say shows what we truly are?",
+    "answer_span": "choices, Harry"
+  },
+  {
+    "query": "Which author said there are only two ways to live your life?",
+    "answer_span": "Albert Einstein"
+  },
+  {
+    "query": "What did Thomas Edison say about failure?",
+    "answer_span": "10,000 ways that won't work"
+  },
+  {
+    "query": "Who compared a woman to a tea bag?",
+    "answer_span": "Eleanor Roosevelt"
+  },
+  {
+    "query": "What did Steve Martin say about a day without sunshine?",
+    "answer_span": "night"
+  },
+  {
+    "query": "Who warned against trying to become a man of success?",
+    "answer_span": "man of value"
+  }
+]
