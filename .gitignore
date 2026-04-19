@@ -27,6 +27,35 @@ env/
 # Claude Code (private plans, memory)
 .claude/
 
+# Private autoresearch / improvement notes (never commit)
+bench/AUTORESEARCH_NOTES.md
+bench/CAMPAIGN_PLAN.md
+bench/CAMPAIGN_LEARNINGS.md
+bench/ceiling_audit_*.md
+
+# Private autoresearch tooling + state (never commit).
+# NOTE: explicit filenames only — do NOT use bench/autoresearch*.py,
+# since bench/autoresearch.py is tracked/public and a wildcard would
+# silently mask future edits to it.
+bench/autoresearch_bench.py
+bench/autoresearch_broad.py
+bench/autoresearch_ontology.py
+bench/iterate_mrr.py
+bench/measure_noise.py
+bench/build_broad_corpus.py
+bench/autoresearch_bench_best.json
+bench/autoresearch_bench_baseline_run.txt
+bench/autoresearch_bench_state.json
+bench/autoresearch_bench_heartbeat.txt
+bench/autoresearch_bench_children.pid
+bench/autoresearch_ontology.json
+bench/broad_baseline.json
+bench/*.bak
+bench/*.phaseD
+bench/iter_runs/
+bench/iter_runs_broad/
+bench/preflight_report.json
+
 # Local output
 output/
 *.jsonl
