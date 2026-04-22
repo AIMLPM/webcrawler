@@ -231,10 +231,12 @@ markcrawl --base https://example.com/dashboards --out ./dash \
   --screenshot-format jpeg --screenshot-wait-ms 3000 --show-progress
 ```
 
-The screenshot path loads with ``wait_until="networkidle"`` and then pauses
+The screenshot path loads with ``wait_until="load"`` and then pauses
 ``--screenshot-wait-ms`` (default 1500ms) before capturing, so canvas/SVG
-charts have time to render.  Failures are recorded in the JSONL row as
-``screenshot_error`` rather than aborting the crawl.
+charts have time to render.  (``networkidle`` is deliberately avoided —
+many real sites never idle due to analytics pings.)  Failures are
+recorded in the JSONL row as ``screenshot_error`` rather than aborting
+the crawl.
 
 **Multi-site: discover seed URLs and fan out across sites**:
 

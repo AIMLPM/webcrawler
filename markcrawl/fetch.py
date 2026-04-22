@@ -328,14 +328,17 @@ def fetch_with_playwright(
     Accepts a reusable browser *context* rather than creating one per call,
     avoiding the overhead of context creation/destruction on every page.
 
-    When *screenshot_config* is enabled, the page is loaded with a stricter
-    wait strategy (``networkidle`` plus ``screenshot_config.wait_ms``) before
-    the screenshot is captured — without this, canvas/SVG dashboards
-    frequently render blank.  Screenshot failures are recorded on the response
-    rather than aborting the fetch.
+    When *screenshot_config* is enabled, the page is loaded with
+    ``wait_until="load"`` (fires on ``window.load`` — all resources fetched)
+    plus an explicit ``screenshot_config.wait_ms`` pause before the
+    screenshot is captured.  We deliberately avoid ``networkidle`` because
+    many real sites (tracker.gg, dotabuff, analytics-heavy pages) never
+    idle within a reasonable timeout due to long-polling, keep-alives, and
+    beacon pings.  Screenshot failures are recorded on the response rather
+    than aborting the fetch.
     """
     shoot = bool(screenshot_config and getattr(screenshot_config, "enabled", False))
-    wait_until = "networkidle" if shoot else "domcontentloaded"
+    wait_until = "load" if shoot else "domcontentloaded"
     page = None
     try:
         page = context.new_page()
