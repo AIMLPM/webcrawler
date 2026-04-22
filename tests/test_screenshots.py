@@ -148,6 +148,33 @@ class TestCaptureScreenshot:
         assert "full_page" not in first.screenshot.call_args.kwargs
         page.screenshot.assert_not_called()
 
+    def test_selector_timeout_propagates_to_wait_and_shot(self, tmp_path):
+        page = MagicMock()
+        locator = MagicMock()
+        first = MagicMock()
+
+        def _fake_shot(path: str, **kwargs):
+            with open(path, "wb") as f:
+                f.write(b"\x89PNG" + b"\x00" * 100)
+
+        first.screenshot.side_effect = _fake_shot
+        locator.first = first
+        page.locator.return_value = locator
+
+        cfg = ScreenshotConfig(
+            enabled=True, fmt="png", full_page=True, selector=".x",
+        )
+        fname, err = capture_screenshot(
+            page, "https://x.com/", cfg, str(tmp_path), timeout_ms=5000,
+        )
+        assert err is None
+        assert fname is not None
+
+        # Both wait_for (for implicit wait) and screenshot must see the timeout.
+        first.wait_for.assert_called_once()
+        assert first.wait_for.call_args.kwargs.get("timeout") == 5000
+        assert first.screenshot.call_args.kwargs.get("timeout") == 5000
+
     def test_failure_records_error_and_no_file(self, tmp_path):
         page = MagicMock()
         page.screenshot.side_effect = TimeoutError("page timeout after 30000ms")

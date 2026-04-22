@@ -20,12 +20,17 @@ https://blitz.gg/
 https://u.gg/
 
 # --- Esports / competitive dashboards ---
+# NOTE: hltv.org returns HTTP 403 to non-residential IPs (Cloudflare bot
+# protection).  Same caveat as wowprogress below.
 https://www.hltv.org/stats
 https://liquipedia.net/counterstrike/Main_Page
 https://liquipedia.net/dota2/Main_Page
 https://liquipedia.net/leagueoflegends/Main_Page
 
 # --- Game wikis with stat/build dashboards ---
+# NOTE: wowprogress.com returns HTTP 403 to non-residential IPs (Cloudflare
+# bot protection).  Left in the pack because it works from many networks,
+# but don't be surprised if the crawl skips it silently.
 https://wowprogress.com/
 https://mobalytics.gg/
 

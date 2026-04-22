@@ -139,6 +139,52 @@ class TestSafeNetlocDir:
 
 
 # ---------------------------------------------------------------------------
+# _site_subdirs — disambiguation when seeds share a netloc
+# ---------------------------------------------------------------------------
+
+class TestSiteSubdirs:
+    def test_unique_netlocs_use_plain_netloc(self):
+        from markcrawl.cli import _site_subdirs
+        seeds = ["https://a.com/x", "https://b.com/y", "https://c.com/"]
+        assert _site_subdirs(seeds) == ["a.com", "b.com", "c.com"]
+
+    def test_shared_netloc_gets_path_suffix(self):
+        from markcrawl.cli import _site_subdirs
+        seeds = [
+            "https://liquipedia.net/counterstrike/Main_Page",
+            "https://liquipedia.net/dota2/Main_Page",
+            "https://liquipedia.net/leagueoflegends/Main_Page",
+        ]
+        out = _site_subdirs(seeds)
+        assert len(set(out)) == 3  # all unique
+        assert all(n.startswith("liquipedia.net__") for n in out)
+        assert any("counterstrike" in n for n in out)
+        assert any("dota2" in n for n in out)
+        assert any("leagueoflegends" in n for n in out)
+
+    def test_mixed_unique_and_shared(self):
+        from markcrawl.cli import _site_subdirs
+        seeds = [
+            "https://steamcharts.com/",
+            "https://liquipedia.net/counterstrike/",
+            "https://liquipedia.net/dota2/",
+        ]
+        out = _site_subdirs(seeds)
+        # steamcharts keeps simple name; liquipedia entries get suffixes
+        assert out[0] == "steamcharts.com"
+        assert out[1].startswith("liquipedia.net__")
+        assert out[2].startswith("liquipedia.net__")
+        assert out[1] != out[2]
+
+    def test_root_path_fallback(self):
+        from markcrawl.cli import _site_subdirs
+        seeds = ["https://x.com/", "https://x.com/"]
+        out = _site_subdirs(seeds)
+        assert all(n.startswith("x.com__") for n in out)
+        assert any("root" in n for n in out)
+
+
+# ---------------------------------------------------------------------------
 # Seed pack file structure
 # ---------------------------------------------------------------------------
 

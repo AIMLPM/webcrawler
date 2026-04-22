@@ -4,7 +4,7 @@ import argparse
 import logging
 import sys
 import urllib.parse as up
-from typing import List
+from typing import Dict, List
 
 from .core import crawl
 from .screenshots import ScreenshotConfig
@@ -253,6 +253,33 @@ def _safe_netloc_dir(url: str) -> str:
     return netloc.split(":")[0].lower() or "unknown"
 
 
+def _site_subdirs(seeds: List[str]) -> List[str]:
+    """Per-seed subdir names, disambiguated when seeds share a netloc.
+
+    Simple case (unique netloc per seed): returns just the netloc — e.g.
+    ``steamcharts.com``.  When multiple seeds share a netloc (e.g. three
+    liquipedia sub-wikis), a path-derived suffix is appended so each seed
+    gets its own directory: ``liquipedia.net__counterstrike-Main_Page``.
+    This prevents later crawl() calls from clobbering the earlier
+    ``pages.jsonl``.
+    """
+    import re
+    netlocs = [_safe_netloc_dir(s) for s in seeds]
+    counts: Dict[str, int] = {}
+    for n in netlocs:
+        counts[n] = counts.get(n, 0) + 1
+
+    out: List[str] = []
+    for seed, netloc in zip(seeds, netlocs):
+        if counts[netloc] == 1:
+            out.append(netloc)
+            continue
+        path = up.urlsplit(seed).path.strip("/").replace("/", "_") or "root"
+        path = re.sub(r"[^a-zA-Z0-9_.-]+", "-", path)[:60].strip("-") or "root"
+        out.append(f"{netloc}__{path}")
+    return out
+
+
 def main() -> None:
     # Subcommand dispatch — kept before argparse so the existing flat-CLI
     # shape stays backward-compatible.
@@ -307,10 +334,10 @@ def main() -> None:
                 wait_ms=args.screenshot_wait_ms,
             )
 
+        subdirs = _site_subdirs(seeds)
         total_pages = 0
-        for i, seed in enumerate(seeds, start=1):
-            netloc_dir = _safe_netloc_dir(seed)
-            site_out = os.path.join(args.out, netloc_dir)
+        for i, (seed, subdir) in enumerate(zip(seeds, subdirs), start=1):
+            site_out = os.path.join(args.out, subdir)
             print(f"\n[{i}/{len(seeds)}] Crawling {seed} → {site_out}")
             try:
                 site_result = crawl(

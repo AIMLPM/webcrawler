@@ -53,11 +53,18 @@ def capture_screenshot(
     url: str,
     config: ScreenshotConfig,
     screenshots_dir: str,
+    timeout_ms: Optional[int] = None,
 ) -> Tuple[Optional[str], Optional[str]]:
     """Capture a screenshot of a Playwright *page*.
 
     The caller is responsible for navigation and wait strategy — this function
     only issues the screenshot call against an already-loaded page.
+
+    ``timeout_ms`` bounds how long Playwright waits (primarily for selector
+    resolution when ``config.selector`` is set).  If *None*, Playwright's
+    30-second default applies, which can compound badly across many pages
+    when a selector doesn't match — callers should pass the user's
+    ``--timeout`` value.
 
     Returns ``(filename, error_message)``.  On success, ``filename`` is the
     basename (relative to *screenshots_dir*) and *error_message* is *None*.
@@ -78,17 +85,30 @@ def capture_screenshot(
     }
     if config.fmt == "jpeg":
         shot_kwargs["quality"] = 85
+    if timeout_ms is not None:
+        shot_kwargs["timeout"] = timeout_ms
 
     try:
         os.makedirs(screenshots_dir, exist_ok=True)
         if config.selector:
             locator = page.locator(config.selector).first
+            # Explicit wait_for bounds the locator-resolution phase.  The
+            # `timeout` kwarg on .screenshot() only bounds the capture
+            # itself, leaving Playwright's 30s default implicit-wait in
+            # place — which compounds painfully for non-matching selectors
+            # across many pages.
+            if timeout_ms is not None:
+                locator.wait_for(state="visible", timeout=timeout_ms)
             # Scoped screenshots don't support full_page — Playwright raises if passed.
-            locator.screenshot(
-                path=filepath,
-                type=shot_kwargs["type"],
-                **({"quality": 85} if config.fmt == "jpeg" else {}),
-            )
+            scoped_kwargs: dict = {
+                "path": filepath,
+                "type": shot_kwargs["type"],
+            }
+            if config.fmt == "jpeg":
+                scoped_kwargs["quality"] = 85
+            if timeout_ms is not None:
+                scoped_kwargs["timeout"] = timeout_ms
+            locator.screenshot(**scoped_kwargs)
         else:
             page.screenshot(**shot_kwargs)
     except Exception as exc:

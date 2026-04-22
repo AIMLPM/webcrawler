@@ -358,7 +358,10 @@ def fetch_with_playwright(
                 page.wait_for_timeout(screenshot_config.wait_ms)
             # Import here so screenshots.py is only loaded when actually used.
             from .screenshots import SCREENSHOTS_DIR, capture_screenshot
-            fname, err = capture_screenshot(page, url, screenshot_config, screenshots_dir)
+            fname, err = capture_screenshot(
+                page, url, screenshot_config, screenshots_dir,
+                timeout_ms=timeout * 1000,
+            )
             if fname:
                 screenshot_path = f"{SCREENSHOTS_DIR}/{fname}"
             if err:
