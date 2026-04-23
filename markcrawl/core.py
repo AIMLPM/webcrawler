@@ -1154,6 +1154,7 @@ def crawl(
     min_words: int = 20,
     user_agent: Optional[str] = DEFAULT_UA,
     render_js: bool = False,
+    auto_render_js: bool = True,
     concurrency: int = 1,
     proxy: Optional[str] = None,
     resume: bool = False,
@@ -1169,8 +1170,8 @@ def crawl(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = False,
-    title_at_top: bool = False,
+    i18n_filter: bool = True,
+    title_at_top: bool = True,
     screenshot_config: Optional[ScreenshotConfig] = None,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
@@ -1249,6 +1250,22 @@ def crawl(
     if screenshot_config and screenshot_config.enabled and not render_js:
         render_js = True
 
+    # Auto-detect JS-heavy SPAs on the base URL and promote to render_js
+    # automatically.  Runs a single HTTP fetch + heuristic (no Playwright
+    # involved in the probe itself).  Conservative by design — only flips
+    # when the initial HTML has BOTH an SPA framework marker AND very
+    # little visible text, characteristic of an empty client-rendered
+    # shell.  SSR sites using id="root"/id="app" as conventions are not
+    # flagged because their HTML has substantial pre-rendered content.
+    if auto_render_js and not render_js:
+        try:
+            from .js_detect import probe_url_for_spa
+            if probe_url_for_spa(base_url, user_agent=user_agent, timeout=min(timeout, 10)):
+                logger.info("auto_render_js: SPA detected at %s — promoting to render_js=True", base_url)
+                render_js = True
+        except Exception as exc:
+            logger.debug("auto_render_js probe failed for %s: %s", base_url, exc)
+
     # Use async engine when httpx is available and JS rendering is off.
     # Async eliminates thread overhead and GIL contention — matching the
     # event-loop model that gives Scrapy/Twisted its speed advantage.
@@ -1320,8 +1337,8 @@ def _crawl_sync(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = False,
-    title_at_top: bool = False,
+    i18n_filter: bool = True,
+    title_at_top: bool = True,
     screenshot_config: Optional[ScreenshotConfig] = None,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
@@ -1476,8 +1493,8 @@ def _crawl_async(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = False,
-    title_at_top: bool = False,
+    i18n_filter: bool = True,
+    title_at_top: bool = True,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 

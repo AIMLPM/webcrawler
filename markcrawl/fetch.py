@@ -338,7 +338,11 @@ def fetch_with_playwright(
     than aborting the fetch.
     """
     shoot = bool(screenshot_config and getattr(screenshot_config, "enabled", False))
-    wait_until = "load" if shoot else "domcontentloaded"
+    # Always use "load" — "domcontentloaded" fires before client-side framework
+    # components hydrate, giving us an empty SPA shell.  "load" waits for all
+    # resources, which is enough for React/Next/Vue to render their initial
+    # tree.  "networkidle" is too strict (modern sites never idle).
+    wait_until = "load"
     page = None
     try:
         page = context.new_page()
@@ -350,6 +354,13 @@ def fetch_with_playwright(
         response = page.goto(url, timeout=timeout * 1000, wait_until=wait_until)
         if response is None:
             return None
+
+        # Let framework hydration settle.  Without this, Playwright often
+        # captures pre-hydration DOM even on "load" waits.
+        try:
+            page.wait_for_timeout(500)
+        except Exception:
+            pass
 
         screenshot_path: Optional[str] = None
         screenshot_error: Optional[str] = None
@@ -368,6 +379,15 @@ def fetch_with_playwright(
                 screenshot_error = err
 
         html = page.content()
+        # Strip post-load overlays (cookie banners, modals, newsletter popups,
+        # sticky CTAs) before returning HTML for extraction.  Screenshots are
+        # already captured above, so this doesn't affect visual output.
+        try:
+            from .dom_cleanup import strip_overlays
+            html = strip_overlays(html)
+        except Exception as exc:
+            logger.debug("overlay strip failed for %s: %s", url, exc)
+
         headers = {k.lower(): v for k, v in response.headers.items()}
         return PlaywrightResponse(
             ok=response.ok,

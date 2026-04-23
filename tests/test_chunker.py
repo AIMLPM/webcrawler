@@ -102,7 +102,8 @@ class TestChunkMarkdown:
     def test_splits_large_section_on_paragraphs(self):
         paragraphs = [f"Paragraph {i} " + " ".join(["word"] * 30) for i in range(5)]
         text = "# Big Section\n\n" + "\n\n".join(paragraphs)
-        chunks = chunk_markdown(text, max_words=50)
+        # Disable prepend_first_paragraph so we test raw split behavior
+        chunks = chunk_markdown(text, max_words=50, prepend_first_paragraph=False)
         # Should split into multiple chunks, but not mid-paragraph
         assert len(chunks) > 1
         for chunk in chunks:
@@ -180,7 +181,10 @@ class TestChunkMarkdown:
             "# Intro\n\nSome content here with enough words to fill a chunk.\n\n"
             "## Details\n\nMore content here with additional words for the second chunk."
         )
-        chunks = chunk_markdown(text, max_words=15, page_title="FastAPI Docs")
+        # Test raw breadcrumb behavior — disable prepend_first_paragraph which
+        # would otherwise interject summary text before the breadcrumb.
+        chunks = chunk_markdown(text, max_words=15, page_title="FastAPI Docs",
+                                prepend_first_paragraph=False)
         assert len(chunks) >= 2
         h1_chunks = [c for c in chunks if c.text.lstrip().startswith("# ")]
         other_chunks = [c for c in chunks if not c.text.lstrip().startswith("# ")]
@@ -196,7 +200,8 @@ class TestChunkMarkdown:
             "# Intro\n\n" + " ".join(["intro"] * 30) + "\n\n"
             "## Details\n\n" + " ".join(["detail"] * 30)
         )
-        chunks = chunk_markdown(text, max_words=40, page_title="FastAPI Docs")
+        chunks = chunk_markdown(text, max_words=40, page_title="FastAPI Docs",
+                                prepend_first_paragraph=False)
         detail_chunks = [c for c in chunks if "detail" in c.text and not c.text.lstrip().startswith("# ")]
         assert detail_chunks, "expected a chunk under Details"
         # The breadcrumb's first line should include the Intro ancestor
