@@ -1220,21 +1220,33 @@ class AsyncCrawlEngine:
 # Public API
 # ---------------------------------------------------------------------------
 
+# Known path-prefix patterns where each /<prefix>/<name> is an *article* —
+# scoping would block sibling articles, so we explicitly skip auto-scoping
+# when the seed's first segment matches one of these.
+_ARTICLE_CONTAINERS = frozenset({
+    "wiki", "wikipedia",
+})
+
+
 def _auto_path_scope_from_seed(base_url: str) -> Optional[List[str]]:
     """Derive an include_paths pattern from the seed URL.
 
     Returns a list with one glob like ``['/docs/transformers/*']`` when the
-    seed has at least two path segments.  Returns ``None`` for root or
-    single-segment seeds (no scoping; preserve whole-site crawl behavior).
+    seed has at least two path segments.  Returns ``None`` for root,
+    single-segment, or article-style seeds (no scoping; preserve
+    whole-site crawl behavior).
 
     Heuristic:
-    1. If the seed ends with a content-page filename (``something.html``,
+    1. If the seed's first segment is a known article-container (wiki,
+       wikipedia, ...), return None — articles are siblings of the seed,
+       not children, so scoping to the seed path would block them.
+    2. If the seed ends with a content-page filename (``something.html``,
        ``.htm``, ``.php``, ``.aspx``, ``.jsp``), drop the filename so the
        scope matches the parent *directory*.  Example:
        ``/stable/user_guide.html`` → scope at ``/stable/*`` so sibling
        pages like ``/stable/modules/...`` are reachable.
-    2. Drop ``/index*`` if it remains.
-    3. Use the resulting path + ``/*`` as scope when ≥ 2 path segments.
+    3. Drop ``/index*`` if it remains.
+    4. Use the resulting path + ``/*`` as scope when ≥ 2 path segments.
 
     This is the heuristic backing ``crawl(auto_path_scope=True)``.  It
     fixes the dominant coverage failure mode: BFS from a sub-section seed
@@ -1244,12 +1256,17 @@ def _auto_path_scope_from_seed(base_url: str) -> Optional[List[str]]:
     """
     parsed = up.urlsplit(base_url)
     path = parsed.path
-    # Step 1: drop content-page filenames to their parent directory
+    # Step 1: detect article-container seeds (e.g. /wiki/Computer_science).
+    # Articles are siblings, not children, so scope would block them.
+    raw_parts = [p for p in path.strip("/").split("/") if p]
+    if raw_parts and raw_parts[0].lower() in _ARTICLE_CONTAINERS:
+        return None
+    # Step 2: drop content-page filenames to their parent directory
     last_seg = path.rstrip("/").rsplit("/", 1)[-1]
     _content_exts = (".html", ".htm", ".php", ".aspx", ".jsp", ".asp")
     if last_seg and "." in last_seg and any(last_seg.lower().endswith(e) for e in _content_exts):
         path = path.rstrip("/").rsplit("/", 1)[0] + "/"
-    # Step 2: drop common /index* suffixes
+    # Step 3: drop common /index* suffixes
     for suffix in ("/index.html", "/index.htm", "/index.php", "/index"):
         if path.endswith(suffix):
             path = path[: -len(suffix)]

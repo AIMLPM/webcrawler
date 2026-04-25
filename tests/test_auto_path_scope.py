@@ -66,3 +66,17 @@ class TestAutoPathScope:
     def test_query_string_ignored(self):
         # Querystring + fragment must not affect path-derivation
         assert derive("https://example.com/docs/foo/?ref=hn#section") == ["/docs/foo/*"]
+
+    def test_wiki_article_returns_none(self):
+        # /wiki/<article> — articles are siblings, scope would block them
+        assert derive("https://en.wikipedia.org/wiki/Computer_science") is None
+        assert derive("https://en.wikipedia.org/wiki/Machine_learning") is None
+        # Case-insensitive match
+        assert derive("https://en.wikipedia.org/Wiki/Machine_learning") is None
+        assert derive("https://example.com/wikipedia/Foo") is None
+
+    def test_non_article_first_seg_is_normal(self):
+        # /docs/concepts/ etc. proceed normally
+        assert derive("https://example.com/docs/concepts") == ["/docs/concepts/*"]
+        # /content-not-in-list/X still gets scoped
+        assert derive("https://example.com/something/X") == ["/something/X/*"]
