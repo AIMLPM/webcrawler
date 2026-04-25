@@ -114,7 +114,12 @@ def strip_overlays(html: str) -> str:
         logger.warning("bs4 not available; skipping overlay strip")
         return html
 
-    soup = BeautifulSoup(html, "lxml")
+    # Prefer lxml for speed; fall back to stdlib html.parser if not available
+    # (e.g. minimal install without the [lxml] dep).
+    try:
+        soup = BeautifulSoup(html, "lxml")
+    except Exception:
+        soup = BeautifulSoup(html, "html.parser")
     removed = 0
 
     # Walk once — iterate a static list to avoid mutation during traversal

@@ -1,4 +1,5 @@
 beautifulsoup4>=4.12.0
+lxml>=5.0.0
 markdownify>=0.12.0
 requests>=2.31.0
 certifi>=2024.2.2
