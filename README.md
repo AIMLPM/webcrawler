@@ -277,26 +277,24 @@ Different tools make different tradeoffs. This table summarizes the main differe
 
 Each tool has strengths: FireCrawl excels as a hosted API, Crawl4AI has deep browser automation, and Scrapy handles massive distributed workloads. MarkCrawl focuses on simple local crawls that produce LLM-ready Markdown.
 
-### Benchmark results (7 tools, April 2026 — v2 methodology)
+### Benchmark results (6 tools, April 2026)
 
-**Speed:** markcrawl is fastest (12.1 pages/sec), scrapy+md second (9.5). Playwright-based tools (crawlee, playwright, crawl4ai) average 1.5–2.2 pages/sec.
+**Speed:** markcrawl is fastest (6.0 pages/sec), scrapy+md second (5.3). Playwright-based tools average 1.4-2.1 pages/sec.
 
-**Content signal:** markcrawl leads at 99% (ratio of answer-bearing tokens to total output) — almost no navigation, footer, or boilerplate makes it into your embeddings.
+**Output cleanliness:** markcrawl has the lowest nav pollution (0 words vs 88+ for others) — less junk in your embeddings.
 
-**RAG quality:** markcrawl scores 4.52/5 on LLM-judged answer quality (tied #2, leader at 4.53 within noise) and 0.698 MRR (3rd, leader crawlee at 0.733) — with 2.1x fewer chunks than crawlee, keeping embedding costs low.
+**RAG answer quality:** markcrawl scores 3.97/5 on answer quality with the fewest chunks (33,638 total, 1.9x fewer than the most), keeping embedding costs low.
 
-| Tool | Speed (p/s) | Content Signal | MRR | Answer (/5) | Annual cost (100K pages) |
-|---|---|---|---|---|---|
-| **markcrawl** | **12.1** | **99%** | 0.698 | 4.52 | **$4,505** |
-| scrapy+md | 9.5 | 93% | 0.459 | 4.03 | $5,464 |
-| colly+md | 4.2 | 67% | 0.677 | **4.53** | $7,213 |
-| playwright | 2.2 | 64% | 0.727 | 4.42 | $7,320 |
-| crawlee | 1.7 | 63% | **0.733** | 4.52 | $7,467 |
-| crawl4ai | 1.5 | 83% | 0.694 | 4.43 | $6,960 |
+| Tool | Chunks/page | Answer Quality (/5) | Annual cost (100K pages, 1K queries/day) |
+|---|---|---|---|
+| **markcrawl** | **23.1** | **3.97** | **$4,505** |
+| scrapy+md | 32.6 | 3.90 | $5,464 |
+| crawl4ai | 24.9 | 4.16 | $6,960 |
+| colly+md | 41.0 | 4.33 | $7,213 |
+| playwright | 42.5 | 3.88 | $7,320 |
+| crawlee | 44.2 | 4.24 | $7,467 |
 
 Full benchmark data: [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Methodology: [llm-crawler-benchmarks](https://github.com/AIMLPM/llm-crawler-benchmarks)
-
-**RAG-optimized recipe (v0.6.0):** With `--i18n-filter --title-at-top` and the opt-in chunker flags (`auto_extract_title=True`, `prepend_first_paragraph=True`, `strip_markdown_links=True` on `chunk_markdown`), markcrawl reaches **0.8148 MRR** on the same 57-query benchmark — a +0.18 jump over the default config and +0.08 over the next best tool (crawlee at 0.733).
 </details>
 
 ## Installation
