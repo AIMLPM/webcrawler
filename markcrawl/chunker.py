@@ -306,9 +306,9 @@ def chunk_markdown(
     overlap_words: int = 50,
     page_title: str | None = None,
     adaptive: bool = False,
-    auto_extract_title: bool = True,
-    prepend_first_paragraph: bool = True,
-    strip_markdown_links: bool = True,
+    auto_extract_title: bool = False,
+    prepend_first_paragraph: bool = False,
+    strip_markdown_links: bool = False,
 ) -> List[Chunk]:
     """Split Markdown text into semantically coherent chunks.
 

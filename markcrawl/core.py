@@ -1154,7 +1154,7 @@ def crawl(
     min_words: int = 20,
     user_agent: Optional[str] = DEFAULT_UA,
     render_js: bool = False,
-    auto_render_js: bool = True,
+    auto_render_js: bool = False,
     concurrency: int = 1,
     proxy: Optional[str] = None,
     resume: bool = False,
@@ -1170,8 +1170,8 @@ def crawl(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = True,
-    title_at_top: bool = True,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
     screenshot_config: Optional[ScreenshotConfig] = None,
 ) -> CrawlResult:
     """Crawl a website and save cleaned content to disk.
@@ -1337,8 +1337,8 @@ def _crawl_sync(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = True,
-    title_at_top: bool = True,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
     screenshot_config: Optional[ScreenshotConfig] = None,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
@@ -1493,8 +1493,8 @@ def _crawl_async(
     prioritize_links: bool = False,
     download_images: bool = False,
     min_image_size: int = 5000,
-    i18n_filter: bool = True,
-    title_at_top: bool = True,
+    i18n_filter: bool = False,
+    title_at_top: bool = False,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 
