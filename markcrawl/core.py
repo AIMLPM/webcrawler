@@ -191,6 +191,7 @@ class CrawlEngine:
         i18n_filter: bool = False,
         title_at_top: bool = False,
         screenshot_config: Optional[ScreenshotConfig] = None,
+        auto_path_priority: bool = True,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -211,6 +212,8 @@ class CrawlEngine:
         self.download_images = download_images
         self.min_image_size = min_image_size
         self.screenshot_config = screenshot_config
+        self.auto_path_priority = auto_path_priority
+        self._seed_path_parts: List[str] = []
         self.screenshots_dir = os.path.join(out_dir, SCREENSHOTS_DIR) if (
             screenshot_config and screenshot_config.enabled
         ) else None
@@ -321,6 +324,29 @@ class CrawlEngine:
         if crawl_delay is not None and crawl_delay > self._throttle.base_delay:
             self._throttle.base_delay = crawl_delay
             self.progress(f"[info] robots.txt Crawl-delay: {crawl_delay}s")
+
+        # Capture seed path for auto_path_priority scoring (BFS reordering)
+        if self.auto_path_priority:
+            seed_path = up.urlsplit(base_url).path
+            self._seed_path_parts = [p for p in seed_path.strip("/").split("/") if p]
+
+    def _path_priority(self, url: str) -> float:
+        """Score 0..1 — how well *url*'s path matches the seed path.
+
+        Used to reorder the BFS queue so on-section links get crawled
+        first.  Never blocks a URL — purely an ordering hint.  Returns
+        0 when no seed path is configured (e.g. root-domain seed).
+        """
+        if not self._seed_path_parts:
+            return 0.0
+        link_parts = [p for p in up.urlsplit(url).path.strip("/").split("/") if p]
+        common = 0
+        for sp, lp in zip(self._seed_path_parts, link_parts):
+            if sp == lp:
+                common += 1
+            else:
+                break
+        return common / len(self._seed_path_parts)
 
     # Keep static method for backward compatibility
     @staticmethod
@@ -545,6 +571,20 @@ class CrawlEngine:
                 new_links = self._scorer.prioritize(new_links)
                 for link in reversed(new_links):
                     self.to_visit.appendleft(link)
+            elif self.auto_path_priority and self._seed_path_parts and new_links:
+                # Reorder this batch by path-similarity to seed — high-priority
+                # links go to the front, low-priority go to the back.  Threshold
+                # at 0.5 (≥ half of seed path-segments matched) → front;
+                # otherwise → back.  Never blocks a URL.
+                high, low = [], []
+                for link in new_links:
+                    (high if self._path_priority(link) >= 0.5 else low).append(link)
+                # Front: high-priority, FIFO order within high
+                for link in reversed(high):
+                    self.to_visit.appendleft(link)
+                # Back: low-priority, FIFO order
+                for link in low:
+                    self.to_visit.append(link)
             else:
                 for link in new_links:
                     self.to_visit.append(link)
@@ -709,6 +749,7 @@ class AsyncCrawlEngine:
         min_image_size: int = 5000,
         i18n_filter: bool = False,
         title_at_top: bool = False,
+        auto_path_priority: bool = True,
     ):
         self.out_dir = out_dir
         self.fmt = fmt
@@ -728,6 +769,8 @@ class AsyncCrawlEngine:
         self.include_paths = include_paths or []
         self.i18n_filter = i18n_filter
         self.title_at_top = title_at_top
+        self.auto_path_priority = auto_path_priority
+        self._seed_path_parts: List[str] = []
 
         self.effective_ua = user_agent or DEFAULT_UA
         self.session = build_async_session(
@@ -813,6 +856,22 @@ class AsyncCrawlEngine:
         if crawl_delay is not None and crawl_delay > self._throttle.base_delay:
             self._throttle.base_delay = crawl_delay
             self.progress(f"[info] robots.txt Crawl-delay: {crawl_delay}s")
+        if self.auto_path_priority:
+            seed_path = up.urlsplit(base_url).path
+            self._seed_path_parts = [p for p in seed_path.strip("/").split("/") if p]
+
+    def _path_priority(self, url: str) -> float:
+        """Score 0..1 for how aligned *url*'s path is with the seed path."""
+        if not self._seed_path_parts:
+            return 0.0
+        link_parts = [p for p in up.urlsplit(url).path.strip("/").split("/") if p]
+        common = 0
+        for sp, lp in zip(self._seed_path_parts, link_parts):
+            if sp == lp:
+                common += 1
+            else:
+                break
+        return common / len(self._seed_path_parts)
 
     def allowed(self, url: str) -> bool:
         try:
@@ -1003,6 +1062,14 @@ class AsyncCrawlEngine:
                 new_links = self._scorer.prioritize(new_links)
                 for link in reversed(new_links):
                     self.to_visit.appendleft(link)
+            elif self.auto_path_priority and self._seed_path_parts and new_links:
+                high, low = [], []
+                for link in new_links:
+                    (high if self._path_priority(link) >= 0.5 else low).append(link)
+                for link in reversed(high):
+                    self.to_visit.appendleft(link)
+                for link in low:
+                    self.to_visit.append(link)
             else:
                 for link in new_links:
                     self.to_visit.append(link)
@@ -1141,6 +1208,47 @@ class AsyncCrawlEngine:
 # Public API
 # ---------------------------------------------------------------------------
 
+def _auto_path_scope_from_seed(base_url: str) -> Optional[List[str]]:
+    """Derive an include_paths pattern from the seed URL.
+
+    Returns a list with one glob like ``['/docs/transformers/*']`` when the
+    seed has at least two path segments.  Returns ``None`` for root or
+    single-segment seeds (no scoping; preserve whole-site crawl behavior).
+
+    Heuristic:
+    1. If the seed ends with a content-page filename (``something.html``,
+       ``.htm``, ``.php``, ``.aspx``, ``.jsp``), drop the filename so the
+       scope matches the parent *directory*.  Example:
+       ``/stable/user_guide.html`` → scope at ``/stable/*`` so sibling
+       pages like ``/stable/modules/...`` are reachable.
+    2. Drop ``/index*`` if it remains.
+    3. Use the resulting path + ``/*`` as scope when ≥ 2 path segments.
+
+    This is the heuristic backing ``crawl(auto_path_scope=True)``.  It
+    fixes the dominant coverage failure mode: BFS from a sub-section seed
+    escapes to sibling sections (mdn /Web/CSS → /Glossary/, /blog/;
+    HF /docs/transformers/ → /docs/sagemaker/, /blog/; ikea /us/en/cat/
+    → /ee/en/, /de/de/) and burns the page budget on off-target pages.
+    """
+    parsed = up.urlsplit(base_url)
+    path = parsed.path
+    # Step 1: drop content-page filenames to their parent directory
+    last_seg = path.rstrip("/").rsplit("/", 1)[-1]
+    _content_exts = (".html", ".htm", ".php", ".aspx", ".jsp", ".asp")
+    if last_seg and "." in last_seg and any(last_seg.lower().endswith(e) for e in _content_exts):
+        path = path.rstrip("/").rsplit("/", 1)[0] + "/"
+    # Step 2: drop common /index* suffixes
+    for suffix in ("/index.html", "/index.htm", "/index.php", "/index"):
+        if path.endswith(suffix):
+            path = path[: -len(suffix)]
+            break
+    path = path.rstrip("/")
+    parts = [p for p in path.split("/") if p]
+    if len(parts) < 2:
+        return None
+    return [f"/{'/'.join(parts)}/*"]
+
+
 def crawl(
     base_url: str,
     out_dir: str,
@@ -1155,6 +1263,8 @@ def crawl(
     user_agent: Optional[str] = DEFAULT_UA,
     render_js: bool = False,
     auto_render_js: bool = False,
+    auto_path_scope: bool = True,
+    auto_path_priority: bool = True,
     concurrency: int = 1,
     proxy: Optional[str] = None,
     resume: bool = False,
@@ -1266,6 +1376,18 @@ def crawl(
         except Exception as exc:
             logger.debug("auto_render_js probe failed for %s: %s", base_url, exc)
 
+    # Auto-derive include_paths from the seed URL when the seed has at least
+    # two path segments (e.g. /docs/transformers/, /en-US/docs/Web/CSS).
+    # This constrains BFS to the seed's subtree and prevents cross-section
+    # drift (the dominant coverage failure mode for sub-section seeds).
+    # Off behavior preserved when the user explicitly passes include_paths.
+    if auto_path_scope and not include_paths:
+        derived = _auto_path_scope_from_seed(base_url)
+        if derived:
+            logger.info("auto_path_scope: scoping crawl to %s (derived from seed %s)",
+                        derived, base_url)
+            include_paths = derived
+
     # Use async engine when httpx is available and JS rendering is off.
     # Async eliminates thread overhead and GIL contention — matching the
     # event-loop model that gives Scrapy/Twisted its speed advantage.
@@ -1289,6 +1411,7 @@ def crawl(
             min_image_size=min_image_size,
             i18n_filter=i18n_filter,
             title_at_top=title_at_top,
+            auto_path_priority=auto_path_priority,
         )
 
     return _crawl_sync(
@@ -1305,6 +1428,7 @@ def crawl(
         cross_dedup=cross_dedup, prioritize_links=prioritize_links,
         download_images=download_images, min_image_size=min_image_size,
         i18n_filter=i18n_filter, title_at_top=title_at_top,
+        auto_path_priority=auto_path_priority,
         screenshot_config=screenshot_config,
     )
 
@@ -1340,6 +1464,7 @@ def _crawl_sync(
     i18n_filter: bool = False,
     title_at_top: bool = False,
     screenshot_config: Optional[ScreenshotConfig] = None,
+    auto_path_priority: bool = True,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
     engine = CrawlEngine(
@@ -1363,6 +1488,7 @@ def _crawl_sync(
         i18n_filter=i18n_filter,
         title_at_top=title_at_top,
         screenshot_config=screenshot_config,
+        auto_path_priority=auto_path_priority,
     )
 
     base_url = norm_url(base_url)
@@ -1495,6 +1621,7 @@ def _crawl_async(
     min_image_size: int = 5000,
     i18n_filter: bool = False,
     title_at_top: bool = False,
+    auto_path_priority: bool = True,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 
@@ -1518,6 +1645,7 @@ def _crawl_async(
             min_image_size=min_image_size,
             i18n_filter=i18n_filter,
             title_at_top=title_at_top,
+            auto_path_priority=auto_path_priority,
         )
 
         nonlocal base_url

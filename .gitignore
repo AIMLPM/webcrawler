@@ -56,6 +56,10 @@ bench/iter_runs/
 bench/iter_runs_broad/
 bench/preflight_report.json
 
+# Diagnostic sandbox — self-contained reproduction of public benchmark
+# scenarios for root-cause analysis. Output and reports here are throwaway.
+bench/sandbox/
+
 # Local output
 output/
 *.jsonl
