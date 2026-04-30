@@ -1642,26 +1642,28 @@ def _crawl_sync(
 
     if not resumed:
         # Phase 2 dispatch: scan to detect site shape, then choose strategy.
-        # auto_scan dispatch: only ship dispatchers proven net-positive in
-        # multi-trial. Wiki-class BFS-priority was tested and rejected
-        # (-0.049 wiki avg across 3 trials × 6 sites in v098-mt-wiki) — its
-        # apparent +0.34 single-trial wins were variance, not signal. Kept
-        # local wiki_bfs_priority=False to preserve the queue-routing
-        # plumbing for an explicit opt-in once we find a refinement that
-        # works.
+        # auto_scan dispatch: cheap-first cascade in markcrawl.dispatch.
+        # Each rule has a stable name (R0..R4) emitted in the log so users
+        # can audit why render_js promoted. See dispatch.py for the rule
+        # ordering and thresholds. Wiki BFS-priority was tested and rejected
+        # in v098-mt-wiki (-0.049 wiki avg); the queue-routing plumbing
+        # below is preserved for a future opt-in via wiki_bfs_priority.
         wiki_bfs_priority = False
         if auto_scan:
             try:
                 from .scan import scan_site
+                from .dispatch import decide_render_js
                 engine.profile = scan_site(base_url, session=engine.session, timeout=min(timeout, 10))
                 engine.progress(f"[info] scan: {engine.profile.summary()}")
-                # SPA detected at scan time → auto-promote render_js. Reuses
-                # the scan's is_spa signal so we don't duplicate the probe
-                # fetch that auto_render_js does. Conservative: only promote,
-                # never demote (user-set render_js=False is preserved when
-                # scan agrees).
-                if engine.profile.is_spa and not engine.render_js:
-                    engine.progress("[info] dispatch: SPA detected — promoting to render_js=True")
+                # User explicitly set render_js? Respect it; cascade only
+                # promotes when user left it as default False AND no other
+                # signal demands rendering.
+                user_render = render_js if render_js is True else None
+                decision = decide_render_js(
+                    engine.profile, user_render_js=user_render,
+                )
+                if decision.promote and not engine.render_js:
+                    engine.progress(decision.log_line())
                     engine.render_js = True
             except Exception as exc:
                 logger.debug("auto_scan failed for %s: %s", base_url, exc)
