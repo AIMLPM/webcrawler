@@ -15,7 +15,7 @@ Current branch: `feature/speed-recovery-mrr-closure`. Spec:
 | DS-4 | Build labeled dataset | 🟡 in progress | ~26/171 sites done (background, overnight) |
 | DS-5 | Implement detection rules | ✅ done | M1..M6 with 28 unit tests |
 | DS-6 | Run autoresearch sweep | ⏳ blocked on DS-4 | sweep runner ready |
-| DS-7 | Ship winning cascade | ⏳ blocked on DS-6 | — |
+| DS-7 | Ship winning cascade | 🟡 partial | `markcrawl/dispatch.py` shipped + wired into core.py; trip-wire/terminal hooks pending DS-6 winner confirmation |
 | DS-8 | Final validation | ⏳ blocked on DS-7 | — |
 
 ## DS-2 findings (3 sites × 6 configs, 50 pages each)
@@ -80,12 +80,17 @@ Estimated completion: ~10 more hours at current rate.
 ## Key git refs
 
 ```
+7c6e264 DS-7 (early): production cascade module markcrawl/dispatch.py
+b1a7ab5 DS-3 v2: cap per-sitemap-fetch timeout at 8s
+2d72ecf docs: campaign status snapshot
 3927052 DS-3 partial: cap sitemap parsing at max(500, max_pages*4) URLs
 c5f2785 DS-5/DS-6/DS-2: cascade methods + sweep runner + feature profiler
 7077755 DS-1: local benchmark replica + labeled-dataset crawler  ← DS-4 pinned here
 af8a548 specs: add v0.9.9 speed recovery + MRR closure campaign
 2b281b5 core: remove wiki BFS-priority dispatch from auto_scan  (on main)
 ```
+
+Total tests: 405 (28 method tests + 27 dispatch tests = 55 new on the campaign branch). All passing.
 
 ## Remaining wallclock budget
 
