@@ -1,0 +1,44 @@
+[
+  {
+    "query": "What are the latest NPR politics stories?",
+    "url_match": "sections/politics",
+    "page_match": "politics",
+    "category": "cross-page",
+    "description": "Find NPR politics section"
+  },
+  {
+    "query": "What world news is NPR covering?",
+    "url_match": "sections/world",
+    "page_match": "world",
+    "category": "cross-page",
+    "description": "Find NPR world section"
+  },
+  {
+    "query": "Where can I find NPR business coverage?",
+    "url_match": "sections/business",
+    "page_match": "business",
+    "category": "cross-page",
+    "description": "Find NPR business section"
+  },
+  {
+    "query": "What health stories is NPR reporting on?",
+    "url_match": "sections/health",
+    "page_match": "health",
+    "category": "cross-page",
+    "description": "Find NPR health section"
+  },
+  {
+    "query": "What science news does NPR have?",
+    "url_match": "sections/science",
+    "page_match": "science",
+    "category": "cross-page",
+    "description": "Find NPR science section"
+  },
+  {
+    "query": "What are the main news headlines from NPR?",
+    "url_match": "sections/news",
+    "page_match": "sections/news",
+    "category": "cross-page",
+    "description": "Find NPR main news section (seed URL)"
+  }
+]

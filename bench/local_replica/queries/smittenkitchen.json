@@ -1,0 +1,58 @@
+[
+  {
+    "query": "How do you make world peace cookies?",
+    "url_match": "world-peace-cookies",
+    "page_match": "world-peace-cookies",
+    "category": "factual-lookup",
+    "description": "Find world peace cookies recipe"
+  },
+  {
+    "query": "What's the recipe for miso chicken and rice?",
+    "url_match": "miso-chicken-and-rice",
+    "page_match": "miso-chicken",
+    "category": "factual-lookup",
+    "description": "Find miso chicken and rice recipe"
+  },
+  {
+    "query": "How do I make ultimate banana bread?",
+    "url_match": "ultimate-banana-bread",
+    "page_match": "banana-bread",
+    "category": "factual-lookup",
+    "description": "Find ultimate banana bread recipe"
+  },
+  {
+    "query": "What's the skillet-baked macaroni and cheese recipe?",
+    "url_match": "skillet-baked-macaroni-and-cheese",
+    "page_match": "macaroni",
+    "category": "factual-lookup",
+    "description": "Find skillet mac and cheese recipe"
+  },
+  {
+    "query": "What vegan recipes are available on Smitten Kitchen?",
+    "url_match": "diet/vegan",
+    "page_match": "vegan",
+    "category": "cross-page",
+    "description": "Find vegan recipes category"
+  },
+  {
+    "query": "Show me cookie recipes",
+    "url_match": "sweets/cookie",
+    "page_match": "cookie",
+    "category": "cross-page",
+    "description": "Find cookie category"
+  },
+  {
+    "query": "How do you make pumpkin basque cheesecake?",
+    "url_match": "pumpkin-basque-cheesecake",
+    "page_match": "pumpkin-basque",
+    "category": "factual-lookup",
+    "description": "Find pumpkin basque cheesecake recipe"
+  },
+  {
+    "query": "What recipes are good for winter?",
+    "url_match": "season/winter",
+    "page_match": "winter",
+    "category": "cross-page",
+    "description": "Find winter season category"
+  }
+]

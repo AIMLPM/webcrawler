@@ -1,0 +1,58 @@
+[
+  {
+    "query": "How do I use the Pipeline class for inference in Transformers?",
+    "url_match": "pipeline_tutorial",
+    "page_match": "pipeline_tutorial",
+    "category": "api-function",
+    "description": "Find pipeline tutorial"
+  },
+  {
+    "query": "How do I train a model with the Hugging Face Trainer?",
+    "url_match": "trainer",
+    "page_match": "trainer",
+    "category": "api-function",
+    "description": "Find trainer tutorial"
+  },
+  {
+    "query": "How do I generate text with a large language model?",
+    "url_match": "llm_tutorial",
+    "page_match": "llm_tutorial",
+    "category": "api-function",
+    "description": "Find LLM text generation tutorial"
+  },
+  {
+    "query": "What are the design principles behind the Transformers library?",
+    "url_match": "philosophy",
+    "page_match": "philosophy",
+    "category": "conceptual",
+    "description": "Find philosophy / design principles page"
+  },
+  {
+    "query": "What models are supported in the Transformers library?",
+    "url_match": "models_timeline",
+    "page_match": "models_timeline",
+    "category": "cross-page",
+    "description": "Find models timeline"
+  },
+  {
+    "query": "What is the Pipeline API reference in Transformers?",
+    "url_match": "main_classes/pipelines",
+    "page_match": "main_classes/pipelines",
+    "category": "api-function",
+    "description": "Find pipelines main class reference"
+  },
+  {
+    "query": "What does the Trainer class support for distributed training?",
+    "url_match": "main_classes/trainer",
+    "page_match": "main_classes/trainer",
+    "category": "api-function",
+    "description": "Find trainer main class reference"
+  },
+  {
+    "query": "What is the Hugging Face Transformers library?",
+    "url_match": "transformers/index",
+    "page_match": "transformers/index",
+    "category": "conceptual",
+    "description": "Find library overview / index page"
+  }
+]

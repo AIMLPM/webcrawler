@@ -1,0 +1,58 @@
+[
+  {
+    "query": "What graphics cards are available at Newegg?",
+    "url_match": "GPUs-Video-Graphics-Cards",
+    "page_match": "GPUs",
+    "category": "cross-page",
+    "description": "Find GPUs category page"
+  },
+  {
+    "query": "What laptops does Newegg sell?",
+    "url_match": "Laptops-Notebooks",
+    "page_match": "Laptops",
+    "category": "cross-page",
+    "description": "Find laptops category page"
+  },
+  {
+    "query": "How much does the AMD Ryzen 7 9800X3D CPU cost?",
+    "url_match": "ryzen-7-9800x3d",
+    "page_match": "ryzen-7-9800x3d",
+    "category": "factual-lookup",
+    "description": "Find Ryzen 7 9800X3D product page with pricing"
+  },
+  {
+    "query": "What is the price of the Intel Core i9-14900K?",
+    "url_match": "i9-14900k",
+    "page_match": "14900k",
+    "category": "factual-lookup",
+    "description": "Find i9-14900K product page with pricing"
+  },
+  {
+    "query": "Tell me about the GIGABYTE GeForce RTX 5090 graphics card",
+    "url_match": "gv-n5090gaming",
+    "page_match": "rtx-5090",
+    "category": "factual-lookup",
+    "description": "Find RTX 5090 product page"
+  },
+  {
+    "query": "How much does the SAPPHIRE Radeon RX 9070 XT cost?",
+    "url_match": "radeon-rx-9070-xt",
+    "page_match": "rx-9070-xt",
+    "category": "factual-lookup",
+    "description": "Find RX 9070 XT product page with pricing"
+  },
+  {
+    "query": "What ASUS TUF gaming laptops are available on Newegg?",
+    "url_match": "asus-tuf-gaming",
+    "page_match": "asus-tuf",
+    "category": "factual-lookup",
+    "description": "Find ASUS TUF gaming laptop product page"
+  },
+  {
+    "query": "What electronics categories does Newegg offer?",
+    "url_match": "Electronics/Store",
+    "page_match": "Electronics",
+    "category": "cross-page",
+    "description": "Find Electronics store category"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "query": "How does the CSS display property work?",
+    "url_match": "CSS/Reference/Properties/display",
+    "page_match": "display",
+    "category": "api-function",
+    "description": "Find CSS display property page"
+  },
+  {
+    "query": "How do I use flexbox for page layout?",
+    "url_match": "Flexible_box_layout",
+    "page_match": "flexbox",
+    "category": "conceptual",
+    "description": "Find flexbox guide"
+  },
+  {
+    "query": "How does CSS Grid layout work?",
+    "url_match": "Grid_layout",
+    "page_match": "grid",
+    "category": "conceptual",
+    "description": "Find grid layout guide"
+  },
+  {
+    "query": "What is the CSS box model?",
+    "url_match": "Box_model",
+    "page_match": "box-model",
+    "category": "conceptual",
+    "description": "Find box model guide"
+  },
+  {
+    "query": "How does the CSS margin property work?",
+    "url_match": "Reference/Properties/margin",
+    "page_match": "margin",
+    "category": "api-function",
+    "description": "Find margin property page"
+  },
+  {
+    "query": "How does CSS specificity determine which rules win?",
+    "url_match": "Cascade/Specificity",
+    "page_match": "specificity",
+    "category": "conceptual",
+    "description": "Find cascade specificity guide"
+  },
+  {
+    "query": "How does the :hover pseudo-class work in CSS?",
+    "url_match": "Selectors/:hover",
+    "page_match": "hover",
+    "category": "api-function",
+    "description": "Find :hover pseudo-class page"
+  },
+  {
+    "query": "How do I create CSS animations?",
+    "url_match": "Animations/Using",
+    "page_match": "animations",
+    "category": "conceptual",
+    "description": "Find CSS animations guide"
+  }
+]

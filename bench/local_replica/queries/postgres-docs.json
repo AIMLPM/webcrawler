@@ -1,0 +1,58 @@
+[
+  {
+    "query": "What data types does PostgreSQL support?",
+    "url_match": "datatype",
+    "page_match": "datatype",
+    "category": "cross-page",
+    "description": "Find data types chapter"
+  },
+  {
+    "query": "What is the SQL syntax for queries in PostgreSQL?",
+    "url_match": "sql-syntax",
+    "page_match": "sql-syntax",
+    "category": "conceptual",
+    "description": "Find SQL syntax chapter"
+  },
+  {
+    "query": "How do indexes work in PostgreSQL?",
+    "url_match": "indexes",
+    "page_match": "indexes",
+    "category": "conceptual",
+    "description": "Find indexes chapter"
+  },
+  {
+    "query": "How does MVCC concurrency control work in PostgreSQL?",
+    "url_match": "mvcc",
+    "page_match": "mvcc",
+    "category": "conceptual",
+    "description": "Find concurrency control chapter"
+  },
+  {
+    "query": "How do transactions work in PostgreSQL?",
+    "url_match": "transactions",
+    "page_match": "transactions",
+    "category": "conceptual",
+    "description": "Find transactions chapter"
+  },
+  {
+    "query": "How do I set up logical replication in PostgreSQL?",
+    "url_match": "logical-replication",
+    "page_match": "logical-replication",
+    "category": "api-function",
+    "description": "Find logical replication chapter"
+  },
+  {
+    "query": "What built-in functions and operators are available in PostgreSQL?",
+    "url_match": "functions",
+    "page_match": "functions",
+    "category": "cross-page",
+    "description": "Find functions and operators chapter"
+  },
+  {
+    "query": "How do I use full text search in PostgreSQL?",
+    "url_match": "textsearch",
+    "page_match": "textsearch",
+    "category": "api-function",
+    "description": "Find full text search chapter"
+  }
+]

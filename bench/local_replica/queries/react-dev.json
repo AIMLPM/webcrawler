@@ -1,0 +1,114 @@
+[
+  {
+    "query": "How do I manage state in a React component?",
+    "url_match": "state",
+    "page_match": "state",
+    "category": "conceptual",
+    "description": "Find state management docs"
+  },
+  {
+    "query": "How does the useEffect hook work in React?",
+    "url_match": "useEffect",
+    "page_match": "useEffect",
+    "category": "api-function",
+    "description": "Find useEffect reference"
+  },
+  {
+    "query": "How do I create and use context in React?",
+    "url_match": "useContext",
+    "page_match": "context",
+    "category": "api-function",
+    "description": "Find context API docs"
+  },
+  {
+    "query": "What is JSX and how does React use it?",
+    "url_match": "writing-markup-with-jsx",
+    "page_match": "jsx",
+    "category": "conceptual",
+    "description": "Find JSX explanation"
+  },
+  {
+    "query": "How do I render lists and use keys in React?",
+    "url_match": "rendering-lists",
+    "page_match": "rendering-lists",
+    "category": "code-example",
+    "description": "Find list rendering docs"
+  },
+  {
+    "query": "How do I use the useRef hook in React?",
+    "url_match": "useRef",
+    "page_match": "useRef",
+    "category": "api-function",
+    "description": "Find useRef reference"
+  },
+  {
+    "query": "How do I pass props between React components?",
+    "url_match": "passing-props",
+    "page_match": "passing-props",
+    "category": "conceptual",
+    "description": "Find props tutorial"
+  },
+  {
+    "query": "How do I conditionally render content in React?",
+    "url_match": "conditional-rendering",
+    "page_match": "conditional",
+    "category": "code-example",
+    "description": "Find conditional rendering docs"
+  },
+  {
+    "query": "What is the useMemo hook for in React?",
+    "url_match": "useMemo",
+    "page_match": "useMemo",
+    "category": "api-function",
+    "description": "Find useMemo reference"
+  },
+  {
+    "query": "How do I use the useState hook in React?",
+    "url_match": "useState",
+    "page_match": "useState",
+    "category": "api-function",
+    "description": "Find useState reference"
+  },
+  {
+    "query": "How do I use the useCallback hook in React?",
+    "url_match": "useCallback",
+    "page_match": "useCallback",
+    "category": "api-function",
+    "description": "Find useCallback reference"
+  },
+  {
+    "query": "How do I use the useReducer hook in React?",
+    "url_match": "useReducer",
+    "page_match": "useReducer",
+    "category": "api-function",
+    "description": "Find useReducer reference"
+  },
+  {
+    "query": "How do I handle events like clicks in React?",
+    "url_match": "responding-to-events",
+    "page_match": "responding-to-events",
+    "category": "code-example",
+    "description": "Find event handling docs"
+  },
+  {
+    "query": "What is the Suspense component in React?",
+    "url_match": "Suspense",
+    "page_match": "Suspense",
+    "category": "api-function",
+    "description": "Find Suspense reference"
+  },
+  {
+    "query": "How do I add interactivity to React components?",
+    "url_match": "adding-interactivity",
+    "page_match": "adding-interactivity",
+    "category": "conceptual",
+    "description": "Find interactivity tutorial"
+  },
+  {
+    "query": "How do I install and set up a new React project?",
+    "url_match": "installation",
+    "page_match": "installation",
+    "category": "conceptual",
+    "description": "Find installation guide"
+  }
+]

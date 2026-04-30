@@ -1,0 +1,58 @@
+[
+  {
+    "query": "What is ownership in Rust?",
+    "url_match": "ch04-01-what-is-ownership",
+    "page_match": "ownership",
+    "category": "conceptual",
+    "description": "Find ownership chapter"
+  },
+  {
+    "query": "How do references and borrowing work in Rust?",
+    "url_match": "ch04-02-references-and-borrowing",
+    "page_match": "references-and-borrowing",
+    "category": "conceptual",
+    "description": "Find references and borrowing chapter"
+  },
+  {
+    "query": "How do I define structs in Rust?",
+    "url_match": "ch05-01-defining-structs",
+    "page_match": "structs",
+    "category": "api-function",
+    "description": "Find structs definition chapter"
+  },
+  {
+    "query": "How do enums work in Rust?",
+    "url_match": "ch06-01-defining-an-enum",
+    "page_match": "enum",
+    "category": "conceptual",
+    "description": "Find enum chapter"
+  },
+  {
+    "query": "How do I use generics in Rust?",
+    "url_match": "ch10-01-syntax",
+    "page_match": "generics",
+    "category": "conceptual",
+    "description": "Find generics chapter"
+  },
+  {
+    "query": "What are traits in Rust and how do I define them?",
+    "url_match": "ch10-02-traits",
+    "page_match": "traits",
+    "category": "conceptual",
+    "description": "Find traits chapter"
+  },
+  {
+    "query": "How do closures work in Rust?",
+    "url_match": "ch13-01-closures",
+    "page_match": "closures",
+    "category": "conceptual",
+    "description": "Find closures chapter"
+  },
+  {
+    "query": "How do I handle errors with Result in Rust?",
+    "url_match": "ch09",
+    "page_match": "error",
+    "category": "conceptual",
+    "description": "Find error handling chapter"
+  }
+]

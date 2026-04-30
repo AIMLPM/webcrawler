@@ -1,0 +1,58 @@
+[
+  {
+    "query": "How much does the MALM bed frame cost at IKEA?",
+    "url_match": "malm-bed-frame",
+    "page_match": "malm-bed-frame",
+    "category": "factual-lookup",
+    "description": "Find MALM bed frame product page with pricing"
+  },
+  {
+    "query": "What's the price of the SLATTUM upholstered bed frame?",
+    "url_match": "slattum-upholstered-bed",
+    "page_match": "slattum",
+    "category": "factual-lookup",
+    "description": "Find SLATTUM bed product page with pricing"
+  },
+  {
+    "query": "Tell me about the HEMNES 8-drawer dresser",
+    "url_match": "hemnes-8-drawer-dresser",
+    "page_match": "hemnes",
+    "category": "factual-lookup",
+    "description": "Find HEMNES dresser product page"
+  },
+  {
+    "query": "What's the price of the RAST 3-drawer dresser?",
+    "url_match": "rast-3-drawer-dresser",
+    "page_match": "rast",
+    "category": "factual-lookup",
+    "description": "Find RAST dresser product page with pricing"
+  },
+  {
+    "query": "What bed frames does IKEA sell?",
+    "url_match": "cat/beds",
+    "page_match": "beds",
+    "category": "cross-page",
+    "description": "Find beds category page"
+  },
+  {
+    "query": "Show me IKEA's sofa and armchair selection",
+    "url_match": "cat/sofas-armchairs",
+    "page_match": "sofas-armchairs",
+    "category": "cross-page",
+    "description": "Find sofas and armchairs category"
+  },
+  {
+    "query": "What dressers and storage drawers does IKEA offer?",
+    "url_match": "cat/dressers-storage-drawers",
+    "page_match": "dressers",
+    "category": "cross-page",
+    "description": "Find dressers and storage drawers category"
+  },
+  {
+    "query": "How much is the STOREMOLLA 8-drawer dresser at IKEA?",
+    "url_match": "storemolla-8-drawer-dresser",
+    "page_match": "storemolla",
+    "category": "factual-lookup",
+    "description": "Find STOREMOLLA product page with pricing"
+  }
+]

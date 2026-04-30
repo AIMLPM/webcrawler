@@ -1,0 +1,58 @@
+[
+  {
+    "query": "What is a Kubernetes pod and what does it represent?",
+    "url_match": "workloads/pods",
+    "page_match": "pods",
+    "category": "conceptual",
+    "description": "Find pods concept docs"
+  },
+  {
+    "query": "How do Kubernetes Deployments manage replicas and rollouts?",
+    "url_match": "controllers/deployment",
+    "page_match": "deployment",
+    "category": "api-function",
+    "description": "Find Deployment controller docs"
+  },
+  {
+    "query": "What is a Kubernetes Service and how does it expose pods?",
+    "url_match": "services-networking/service",
+    "page_match": "service",
+    "category": "conceptual",
+    "description": "Find Service networking docs"
+  },
+  {
+    "query": "How do I use ConfigMaps to inject configuration into pods?",
+    "url_match": "configuration/configmap",
+    "page_match": "configmap",
+    "category": "api-function",
+    "description": "Find ConfigMap docs"
+  },
+  {
+    "query": "How do I manage Secrets in Kubernetes?",
+    "url_match": "configuration/secret",
+    "page_match": "secret",
+    "category": "api-function",
+    "description": "Find Secret docs"
+  },
+  {
+    "query": "What are namespaces in Kubernetes and when should I use them?",
+    "url_match": "working-with-objects/namespaces",
+    "page_match": "namespaces",
+    "category": "conceptual",
+    "description": "Find namespaces docs"
+  },
+  {
+    "query": "How does Kubernetes Ingress route external traffic?",
+    "url_match": "services-networking/ingress",
+    "page_match": "ingress",
+    "category": "conceptual",
+    "description": "Find Ingress networking docs"
+  },
+  {
+    "query": "What is a StatefulSet and when do I need one?",
+    "url_match": "controllers/statefulset",
+    "page_match": "statefulset",
+    "category": "api-function",
+    "description": "Find StatefulSet docs"
+  }
+]

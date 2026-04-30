@@ -1,0 +1,145 @@
+# Canonical site pool for llm-crawler-benchmarks.
+#
+# Structure: see sites/pool.py. Adding a site:
+#   1. Pick the right category (must be in VALID_CATEGORIES).
+#   2. Verify it's crawlable (no auth wall, reasonable robots.txt, stable).
+#   3. Set has_queries: true ONLY if TEST_QUERIES in benchmark_retrieval.py
+#      has an entry with the same `name`. Retrieval/answer-quality benches
+#      filter on this flag.
+#
+# Version bumps: when swapping sites in/out, increment `version` (e.g.
+# v1.0 -> v1.1) so run manifests capture which pool produced their numbers.
+#
+# Health check: a weekly CI job (TODO) should fetch each URL and flag
+# non-200s or content-hash drift exceeding 30% — dead sites shouldn't
+# silently lower everyone's scores.
+
+version: "v1.2"
+released: "2026-04-24"
+
+sites:
+  # ==========================================================================
+  # v1.2 -- major pool swap.
+  # Dropped all v1.0/v1.1 sites except react-dev and stripe-docs (anchors).
+  # gen2fund removed entirely. Also dropped REI and Warby Parker after
+  # drafting revealed both block WebFetch with anti-bot -- we cannot verify
+  # ground-truth URLs for queries. Replaced with Newegg (electronics) and
+  # IKEA (furniture): both accessible, both expose real pricing.
+  # Mix: 5 dev docs, 1 reference, 1 tutorial, 1 wiki, 2 ecommerce (pricing),
+  # 1 recipe blog, 1 news -- so crawlers are stressed on structured
+  # products and long-form editorial, not just dev docs.
+  # ==========================================================================
+
+  # --- Carried over from v1.1 (anchors) ---
+
+  - name: react-dev
+    url: https://react.dev/learn
+    category: framework_docs
+    difficulty: [dynamic_js]
+    max_pages: 500
+    render_js: true
+    description: "React docs (SPA, JS-rendered, interactive examples)"
+    has_queries: true
+
+  - name: stripe-docs
+    url: https://docs.stripe.com/payments
+    category: api_docs
+    difficulty: [dynamic_js]
+    max_pages: 500
+    render_js: false
+    description: "Stripe API docs (tabbed content, code samples, sidebars)"
+    has_queries: true
+
+  # --- New in v1.2: framework / API / reference / tutorial / wiki ---
+
+  - name: huggingface-transformers
+    url: https://huggingface.co/docs/transformers/index
+    category: framework_docs
+    difficulty: [dynamic_js]
+    max_pages: 300
+    render_js: true
+    description: "Hugging Face Transformers docs -- model cards, code examples, SPA"
+    has_queries: true
+
+  - name: kubernetes-docs
+    url: https://kubernetes.io/docs/concepts/
+    category: api_docs
+    difficulty: [static, paginated]
+    max_pages: 400
+    render_js: false
+    description: "Kubernetes concepts + reference docs -- long-form, cross-linked"
+    has_queries: true
+
+  - name: postgres-docs
+    url: https://www.postgresql.org/docs/current/
+    category: api_docs
+    difficulty: [static, paginated]
+    max_pages: 400
+    render_js: false
+    description: "PostgreSQL docs -- dense SQL reference, text-heavy"
+    has_queries: true
+
+  - name: mdn-css
+    url: https://developer.mozilla.org/en-US/docs/Web/CSS
+    category: reference
+    difficulty: [static]
+    max_pages: 300
+    render_js: false
+    description: "MDN CSS reference -- property/selector pages, deeply linked"
+    has_queries: true
+
+  - name: rust-book
+    url: https://doc.rust-lang.org/book/
+    category: tutorial
+    difficulty: [static, paginated]
+    max_pages: 200
+    render_js: false
+    description: "The Rust Programming Language book -- chaptered tutorial"
+    has_queries: true
+
+  - name: wikipedia-llm
+    url: https://en.wikipedia.org/wiki/Large_language_model
+    category: wiki
+    difficulty: [static]
+    max_pages: 50
+    render_js: false
+    description: "Wikipedia: Large language model -- article + citations + infobox"
+    has_queries: false  # extraction-only: single seed article doesn't yield URL-diverse retrieval targets
+
+  # --- New in v1.2: non-technical content (ecommerce / blog / news) ---
+
+  - name: newegg
+    url: https://www.newegg.com/Laptops-Notebooks/SubCategory/ID-32
+    category: ecommerce
+    difficulty: [dynamic_js, paginated]
+    max_pages: 200
+    render_js: true
+    description: "Newegg electronics catalog -- product listings with pricing, clean /<slug>/p/<id> URL pattern"
+    has_queries: true
+
+  - name: ikea
+    url: https://www.ikea.com/us/en/cat/furniture-fu001/
+    category: ecommerce
+    difficulty: [dynamic_js, paginated]
+    max_pages: 200
+    render_js: true
+    description: "IKEA US furniture catalog -- product + category pages with pricing"
+    has_queries: true
+
+  - name: smittenkitchen
+    url: https://smittenkitchen.com/recipes/
+    category: blog
+    difficulty: [static, paginated]
+    max_pages: 200
+    render_js: false
+    description: "Smitten Kitchen recipe blog -- WordPress long-form, recipe microdata"
+    has_queries: true
+
+  - name: npr-news
+    url: https://www.npr.org/sections/news/
+    category: news
+    difficulty: [static, paginated]
+    max_pages: 150
+    render_js: false
+    description: "NPR news section -- wire-style articles, deep linking, stable URLs"
+    has_queries: true

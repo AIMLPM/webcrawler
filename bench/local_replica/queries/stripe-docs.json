@@ -1,0 +1,128 @@
+[
+  {
+    "query": "How do I create a payment intent with Stripe?",
+    "url_match": "payment-intent",
+    "page_match": "payment-intent",
+    "category": "api-function",
+    "description": "Find payment intent docs"
+  },
+  {
+    "query": "How do I handle webhooks from Stripe?",
+    "url_match": "webhook",
+    "page_match": "webhook",
+    "category": "api-function",
+    "description": "Find webhook handling docs"
+  },
+  {
+    "query": "How do I set up Stripe subscriptions?",
+    "url_match": "subscription",
+    "page_match": "subscription",
+    "category": "api-function",
+    "description": "Find subscription docs"
+  },
+  {
+    "query": "How do I authenticate with the Stripe API?",
+    "url_match": "authentication",
+    "page_match": "authentication",
+    "category": "api-function",
+    "description": "Find authentication docs"
+  },
+  {
+    "query": "How do I handle errors in the Stripe API?",
+    "url_match": "error-handling",
+    "page_match": "error-handling",
+    "category": "api-function",
+    "description": "Find error handling docs"
+  },
+  {
+    "query": "How do I process refunds with Stripe?",
+    "url_match": "refund",
+    "page_match": "refund",
+    "category": "api-function",
+    "description": "Find refund docs"
+  },
+  {
+    "query": "How do I use Stripe checkout for payments?",
+    "url_match": "checkout",
+    "page_match": "checkout",
+    "category": "js-rendered",
+    "description": "Find checkout docs (JS-rendered tabbed content)"
+  },
+  {
+    "query": "How do I test Stripe payments in development?",
+    "url_match": "testing",
+    "page_match": "testing",
+    "category": "code-example",
+    "description": "Find testing docs with code samples"
+  },
+  {
+    "query": "What are Stripe Connect and platform payments?",
+    "url_match": "connect",
+    "page_match": "connect",
+    "category": "conceptual",
+    "description": "Find Connect docs"
+  },
+  {
+    "query": "How do I set up usage-based billing with Stripe?",
+    "url_match": "usage-based",
+    "page_match": "usage-based",
+    "category": "js-rendered",
+    "description": "Find usage-based billing (JS tabbed content)"
+  },
+  {
+    "query": "How do I manage Stripe API keys?",
+    "url_match": "keys",
+    "page_match": "keys",
+    "category": "api-function",
+    "description": "Find API key management docs"
+  },
+  {
+    "query": "How do I handle Stripe rate limits?",
+    "url_match": "rate-limits",
+    "page_match": "rate-limit",
+    "category": "api-function",
+    "description": "Find rate limiting docs"
+  },
+  {
+    "query": "How do I use metadata with Stripe objects?",
+    "url_match": "metadata",
+    "page_match": "metadata",
+    "category": "api-function",
+    "description": "Find metadata docs"
+  },
+  {
+    "query": "How do I set up Apple Pay with Stripe?",
+    "url_match": "apple-pay",
+    "page_match": "apple-pay",
+    "category": "js-rendered",
+    "description": "Find Apple Pay integration (JS-rendered)"
+  },
+  {
+    "query": "How do I issue cards with Stripe Issuing?",
+    "url_match": "issuing",
+    "page_match": "issuing",
+    "category": "api-function",
+    "description": "Find Stripe Issuing docs"
+  },
+  {
+    "query": "How do I recover failed subscription payments?",
+    "url_match": "revenue-recovery",
+    "page_match": "revenue-recovery",
+    "category": "js-rendered",
+    "description": "Find revenue recovery docs (JS tabbed content)"
+  },
+  {
+    "query": "How does Stripe handle tax calculation for billing?",
+    "url_match": "billing/taxes",
+    "page_match": "billing/taxes",
+    "category": "js-rendered",
+    "description": "Find billing tax docs (JS-rendered)"
+  },
+  {
+    "query": "How do I migrate data to Stripe?",
+    "url_match": "data-migrations",
+    "page_match": "data-migration",
+    "category": "conceptual",
+    "description": "Find data migration guide"
+  }
+]
