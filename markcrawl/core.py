@@ -1677,11 +1677,16 @@ def _crawl_sync(
             # to fetch MORE child sitemaps trying to fill the cap, making
             # things worse. Filter post-collection instead.
             sm_cap = max(500, max_pages * 4)
+            # Cap per-sitemap-fetch timeout independently of crawl timeout.
+            # Slow sitemap servers (npr.org) can stall a 20s crawl-timeout
+            # request for the full window; 8s is enough for a normal sitemap
+            # and gives up fast on bad ones.
+            sm_timeout = min(timeout, 8)
             for sitemap_url in discover_sitemaps(engine.session, base_url, robots_text=engine._robots_text):
                 if len(engine.seeds) >= sm_cap:
                     break
                 engine.seeds.extend(parse_sitemap_xml(
-                    engine.session, sitemap_url, timeout,
+                    engine.session, sitemap_url, sm_timeout,
                     max_total_urls=sm_cap - len(engine.seeds),
                 ))
             engine.seeds = [norm_url(u) for u in engine.seeds if u]
@@ -1867,13 +1872,14 @@ def _crawl_async(
                         if sitemap_url:
                             sitemaps.append(sitemap_url)
 
-                # See sync branch for rationale on the sitemap cap.
+                # See sync branch for rationale on the sitemap cap + timeout.
                 sm_cap = max(500, max_pages * 4)
+                sm_timeout = min(timeout, 8)
                 for sitemap_url in sitemaps:
                     if len(engine.seeds) >= sm_cap:
                         break
                     engine.seeds.extend(await parse_sitemap_xml_async(
-                        engine.session, sitemap_url, timeout,
+                        engine.session, sitemap_url, sm_timeout,
                         max_total_urls=sm_cap - len(engine.seeds),
                     ))
                 engine.seeds = [norm_url(u) for u in engine.seeds if u]
