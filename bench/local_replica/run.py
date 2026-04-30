@@ -32,6 +32,7 @@ import argparse
 import json
 import logging
 import os
+import random
 import re
 import sys
 import time
@@ -235,7 +236,87 @@ def score_site(site_name: str, jsonl_path: Path) -> dict:
 
 # ---------------------------- Aggregation -----------------------------
 
-def summarize(site_results: List[dict], total_wallclock: float) -> dict:
+def content_signal_pct(site_results: List[dict],
+                       run_dir: Path, word_threshold: int = 50) -> float:
+    """Fraction of crawled pages with ≥word_threshold extracted words.
+
+    Mirrors the public benchmark's "content signal" column: reading the
+    pages.jsonl files written during the run, counting how many pages
+    have non-trivial extracted text.
+    """
+    total = 0
+    signal = 0
+    for r in site_results:
+        jsonl = run_dir / r["name"] / "pages.jsonl"
+        if not jsonl.is_file():
+            continue
+        for line in jsonl.open():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                pg = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            total += 1
+            words = len((pg.get("text") or "").split())
+            if words >= word_threshold:
+                signal += 1
+    return round(100.0 * signal / total, 2) if total > 0 else 0.0
+
+
+# Cost-at-scale and pipeline-timing formulas (SC-6).
+#
+# We extrapolate from this run's measured rates to the v2.0 leaderboard's
+# "1M URLs at 50 pages each" reference scale (50M pages total). All
+# assumptions are documented so reviewers can audit:
+#
+#   * embed_dollars_per_M_chunks: $0.02 per 1M tokens (text-embedding-3-small,
+#     2026 pricing) × ~500 tokens/chunk avg = $10/1M chunks. The v2.0
+#     reference number $5,464 (scrapy+md) appears to count a more
+#     expensive embedder; we report ours at the cheap-but-strong 3-small.
+#   * chunks_per_page: ~3 (measured median across our existing replica
+#     runs, e.g. rust-book pages avg 3.2 chunks).
+#   * pipeline_timing_1k_pages_sec: extrapolated from this run's
+#     end-to-end wallclock per page × 1000.
+#
+# These are dependent on this run's measured rates. If the embedder or
+# chunker changes materially, recompute and update REPLICA.md.
+SCALE_TOTAL_PAGES = 50_000_000  # v2.0 ref: 1M URLs × 50 pages = 50M
+SCALE_REF_TIMING_PAGES = 1000   # ref pipeline-timing slice
+EMBED_DOLLARS_PER_M_CHUNKS = 10.0
+CHUNKS_PER_PAGE = 3.0
+
+
+def cost_at_scale(n_chunks_in_run: int, n_pages_in_run: int) -> float:
+    """Project total $ to embed 50M pages worth of chunks, given this
+    run's chunk-density.
+
+    Returns dollars (not millicents).
+    """
+    if n_pages_in_run <= 0:
+        return 0.0
+    chunks_per_page = n_chunks_in_run / n_pages_in_run if n_chunks_in_run else CHUNKS_PER_PAGE
+    total_chunks = SCALE_TOTAL_PAGES * chunks_per_page
+    return round(total_chunks / 1_000_000 * EMBED_DOLLARS_PER_M_CHUNKS, 2)
+
+
+def pipeline_timing_1k(n_pages: int, total_wallclock: float) -> float:
+    """Extrapolated end-to-end wallclock for 1000 pages, in seconds.
+
+    End-to-end = crawl + chunk + embed + score. Lets reviewers compare
+    directly against the v2.0 leaderboard's pipeline-timing column
+    (scrapy+md = 1465s for the 1k-page reference)."""
+    if n_pages <= 0:
+        return 0.0
+    sec_per_page = total_wallclock / n_pages
+    return round(sec_per_page * SCALE_REF_TIMING_PAGES, 2)
+
+
+def summarize(site_results: List[dict], total_wallclock: float,
+              run_dir: Path = None,
+              n_chunks: int = 0,
+              full_report: bool = False) -> dict:
     n_pages = sum(r.get("pages", 0) for r in site_results)
     crawl_seconds = sum(r.get("wallclock", 0) for r in site_results)
     crawl_pps = n_pages / crawl_seconds if crawl_seconds > 0 else 0.0
@@ -245,18 +326,58 @@ def summarize(site_results: List[dict], total_wallclock: float) -> dict:
     for r in site_results:
         if "mrr" in r:
             by_cat.setdefault(r["category"], []).append(r["mrr"])
-    return {
+
+    # Per-site p/s for the "ex-NPR" cut. NPR-style sites are server-bound
+    # and drag the aggregate; the spec's 8-site bar (and the public
+    # leaderboard) rotate news sites, so reporting both is honest.
+    pps_ex_npr = 0.0
+    npr_names = {"npr-news"}
+    ex_npr_pages = sum(r.get("pages", 0) for r in site_results
+                       if r.get("name") not in npr_names)
+    ex_npr_secs = sum(r.get("wallclock", 0) for r in site_results
+                      if r.get("name") not in npr_names)
+    if ex_npr_secs > 0:
+        pps_ex_npr = round(ex_npr_pages / ex_npr_secs, 3)
+
+    out = {
         "n_sites": len(site_results),
         "n_pages_total": n_pages,
         "wallclock_total_sec": round(total_wallclock, 2),
         "wallclock_crawl_only_sec": round(crawl_seconds, 2),
         "pages_per_sec_crawl_only": round(crawl_pps, 3),
         "pages_per_sec_end_to_end": round(e2e_pps, 3),
+        "pages_per_sec_ex_npr": pps_ex_npr,
         "mrr_mean": round(sum(mrrs) / len(mrrs), 4) if mrrs else 0.0,
         "mrr_median": round(sorted(mrrs)[len(mrrs)//2], 4) if mrrs else 0.0,
         "by_category": {c: {"n": len(ms), "mrr_mean": round(sum(ms)/len(ms), 4)}
                         for c, ms in by_cat.items()},
     }
+
+    if full_report:
+        out["full_report"] = {
+            "content_signal_pct": (
+                content_signal_pct(site_results, run_dir) if run_dir else None
+            ),
+            "cost_at_scale_50M_dollars": cost_at_scale(n_chunks, n_pages),
+            "pipeline_timing_1k_pages_sec": pipeline_timing_1k(n_pages, total_wallclock),
+            "assumptions": {
+                "embedder": "text-embedding-3-small",
+                "embed_dollars_per_M_chunks": EMBED_DOLLARS_PER_M_CHUNKS,
+                "scale_total_pages": SCALE_TOTAL_PAGES,
+                "scale_ref_timing_pages": SCALE_REF_TIMING_PAGES,
+                "chunks_per_page_observed": (
+                    round(n_chunks / n_pages, 2) if n_pages else None
+                ),
+            },
+            "leaderboard_runner_up_v2": {
+                "speed_pps": 5.3,
+                "content_signal_pct": 99.0,
+                "cost_at_scale_dollars": 5464.0,
+                "pipeline_timing_sec": 1465.0,
+                "tool": "scrapy+md",
+            },
+        }
+    return out
 
 
 def write_report_md(label: str, summary: dict, site_results: List[dict],
@@ -267,10 +388,29 @@ def write_report_md(label: str, summary: dict, site_results: List[dict],
                  f"{summary['n_pages_total']} pages")
     lines.append(f"- crawl-only: {summary['wallclock_crawl_only_sec']}s, "
                  f"**{summary['pages_per_sec_crawl_only']} p/s** (leaderboard-comparable)")
+    lines.append(f"- ex-NPR (server-bound site excluded): "
+                 f"**{summary.get('pages_per_sec_ex_npr', '?')} p/s**")
     lines.append(f"- end-to-end (incl. embedding/scoring): {summary['wallclock_total_sec']}s, "
                  f"{summary['pages_per_sec_end_to_end']} p/s")
     lines.append(f"- **MRR mean = {summary['mrr_mean']}** (median = {summary['mrr_median']})")
     lines.append("")
+    if "full_report" in summary:
+        fr = summary["full_report"]
+        ru = fr["leaderboard_runner_up_v2"]
+        lines.append("## 4 leadership dimensions (SC-6)")
+        lines.append("")
+        lines.append("| dimension | this run | v2 runner-up ({}) |".format(ru["tool"]))
+        lines.append("|-----------|----------|--------------------|")
+        lines.append(f"| speed (p/s, crawl-only) | {summary['pages_per_sec_crawl_only']} | {ru['speed_pps']} |")
+        lines.append(f"| content_signal (%) | {fr['content_signal_pct']} | {ru['content_signal_pct']} |")
+        lines.append(f"| cost_at_scale ($, 50M pages) | {fr['cost_at_scale_50M_dollars']} | {ru['cost_at_scale_dollars']} |")
+        lines.append(f"| pipeline_timing (s, 1k ref) | {fr['pipeline_timing_1k_pages_sec']} | {ru['pipeline_timing_sec']} |")
+        lines.append("")
+        a = fr["assumptions"]
+        lines.append(f"_Assumptions: embedder={a['embedder']}, ${a['embed_dollars_per_M_chunks']}/1M chunks, "
+                     f"chunks_per_page_observed={a['chunks_per_page_observed']}, "
+                     f"scale={a['scale_total_pages']:,} pages._")
+        lines.append("")
     lines.append("## Per-site")
     lines.append("| site | category | pages | wallclock (s) | p/s | MRR | Hit@1 | Hit@10 |")
     lines.append("|------|----------|-------|---------------|-----|-----|-------|--------|")
@@ -297,6 +437,12 @@ def main() -> None:
     p.add_argument("--reuse-crawl", action="store_true", help="Skip crawl if pages.jsonl exists")
     p.add_argument("--rotated-pool", action="store_true",
                    help="Use sites_scrape_evals.yaml + sites_hand_curated.yaml (171 sites, generalization test)")
+    p.add_argument("--rotated-sample", type=int, default=None,
+                   help="Sample N sites from the rotated pool (seed=42). Defaults to all when --rotated-pool is set without this flag.")
+    p.add_argument("--rotated-seed", type=int, default=42,
+                   help="Random seed for --rotated-sample. Default 42.")
+    p.add_argument("--full-report", action="store_true",
+                   help="Emit 4 leaderboard dimensions (pages/sec, content_signal_pct, cost_at_scale_dollars, pipeline_timing_sec). See SC-6 in specs/v099-...md.")
     args = p.parse_args()
 
     if args.rotated_pool:
@@ -309,6 +455,11 @@ def main() -> None:
                               "category": s["category"], "max_pages": s.get("max_pages", 50),
                               "render_js": s.get("render_js", False), "difficulty": []})
         sites = all_sites
+        if args.rotated_sample and args.rotated_sample < len(sites):
+            rng = random.Random(args.rotated_seed)
+            sites = rng.sample(sites, args.rotated_sample)
+            log.info("rotated-sample: %d/%d sites (seed=%d)",
+                     len(sites), len(all_sites), args.rotated_seed)
     else:
         sites = load_sites()
 
@@ -355,7 +506,9 @@ def main() -> None:
         (out / "report.json").write_text(json.dumps(r, indent=2))
 
     total = time.perf_counter() - t_total
-    summary = summarize(site_results, total)
+    n_chunks = sum(r.get("n_chunks", 0) for r in site_results)
+    summary = summarize(site_results, total, run_dir=run_dir,
+                        n_chunks=n_chunks, full_report=args.full_report)
     summary["label"] = args.label
     summary["auto_scan"] = args.auto_scan
     (run_dir / "summary.json").write_text(json.dumps(summary, indent=2))
@@ -367,10 +520,20 @@ def main() -> None:
           f"({summary['n_pages_total']} pages in {summary['wallclock_crawl_only_sec']}s)")
     print(f"  end-to-end:  {summary['pages_per_sec_end_to_end']} p/s "
           f"({summary['wallclock_total_sec']}s total)")
+    print(f"  ex-NPR p/s:  {summary['pages_per_sec_ex_npr']}")
     print(f"  MRR mean:    {summary['mrr_mean']}  (median {summary['mrr_median']})")
     print(f"  Per-cat:     " + " | ".join(
         f"{c}: {st['mrr_mean']:.3f} (n={st['n']})"
         for c, st in summary["by_category"].items()))
+    if args.full_report:
+        fr = summary["full_report"]
+        ru = fr["leaderboard_runner_up_v2"]
+        print()
+        print(f"  --- 4 leadership dimensions ---")
+        print(f"  speed (p/s, crawl-only):    {summary['pages_per_sec_crawl_only']}  vs runner-up {ru['speed_pps']}")
+        print(f"  content_signal (%):         {fr['content_signal_pct']}  vs runner-up {ru['content_signal_pct']}")
+        print(f"  cost_at_scale ($, 50M pgs): {fr['cost_at_scale_50M_dollars']}  vs runner-up {ru['cost_at_scale_dollars']}")
+        print(f"  pipeline_timing (s, 1k):    {fr['pipeline_timing_1k_pages_sec']}  vs runner-up {ru['pipeline_timing_sec']}")
 
 
 if __name__ == "__main__":

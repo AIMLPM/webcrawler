@@ -53,7 +53,7 @@ class DispatchDecision:
 
     def log_line(self) -> str:
         verb = "promote" if self.promote else ("hold" if self.promote is False else "defer")
-        return f"[info] dispatch: {self.rule} -> {verb} (signal: {self.signal})"
+        return f"[info] dispatch: {self.rule} fired ({verb}) because {self.signal}"
 
 
 def decide_render_js(

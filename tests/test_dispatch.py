@@ -193,6 +193,8 @@ def test_log_line_contains_rule_and_signal():
     assert "R1/is_spa" in log
     assert "is_spa=True" in log
     assert "promote" in log
+    assert "fired" in log
+    assert "because" in log
 
 
 def test_log_line_describes_hold_when_no_promote():
@@ -200,6 +202,17 @@ def test_log_line_describes_hold_when_no_promote():
     d = decide_render_js(p)
     log = d.log_line()
     assert "hold" in log
+    assert "fired" in log
+
+
+def test_log_line_matches_sc5_format():
+    """SC-5 spec: '[info] dispatch: <rule> fired because <signal>=<value>'."""
+    p = FakeProfile(is_spa=True)
+    d = decide_render_js(p)
+    log = d.log_line()
+    assert log.startswith("[info] dispatch: ")
+    assert " fired " in log
+    assert " because " in log
 
 
 # ---- Threshold sanity checks ------------------------------------------
