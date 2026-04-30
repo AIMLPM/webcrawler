@@ -33,7 +33,10 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import multiprocessing as mp
+import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -91,8 +94,11 @@ def yield_metrics(jsonl: Path) -> Dict:
     }
 
 
-def crawl_one(url: str, out_dir: Path, render_js: bool, max_pages: int = 50,
-              timeout: int = 12) -> Dict:
+PER_SITE_WALLCLOCK_SEC = 300
+
+
+def _crawl_inline(url: str, out_dir: Path, render_js: bool, max_pages: int,
+                  timeout: int) -> Dict:
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -116,6 +122,81 @@ def crawl_one(url: str, out_dir: Path, render_js: bool, max_pages: int = 50,
             "wallclock_sec": round(time.perf_counter() - t0, 2),
             "error": repr(exc)[:200],
         }
+
+
+def _crawl_subprocess_target(url, out_dir, render_js, max_pages, timeout, conn):
+    try:
+        os.setsid()
+    except Exception:
+        pass
+    try:
+        result = _crawl_inline(url, Path(out_dir), render_js, max_pages, timeout)
+    except BaseException as exc:
+        result = {"pages_saved": 0, "wallclock_sec": 0.0,
+                  "error": f"subprocess_crash:{exc!r}"[:200]}
+    try:
+        conn.send(result)
+    finally:
+        conn.close()
+
+
+def _kill_tree(pid: int) -> None:
+    """Kill pid and all descendants. Best effort — handles missing pgrep."""
+    try:
+        out = subprocess.check_output(["pgrep", "-P", str(pid)],
+                                      text=True, stderr=subprocess.DEVNULL)
+        for child in out.split():
+            _kill_tree(int(child))
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.kill(pid, sig)
+        except ProcessLookupError:
+            return
+        time.sleep(0.5)
+
+
+def crawl_one(url: str, out_dir: Path, render_js: bool, max_pages: int = 50,
+              timeout: int = 12,
+              max_wall_sec: int = PER_SITE_WALLCLOCK_SEC) -> Dict:
+    """Run a single crawl in a subprocess so a stuck Playwright render can
+    be hard-killed without freezing the campaign.
+    """
+    ctx = mp.get_context("spawn")
+    parent_conn, child_conn = ctx.Pipe(duplex=False)
+    p = ctx.Process(
+        target=_crawl_subprocess_target,
+        args=(url, str(out_dir), render_js, max_pages, timeout, child_conn),
+        daemon=False,
+    )
+    t0 = time.perf_counter()
+    p.start()
+    child_conn.close()
+    p.join(max_wall_sec)
+    if p.is_alive():
+        log.warning("    timeout %ds for %s render_js=%s — killing tree",
+                    max_wall_sec, url, render_js)
+        _kill_tree(p.pid)
+        p.join(10)
+        if p.is_alive():
+            p.kill()
+            p.join(5)
+        return {
+            "pages_saved": 0,
+            "wallclock_sec": round(time.perf_counter() - t0, 2),
+            "error": f"wallclock_timeout_{max_wall_sec}s",
+        }
+    if parent_conn.poll(2):
+        try:
+            return parent_conn.recv()
+        except EOFError:
+            pass
+    return {
+        "pages_saved": 0,
+        "wallclock_sec": round(time.perf_counter() - t0, 2),
+        "error": f"subprocess_no_result_exit{p.exitcode}",
+    }
 
 
 def label_one(site: dict, static_dir: Path, render_dir: Path) -> Dict:

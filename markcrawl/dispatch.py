@@ -14,7 +14,14 @@ Cascade order (cheap → expensive):
   R1  is_spa=True                 (current heuristic, high precision)
   R2  class-gated thin seed       (apiref/docs/spa < threshold words)
   R3  HTML/text size ratio        (>50× ratio = JS shell; needs html bytes)
-  R4  trip-wire after first pages (deferred to crawl loop)
+
+R4 (in-loop trip-wire after N static pages) was specified but
+deliberately NOT shipped. The DS-6 autoresearch sweep on the v0.9.9
+campaign labeled dataset (47 definite sites, 6 needs_render_js
+positives) scored M3-trip-wire at 0% precision / 0% recall / 10.5%
+FP-rate — strictly worse than chance. Adding R4 would degrade the
+cascade (M6 with M3 vs M6 without). If reintroduced later, gate it
+behind fresh sweep evidence; do not infer from intuition alone.
 
 Each rule returns a `DispatchDecision` so the engine can log the rule
 and signal that fired. Keep rule names stable — they're emitted in user

@@ -1,0 +1,1579 @@
+{
+  "n_labeled": 47,
+  "label_distribution": null,
+  "per_method": {
+    "M1-is-spa": {
+      "tp": 1,
+      "fp": 0,
+      "tn": 41,
+      "fn": 5,
+      "precision": 1.0,
+      "recall": 0.16666666666666666,
+      "fp_rate": 0.0,
+      "fn_rate": 0.8333333333333334,
+      "balanced_accuracy": 0.5833333333333334,
+      "n": 47,
+      "n_undefined": 0,
+      "mean_cost_seconds_per_site": 0.0
+    },
+    "M2-seed-words": {
+      "tp": 2,
+      "fp": 2,
+      "tn": 39,
+      "fn": 4,
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "fp_rate": 0.04878048780487805,
+      "fn_rate": 0.6666666666666666,
+      "balanced_accuracy": 0.6422764227642276,
+      "n": 47,
+      "n_undefined": 0,
+      "mean_cost_seconds_per_site": 0.0
+    },
+    "M3-trip-wire": {
+      "tp": 0,
+      "fp": 2,
+      "tn": 17,
+      "fn": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "fp_rate": 0.10526315789473684,
+      "fn_rate": 0.0,
+      "balanced_accuracy": 0.4473684210526316,
+      "n": 19,
+      "n_undefined": 28,
+      "mean_cost_seconds_per_site": 2.5
+    },
+    "M5-ratio": {
+      "error": "no definite predictions",
+      "n_undefined": 47
+    },
+    "M6-cascade": {
+      "tp": 3,
+      "fp": 3,
+      "tn": 38,
+      "fn": 3,
+      "precision": 0.5,
+      "recall": 0.5,
+      "fp_rate": 0.07317073170731707,
+      "fn_rate": 0.5,
+      "balanced_accuracy": 0.7134146341463414,
+      "n": 47,
+      "n_undefined": 0,
+      "mean_cost_seconds_per_site": 2.074468085106383
+    }
+  },
+  "ranking": [
+    "M6-cascade",
+    "M2-seed-words",
+    "M1-is-spa",
+    "M3-trip-wire",
+    "M5-ratio"
+  ],
+  "per_site_predictions": {
+    "daifuku-com-0801": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=915>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "findchips-com-0033": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": true,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=9<50",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "no crawl data; deferred",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M2",
+        "signal": "class=generic seed_word_count=9<50",
+        "truth": true
+      }
+    },
+    "der-heidehof-de-0918": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=729>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "annaka-ss-co-jp-0340": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=60>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "duckduckgo-com-0300": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": true,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=25<50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": true,
+        "rule": "M3",
+        "signal": "4/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M2",
+        "signal": "class=generic seed_word_count=25<50",
+        "truth": false
+      }
+    },
+    "biospace-com-0172": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=986>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "centricbrands-com-0913": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=356>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "dogecoin-com-0123": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=377>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "cabinetnow-com-0841": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=2437>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "pentalog-com-0917": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=1495>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "playwell-bricks-com-0683": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=4121>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "tibet-net-0108": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": true,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=9<50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M2",
+        "signal": "class=generic seed_word_count=9<50",
+        "truth": false
+      }
+    },
+    "careers-siriusxm-com-0041": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=316>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "smartphoto-nl-0114": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=156>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "mopsov-twse-com-tw-0269": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=None",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "seed_word_count unknown",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "no crawl data; deferred",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": true
+      }
+    },
+    "underkind-co-0285": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=2458>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "marchmountain-mvusd-net-0752": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=1857>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "irepartners-com-0704": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=337>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "rd-go-th-0245": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=287>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "accessibilitychecker-org-0523": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=3818>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "iz-io-0559": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=252>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "my-mg-com-0735": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=945>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "salesmessage-com-0344": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=9339>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "nisum-com-0010": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=598>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "balance-vc-0940": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=119>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": true,
+        "rule": "M3",
+        "signal": "4/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M3",
+        "signal": "4/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "antal-com-0997": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=582>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "abc-net-au-0113": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=2717>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "flooranddecor-com-0118": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=1773>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "arxiv-org-0451": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=17747>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "infonegocios-com-py-0435": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=1742>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "plasticsurgery-org-0325": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=990>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 4 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "svz-fr-0998": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=295>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "es-ogs-ny-gov-0055": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=990>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "0/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "retellai-com-0905": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=2649>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "secura-net-0669": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=884>=50",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "kailecustoms-as-me-0097": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": true,
+        "rule": "M2",
+        "signal": "class=generic seed_word_count=5<50",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M2",
+        "signal": "class=generic seed_word_count=5<50",
+        "truth": true
+      }
+    },
+    "academy-moralis-io-0698": {
+      "M1-is-spa": {
+        "promote": true,
+        "rule": "M1",
+        "signal": "is_spa=True",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": true,
+        "rule": "M6/M1",
+        "signal": "is_spa=True",
+        "truth": true
+      }
+    },
+    "bbc-co-uk-0750": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "yicai-com-0212": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": false,
+        "rule": "M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/M3",
+        "signal": "1/5 pages thin (<50 words)",
+        "truth": false
+      }
+    },
+    "sanmarin-nusd-org-0268": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "hive-com-0969": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "blog-oceanprotocol-com-0927": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=None",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "no crawl data; deferred",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": true
+      }
+    },
+    "gourmetpro-co-0343": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "restate-dev-0596": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "jayski-com-0948": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": true
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": true
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "no crawl data; deferred",
+        "truth": true
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": true
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": true
+      }
+    },
+    "accuranker-com-0166": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    },
+    "pharmavite-com-0474": {
+      "M1-is-spa": {
+        "promote": false,
+        "rule": "M1",
+        "signal": "is_spa=False",
+        "truth": false
+      },
+      "M2-seed-words": {
+        "promote": false,
+        "rule": "M2",
+        "signal": "class=blog not gated",
+        "truth": false
+      },
+      "M3-trip-wire": {
+        "promote": null,
+        "rule": "M3",
+        "signal": "only 1 pages crawled",
+        "truth": false
+      },
+      "M5-ratio": {
+        "promote": null,
+        "rule": "M5",
+        "signal": "no html/text byte counts",
+        "truth": false
+      },
+      "M6-cascade": {
+        "promote": false,
+        "rule": "M6/default",
+        "signal": "no cascade rule fired",
+        "truth": false
+      }
+    }
+  }
+}

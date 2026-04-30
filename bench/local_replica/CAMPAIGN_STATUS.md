@@ -12,11 +12,11 @@ Current branch: `feature/speed-recovery-mrr-closure`. Spec:
 | DS-1 | Build local benchmark replica | ✅ done | `bench/local_replica/run.py` |
 | DS-2 | Profile speed regression | ✅ done | sitemap parsing identified as main cost |
 | DS-3 | Recover speed | 🟡 partial | 5.84 → 7.55 p/s; needs final pass to hit 10 p/s |
-| DS-4 | Build labeled dataset | 🟡 in progress | ~26/171 sites done (background, overnight) |
+| DS-4 | Build labeled dataset | 🟡 in progress | 80/171 done; per-site 5-min wallclock cap added after a Playwright hang on `svz-fr-0998`; threshold (≥80) for DS-6 met |
 | DS-5 | Implement detection rules | ✅ done | M1..M6 with 28 unit tests |
-| DS-6 | Run autoresearch sweep | ⏳ blocked on DS-4 | sweep runner ready |
-| DS-7 | Ship winning cascade | 🟡 partial | `markcrawl/dispatch.py` shipped + wired into core.py; trip-wire/terminal hooks pending DS-6 winner confirmation |
-| DS-8 | Final validation | ⏳ blocked on DS-7 | — |
+| DS-6 | Run autoresearch sweep | ✅ done (80-site snapshot) | M6-cascade wins (bal_acc 0.713); M3 trip-wire **rejected** (0/0/10.5% prec/rec/FP). Re-run on full 171 if any margin shifts. |
+| DS-7 | Ship winning cascade | ✅ done | R0–R3 already shipped via `markcrawl/dispatch.py` + wired into core.py; R4 trip-wire NOT shipped (rejected by DS-6). Production cascade matches winning shape. |
+| DS-8 | Final validation | ⏳ blocked on DS-4 finishing | Concurrent DS-4 contention contaminates speed (rust-book 16.8→4.9 p/s under contention) — wait for clean network/disk |
 
 ## DS-2 findings (3 sites × 6 configs, 50 pages each)
 
@@ -76,6 +76,18 @@ Sample early labels:
 - `mopsov-twse-com-tw` → needs_render_js (1520×, but URL also failed Playwright fetch)
 
 Estimated completion: ~10 more hours at current rate.
+
+## DS-6 sweep result (80-site snapshot, 47 definite)
+
+| method | bal_acc | precision | recall | FP rate | n_definite | cost/site |
+|---|---|---|---|---|---|---|
+| **M6-cascade** | **0.713** | 0.500 | 0.500 | 7.3% | 47 | 2.07s |
+| M2-seed-words | 0.642 | 0.500 | 0.333 | 4.9% | 47 | 0.00s |
+| M1-is-spa | 0.583 | 1.000 | 0.167 | 0.0% | 47 | 0.00s |
+| **M3-trip-wire** | **0.447** | 0.000 | 0.000 | 10.5% | 19 | 2.50s |
+| M5-ratio | — | — | — | — | 0 | (no html-bytes signal) |
+
+Positive class is small (6/47 ≈ 13%) — recall is high-variance. M3 produced 2 FP / 0 TP across 19 firings; would degrade the cascade if shipped. Re-run sweep on full 171 once DS-4 finishes if you want tighter intervals; the directional verdict (M3 rejected) won't flip.
 
 ## Key git refs
 
