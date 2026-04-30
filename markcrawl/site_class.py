@@ -66,15 +66,20 @@ _FIRST_SEG_CONTENT: dict[str, str] = {
     "docs":        "docs",
     "documentation": "docs",
     "tutorial":    "docs",
+    "tutorials":   "docs",
     "guide":       "docs",
+    "guides":      "docs",
     "book":        "docs",
     "handbook":    "docs",
     "manual":      "docs",
+    "learn":       "docs",     # graphql.org/learn, codecademy-style
+    "get-started": "docs",     # /en/get-started GitHub support
     # blog-class
     "blog":        "blog",
     "news":        "blog",
     "posts":       "blog",
     "articles":    "blog",
+    "sections":    "blog",     # npr.org/sections/news, washington-post style
 }
 
 # Generic ecom-marker set (must match ``core.py::_ECOMMERCE_CATEGORY_MARKERS``)
@@ -102,7 +107,9 @@ def classify_site(seed_url: str) -> SiteClassification:
     URL-only — no fetches. Generic conventions only (≥3 platforms each).
     Detection priority is encoded in the function order: more-specific
     hostname signals win over first-segment, which wins over deeper
-    path-anywhere markers.
+    path-anywhere markers. Leading locale segments (e.g. ``/de/``,
+    ``/en-US/``) are stripped before first-segment matching, so MDN
+    `/de/docs/Web/CSS` still classifies as docs.
 
     Returns ``SiteClassification`` with the class label and a short
     reason string for logging/debugging.
@@ -111,6 +118,17 @@ def classify_site(seed_url: str) -> SiteClassification:
     host = (parts.hostname or "").lower()
     path = parts.path or "/"
     segs = [s for s in path.split("/") if s]
+
+    # Strip leading locale segment (e.g. /en-US/docs/...) so the actual
+    # content-class signal in the next segment can be detected.
+    try:
+        from .analyzer import locale_segment
+        loc = locale_segment(seed_url)
+        if loc and segs and segs[0].lower() == loc.lower():
+            segs = segs[1:]
+    except Exception:
+        pass
+
     first = segs[0].lower() if segs else ""
 
     # 1. Hostname-prefix signals (most specific source of truth)

@@ -264,8 +264,14 @@ class CrawlEngine:
         # Adaptive throttle
         self._throttle = AdaptiveThrottle(delay, self.progress)
 
-        # Crawl state
+        # Crawl state. `to_visit_low` is a fallback queue used when the
+        # site profile says BFS-from-seed should drain first (currently
+        # gated to wiki class with clustered outlinks via Phase 2 scan
+        # dispatch). When unused it stays empty and behavior matches the
+        # historical single-queue path exactly.
         self.to_visit: Deque[str] = deque()
+        self.to_visit_low: Deque[str] = deque()
+        self.profile: Optional[object] = None  # SiteProfile from scan_site
         self.seen_urls: Set[str] = set()
         self.seen_content: Set[str] = set()
         self.visited_for_links: Set[str] = set()
@@ -606,16 +612,30 @@ class CrawlEngine:
     # -- Batch processing (unified for sequential & concurrent) -------------
 
     def _should_continue(self, max_pages: int) -> bool:
-        return bool(self.to_visit) and (max_pages <= 0 or self.saved_count < max_pages) and not self.interrupted
+        has_work = bool(self.to_visit) or bool(self.to_visit_low)
+        return has_work and (max_pages <= 0 or self.saved_count < max_pages) and not self.interrupted
+
+    def _pop_one(self) -> Optional[str]:
+        """Pop next URL: drain ``to_visit`` (BFS-from-seed when scan dispatch
+        is active; otherwise the only queue) before falling back to
+        ``to_visit_low`` (sitemap-broad, only populated under wiki-class
+        BFS-priority dispatch — empty in default behavior)."""
+        if self.to_visit:
+            return self.to_visit.popleft()
+        if self.to_visit_low:
+            return self.to_visit_low.popleft()
+        return None
 
     def _collect_batch(self, base_netloc: str, max_pages: int) -> List[str]:
         """Pop up to ``concurrency`` eligible URLs from the queue."""
         batch_size = max(1, self.concurrency)
         batch: List[str] = []
-        while self.to_visit and len(batch) < batch_size:
+        while (self.to_visit or self.to_visit_low) and len(batch) < batch_size:
             if max_pages > 0 and self.saved_count + len(batch) >= max_pages:
                 break
-            url = self.to_visit.popleft()
+            url = self._pop_one()
+            if url is None:
+                break
             if url in self.seen_urls:
                 continue
             if not self.in_scope(url, base_netloc):
@@ -806,8 +826,14 @@ class AsyncCrawlEngine:
         else:
             self._executor = None
 
-        # Crawl state
+        # Crawl state. `to_visit_low` is a fallback queue used when the
+        # site profile says BFS-from-seed should drain first (currently
+        # gated to wiki class with clustered outlinks via Phase 2 scan
+        # dispatch). When unused it stays empty and behavior matches the
+        # historical single-queue path exactly.
         self.to_visit: Deque[str] = deque()
+        self.to_visit_low: Deque[str] = deque()
+        self.profile: Optional[object] = None  # SiteProfile from scan_site
         self.seen_urls: Set[str] = set()
         self.seen_content: Set[str] = set()
         self.visited_for_links: Set[str] = set()
@@ -1094,15 +1120,25 @@ class AsyncCrawlEngine:
     # -- Batch processing (async) -------------------------------------------
 
     def _should_continue(self, max_pages: int) -> bool:
-        return bool(self.to_visit) and (max_pages <= 0 or self.saved_count < max_pages) and not self.interrupted
+        has_work = bool(self.to_visit) or bool(self.to_visit_low)
+        return has_work and (max_pages <= 0 or self.saved_count < max_pages) and not self.interrupted
+
+    def _pop_one(self) -> Optional[str]:
+        if self.to_visit:
+            return self.to_visit.popleft()
+        if self.to_visit_low:
+            return self.to_visit_low.popleft()
+        return None
 
     def _collect_batch(self, base_netloc: str, max_pages: int) -> List[str]:
         batch_size = max(1, self.concurrency * 2)
         batch: List[str] = []
-        while self.to_visit and len(batch) < batch_size:
+        while (self.to_visit or self.to_visit_low) and len(batch) < batch_size:
             if max_pages > 0 and self.saved_count + len(batch) >= max_pages:
                 break
-            url = self.to_visit.popleft()
+            url = self._pop_one()
+            if url is None:
+                break
             if url in self.seen_urls:
                 continue
             if not self.in_scope(url, base_netloc):
@@ -1346,6 +1382,7 @@ def crawl(
     user_agent: Optional[str] = DEFAULT_UA,
     render_js: bool = False,
     auto_render_js: bool = False,
+    auto_scan: bool = False,
     auto_path_scope: bool = True,
     auto_path_priority: bool = True,
     concurrency: int = 1,
@@ -1495,6 +1532,7 @@ def crawl(
             i18n_filter=i18n_filter,
             title_at_top=title_at_top,
             auto_path_priority=auto_path_priority,
+            auto_scan=auto_scan,
         )
 
     return _crawl_sync(
@@ -1512,6 +1550,7 @@ def crawl(
         download_images=download_images, min_image_size=min_image_size,
         i18n_filter=i18n_filter, title_at_top=title_at_top,
         auto_path_priority=auto_path_priority,
+        auto_scan=auto_scan,
         screenshot_config=screenshot_config,
     )
 
@@ -1548,6 +1587,7 @@ def _crawl_sync(
     title_at_top: bool = False,
     screenshot_config: Optional[ScreenshotConfig] = None,
     auto_path_priority: bool = True,
+    auto_scan: bool = False,
 ) -> CrawlResult:
     """Synchronous crawl path using ThreadPoolExecutor."""
     engine = CrawlEngine(
@@ -1601,6 +1641,34 @@ def _crawl_sync(
             engine.progress("[info] no saved state found, starting fresh")
 
     if not resumed:
+        # Phase 2 dispatch: scan to detect site shape, then choose strategy.
+        # When the site is wiki-class with clustered seed outlinks (e.g.
+        # wikipedia, gentoo), routing sitemap URLs to the LOW-priority queue
+        # lets BFS-from-seed drain the topical neighborhood first — closes
+        # the wiki -0.34 gap measured in v096_40site_eval. Other classes
+        # preserve current behavior (sitemap → main queue, drains FIFO).
+        wiki_bfs_priority = False
+        if auto_scan:
+            try:
+                from .scan import scan_site
+                engine.profile = scan_site(base_url, session=engine.session, timeout=min(timeout, 10))
+                engine.progress(f"[info] scan: {engine.profile.summary()}")
+                # Phase 2 dispatch: wiki class + clustered outlinks → BFS-from-seed
+                if (engine.profile.url_class == "wiki"
+                        and engine.profile.seed_outlinks_clustered):
+                    wiki_bfs_priority = True
+                    engine.progress("[info] dispatch: wiki BFS-from-seed priority queue")
+                # Phase 6 dispatch: SPA detected at scan time → auto-promote render_js.
+                # Reuses the scan's is_spa signal so we don't duplicate the probe
+                # fetch that auto_render_js does. Conservative: only promote, never
+                # demote (if user explicitly set render_js=False AND scan disagrees,
+                # we trust the scan).
+                if engine.profile.is_spa and not engine.render_js:
+                    engine.progress("[info] dispatch: SPA detected — promoting to render_js=True")
+                    engine.render_js = True
+            except Exception as exc:
+                logger.debug("auto_scan failed for %s: %s", base_url, exc)
+
         if use_sitemap:
             for sitemap_url in discover_sitemaps(engine.session, base_url, robots_text=engine._robots_text):
                 engine.seeds.extend(parse_sitemap_xml(engine.session, sitemap_url, timeout))
@@ -1608,13 +1676,21 @@ def _crawl_sync(
             engine.seeds = [u for u in engine.seeds if engine.in_scope(u, base_netloc)]
             engine.seeds = [u for u in engine.seeds if engine.allowed(u)]
             engine.seeds = [u for u in engine.seeds if not engine.path_excluded(u)]
+            target_queue = engine.to_visit_low if wiki_bfs_priority else engine.to_visit
             for u in engine.seeds:
-                engine.to_visit.append(u)
+                target_queue.append(u)
             if engine.seeds:
                 engine.total_planned = len(engine.seeds)
-                engine.progress(f"[info] sitemap discovered {engine.total_planned} in-scope page(s)")
+                queue_label = "low (BFS-from-seed wins)" if wiki_bfs_priority else "main"
+                engine.progress(f"[info] sitemap discovered {engine.total_planned} in-scope page(s) → {queue_label} queue")
 
-        if not engine.to_visit:
+        # Always seed base_url to the FRONT of the main queue when wiki
+        # BFS-priority is active (so its outlinks expand HIGH bucket first).
+        # Otherwise preserve current behavior: only add if main queue empty.
+        if wiki_bfs_priority and base_url not in engine._seed_urls:
+            engine.to_visit.appendleft(base_url)
+            engine._seed_urls.add(base_url)
+        elif not engine.to_visit and not engine.to_visit_low:
             engine.to_visit.append(base_url)
             engine._seed_urls.add(base_url)
             engine.progress("[info] no sitemap seeds available; using base URL as crawl seed")
@@ -1705,6 +1781,7 @@ def _crawl_async(
     i18n_filter: bool = False,
     title_at_top: bool = False,
     auto_path_priority: bool = True,
+    auto_scan: bool = False,
 ) -> CrawlResult:
     """Async crawl path using native asyncio event loop."""
 
@@ -1757,6 +1834,20 @@ def _crawl_async(
                 engine.progress("[info] no saved state found, starting fresh")
 
         if not resumed:
+            # Phase 2 dispatch (sync version mirrored above)
+            wiki_bfs_priority = False
+            if auto_scan:
+                try:
+                    from .scan import scan_site
+                    engine.profile = scan_site(base_url, timeout=min(timeout, 10))
+                    engine.progress(f"[info] scan: {engine.profile.summary()}")
+                    if (engine.profile.url_class == "wiki"
+                            and engine.profile.seed_outlinks_clustered):
+                        wiki_bfs_priority = True
+                        engine.progress("[info] dispatch: wiki BFS-from-seed priority queue")
+                except Exception as exc:
+                    logger.debug("auto_scan failed for %s: %s", base_url, exc)
+
             if use_sitemap:
                 robots_text = engine._robots_text
                 sitemaps: List[str] = []
@@ -1774,13 +1865,17 @@ def _crawl_async(
                 engine.seeds = [u for u in engine.seeds if engine.in_scope(u, base_netloc)]
                 engine.seeds = [u for u in engine.seeds if engine.allowed(u)]
                 engine.seeds = [u for u in engine.seeds if not engine.path_excluded(u)]
+                target_queue = engine.to_visit_low if wiki_bfs_priority else engine.to_visit
                 for u in engine.seeds:
-                    engine.to_visit.append(u)
+                    target_queue.append(u)
                 if engine.seeds:
                     engine.total_planned = len(engine.seeds)
                     engine.progress(f"[info] sitemap discovered {engine.total_planned} in-scope page(s)")
 
-            if not engine.to_visit:
+            if wiki_bfs_priority and base_url not in engine._seed_urls:
+                engine.to_visit.appendleft(base_url)
+                engine._seed_urls.add(base_url)
+            elif not engine.to_visit and not engine.to_visit_low:
                 engine.to_visit.append(base_url)
                 engine._seed_urls.add(base_url)
                 engine.progress("[info] no sitemap seeds available; using base URL as crawl seed")
