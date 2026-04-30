@@ -31,9 +31,12 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import multiprocessing as mp
 import os
 import random
 import re
+import signal
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -77,8 +80,10 @@ def load_sites() -> List[dict]:
 
 # ---------------------------- Crawl + extract -----------------------------
 
-def crawl_site(site: dict, out_dir: Path, dispatch_kwargs: dict) -> Tuple[int, float]:
-    """Crawl one site. Return (pages_saved, wallclock_sec)."""
+def _crawl_site_inline(site: dict, out_dir: Path,
+                       dispatch_kwargs: dict) -> Tuple[int, float]:
+    """Direct crawl in the current process. Used inside the subprocess
+    target; not for direct use from main."""
     out_dir.mkdir(parents=True, exist_ok=True)
     kwargs = dict(
         base_url=site["url"], out_dir=str(out_dir), fmt="markdown",
@@ -95,6 +100,100 @@ def crawl_site(site: dict, out_dir: Path, dispatch_kwargs: dict) -> Tuple[int, f
     except Exception as exc:
         log.warning("crawl failed for %s: %s", site["name"], exc)
         pages = 0
+    return pages, time.perf_counter() - t0
+
+
+def _crawl_site_subprocess_target(site, out_dir, dispatch_kwargs, conn):
+    try:
+        os.setsid()
+    except Exception:
+        pass
+    try:
+        pages, wall = _crawl_site_inline(site, Path(out_dir), dispatch_kwargs)
+    except BaseException as exc:
+        conn.send((0, 0.0, f"subprocess_crash:{exc!r}"[:200]))
+        conn.close()
+        return
+    conn.send((pages, wall, None))
+    conn.close()
+
+
+def _kill_tree(pid: int) -> None:
+    """Kill pid and all descendants. Best effort."""
+    try:
+        out = subprocess.check_output(["pgrep", "-P", str(pid)],
+                                      text=True, stderr=subprocess.DEVNULL)
+        for child in out.split():
+            _kill_tree(int(child))
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.kill(pid, sig)
+        except ProcessLookupError:
+            return
+        time.sleep(0.5)
+
+
+def _count_pages_jsonl(out_dir: Path) -> int:
+    """Recover page count from the partial pages.jsonl after a kill."""
+    jsonl = out_dir / "pages.jsonl"
+    if not jsonl.is_file():
+        return 0
+    try:
+        return sum(1 for line in jsonl.open() if line.strip())
+    except Exception:
+        return 0
+
+
+def crawl_site(site: dict, out_dir: Path, dispatch_kwargs: dict,
+               max_wall_sec: int = 600) -> Tuple[int, float]:
+    """Crawl one site under a per-site wallclock cap.
+
+    Runs the crawl in a multiprocessing.spawn subprocess. If the
+    subprocess (and its Playwright child) doesn't return within
+    max_wall_sec, the whole process tree is hard-killed and we return
+    the page count recovered from any partial pages.jsonl on disk.
+
+    The cap matters because some YAML-configured caps (huggingface
+    max=300 with render_js) combined with target rate-limiting can
+    produce single-site wallclocks of hours. The leaderboard p/s metric
+    is rate, not absolute pages, so capped runs are still comparable.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    ctx = mp.get_context("spawn")
+    parent_conn, child_conn = ctx.Pipe(duplex=False)
+    p = ctx.Process(
+        target=_crawl_site_subprocess_target,
+        args=(site, str(out_dir), dispatch_kwargs, child_conn),
+        daemon=False,
+    )
+    t0 = time.perf_counter()
+    p.start()
+    child_conn.close()
+    p.join(max_wall_sec)
+    if p.is_alive():
+        log.warning("[%s] wallclock cap %ds hit — killing tree",
+                    site["name"], max_wall_sec)
+        _kill_tree(p.pid)
+        p.join(10)
+        if p.is_alive():
+            p.kill()
+            p.join(5)
+        # Recover whatever pages.jsonl already had on disk
+        pages = _count_pages_jsonl(out_dir)
+        wall = time.perf_counter() - t0
+        return pages, wall
+    if parent_conn.poll(2):
+        try:
+            pages, wall, err = parent_conn.recv()
+            if err:
+                log.warning("[%s] subprocess returned error: %s",
+                            site["name"], err)
+            return pages, wall
+        except EOFError:
+            pass
+    pages = _count_pages_jsonl(out_dir)
     return pages, time.perf_counter() - t0
 
 
@@ -443,6 +542,8 @@ def main() -> None:
                    help="Random seed for --rotated-sample. Default 42.")
     p.add_argument("--full-report", action="store_true",
                    help="Emit 4 leaderboard dimensions (pages/sec, content_signal_pct, cost_at_scale_dollars, pipeline_timing_sec). See SC-6 in specs/v099-...md.")
+    p.add_argument("--max-wallclock-per-site", type=int, default=600,
+                   help="Per-site wallclock cap in seconds. Hard-kills the crawl process tree on cap. Default 600 (10 min).")
     args = p.parse_args()
 
     if args.rotated_pool:
@@ -490,7 +591,8 @@ def main() -> None:
             log.info("  reuse cached crawl: %d pages", n)
             pages, wall = n, 0.0
         else:
-            pages, wall = crawl_site(s, out, dispatch)
+            pages, wall = crawl_site(s, out, dispatch,
+                                     max_wall_sec=args.max_wallclock_per_site)
             log.info("  done: %d pages in %.1fs (%.2f p/s)",
                      pages, wall, pages / wall if wall > 0 else 0.0)
         # Score
