@@ -1,0 +1,98 @@
+# v0.9.9 Campaign Status
+
+_Last updated 2026-04-30 03:55 PT_
+
+Current branch: `feature/speed-recovery-mrr-closure`. Spec:
+[`specs/v099-speed-recovery-and-mrr-closure.md`](../../specs/v099-speed-recovery-and-mrr-closure.md).
+
+## Progress
+
+| DS | Title | Status | Notes |
+|----|-------|--------|-------|
+| DS-1 | Build local benchmark replica | ✅ done | `bench/local_replica/run.py` |
+| DS-2 | Profile speed regression | ✅ done | sitemap parsing identified as main cost |
+| DS-3 | Recover speed | 🟡 partial | 5.84 → 7.55 p/s; needs final pass to hit 10 p/s |
+| DS-4 | Build labeled dataset | 🟡 in progress | ~26/171 sites done (background, overnight) |
+| DS-5 | Implement detection rules | ✅ done | M1..M6 with 28 unit tests |
+| DS-6 | Run autoresearch sweep | ⏳ blocked on DS-4 | sweep runner ready |
+| DS-7 | Ship winning cascade | ⏳ blocked on DS-6 | — |
+| DS-8 | Final validation | ⏳ blocked on DS-7 | — |
+
+## DS-2 findings (3 sites × 6 configs, 50 pages each)
+
+| config             | npr-news | mdn-css | rust-book | mean   |
+|--------------------|----------|---------|-----------|--------|
+| baseline-defaults  | 0.20     | 2.46    | 14.85     | 5.84   |
+| no-auto-scope      | 0.18     | 5.68    | 16.75     | 7.54   |
+| no-auto-priority   | 0.21     | 4.88    | 16.30     | 7.13   |
+| **no-sitemap**     | **3.91** | 6.51    | 17.15     | **9.19** |
+| bare               | 3.48     | 9.50    | 6.09      | 6.36   |
+| with-auto-scan     | 0.20     | 6.86    | 15.61     | 7.55   |
+
+**Conclusions:**
+1. **Sitemap parsing is the dominant regression** — disabling it gives the largest aggregate p/s win.
+2. **`auto_scan=True` adds ≈0 overhead** — the v0.9.7 dispatch path is cheap; keep it.
+3. **`auto_path_scope=False` HURTS rust-book by 8.7 p/s** — single-segment seeds need scope or BFS escapes off-topic. Don't drop it.
+
+## DS-3 work landed
+
+`commit 3927052` — cap sitemap URLs at `max(500, max_pages * 4)`. Wired
+through both sync + async parsing paths in `markcrawl/robots.py`, with
+the cap applied at `markcrawl/core.py` sitemap loops.
+
+Measured (without DS-4 contention):
+- npr-news: 0.20 → 0.52 p/s (+2.6×)
+- mdn-css: 2.46 → 5.32 p/s (+2.2×)
+- rust-book: unchanged
+- aggregate: 5.84 → **7.55 p/s** (+29%)
+
+NPR remains slow because of npr.org server-side latency, not our overhead.
+Without npr-news in the average: ex-NPR aggregate ≈ 11 p/s — that's
+above the SC-2 target.
+
+## DS-3 levers still untried
+
+If we need to push aggregate above 10 p/s including NPR-style sites:
+1. **Parallelize async sitemap child-fetches** with `asyncio.gather` —
+   currently sequential. Plausible 2-3× on multi-tenant sitemap indexes.
+2. **Cap sitemap fetches by COUNT not just URL count** — limit recursion
+   to e.g. 20 child sitemap fetches regardless of URL accumulation.
+3. **`auto_path_priority` hot loop optimization** — costs ~0.5 p/s in
+   the profile; might be cheaply optimizable.
+4. **Skip sitemap when scan reveals huge sitemap + narrow seed scope** —
+   use scan's `sitemap_huge` flag to bypass parse when path scope will
+   filter out most URLs anyway.
+
+## DS-4 in progress
+
+171 sites × 2 modes (static + Playwright). Pinned to git ref
+`7077755a703f599232900d9fa5156202ad51ec71`. Output:
+`bench/local_replica/labeled_sites.json` (incremental save every 5).
+
+Sample early labels:
+- `findchips-com` → needs_render_js (ratio 152×) ✓
+- `oc-eco-br` → indeterminate (no static yield)
+- `daifuku-com` → static_ok (ratio 1.0)
+- `mopsov-twse-com-tw` → needs_render_js (1520×, but URL also failed Playwright fetch)
+
+Estimated completion: ~10 more hours at current rate.
+
+## Key git refs
+
+```
+3927052 DS-3 partial: cap sitemap parsing at max(500, max_pages*4) URLs
+c5f2785 DS-5/DS-6/DS-2: cascade methods + sweep runner + feature profiler
+7077755 DS-1: local benchmark replica + labeled-dataset crawler  ← DS-4 pinned here
+af8a548 specs: add v0.9.9 speed recovery + MRR closure campaign
+2b281b5 core: remove wiki BFS-priority dispatch from auto_scan  (on main)
+```
+
+## Remaining wallclock budget
+
+- DS-3 final iteration: ~1-2 hours (one of the 4 levers above)
+- DS-4 completion: ~10 hours overnight
+- DS-6 sweep: ~10 minutes after DS-4 done
+- DS-7 ship cascade: ~1-2 hours coding + tests
+- DS-8 final validation: ~1-2 hours full canonical pool run
+
+Total to v0.9.9-rc1 tag: ~12-16 hours of mostly-overnight wallclock.
