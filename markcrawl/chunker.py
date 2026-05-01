@@ -309,6 +309,8 @@ def chunk_markdown(
     auto_extract_title: bool = False,
     prepend_first_paragraph: bool = False,
     strip_markdown_links: bool = False,
+    min_words: int = 0,
+    section_overlap_words: int = 0,
 ) -> List[Chunk]:
     """Split Markdown text into semantically coherent chunks.
 
@@ -353,6 +355,18 @@ def chunk_markdown(
         If True, rewrite ``[anchor](url)`` to just ``anchor`` before
         chunking. Removes URL noise from embeddings while keeping the
         human-readable anchor text as semantic signal.
+    min_words:
+        If > 0, merge consecutive chunks until each is at least this size
+        (subject to ``max_words`` ceiling). Heading-driven splits often
+        produce many small chunks (one per ``##``) that lose retrieval
+        context; merging brings the average chunk size up to the band
+        retrieval embeddings prefer (~200-300 words).
+    section_overlap_words:
+        If > 0, prefix each chunk after the first with the trailing
+        ``section_overlap_words`` words of the previous chunk. Adds a
+        recall safety net for queries whose answer straddles a section
+        boundary. Independent of ``overlap_words`` (which only kicks in
+        on the word-fallback path for oversized single paragraphs).
 
     Returns
     -------
@@ -424,6 +438,40 @@ def chunk_markdown(
                 if i > 0 and heading_line and not sc_text.lstrip().startswith("#"):
                     sc_text = heading_line + "\n\n" + sc_text
                 final_chunks.append((sc_text, crumbs))
+
+    # Step 4 (Track D): merge consecutive small chunks toward min_words,
+    # subject to the max_words ceiling. The first chunk's crumbs are
+    # carried into the merged chunk (the merged content typically lives
+    # under the same H2 ancestor anyway since paragraphs/H3s only get
+    # merged when their parent section is short).
+    if min_words and min_words > 0:
+        merged: List[tuple[str, List[str]]] = []
+        for chunk_str, crumbs in final_chunks:
+            if merged:
+                prev_str, prev_crumbs = merged[-1]
+                if (_word_count(prev_str) < min_words
+                        and _word_count(prev_str) + _word_count(chunk_str) <= max_words):
+                    merged[-1] = (prev_str + "\n\n" + chunk_str, prev_crumbs)
+                    continue
+            merged.append((chunk_str, crumbs))
+        final_chunks = merged
+
+    # Step 5 (Track D): apply section-level overlap by prepending the
+    # trailing N words of the previous chunk to each subsequent chunk.
+    # Provides a recall safety net for queries that straddle section
+    # boundaries.
+    if section_overlap_words and section_overlap_words > 0 and len(final_chunks) > 1:
+        with_overlap: List[tuple[str, List[str]]] = [final_chunks[0]]
+        for i in range(1, len(final_chunks)):
+            prev_str, _ = final_chunks[i - 1]
+            curr_str, curr_crumbs = final_chunks[i]
+            prev_words = prev_str.split()
+            n = min(section_overlap_words, len(prev_words))
+            if n > 0:
+                tail = " ".join(prev_words[-n:])
+                curr_str = f"...{tail}\n\n{curr_str}"
+            with_overlap.append((curr_str, curr_crumbs))
+        final_chunks = with_overlap
 
     # Prepend breadcrumb context — skip H1 chunks (redundant with the heading,
     # and it inflates similarity on generic page-topic queries).

@@ -366,3 +366,76 @@ class TestAdaptiveChunking:
         adaptive = chunk_markdown(code_text, max_words=400, adaptive=True)
         # Adaptive should produce at least as many chunks (smaller size → more chunks)
         assert len(adaptive) >= len(fixed)
+
+
+# Track D — min_words merge + section_overlap_words
+class TestMinWordsMerge:
+    """Track D: merging consecutive small chunks toward min_words."""
+
+    def _multi_section_doc(self, n_sections: int = 14, words_per_section: int = 40) -> str:
+        sections = []
+        for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:n_sections]:
+            body = " ".join(f"word{i}" for i in range(words_per_section))
+            sections.append(f"## Section {letter}\n\n{body}")
+        return "# Title\n\n" + "\n\n".join(sections)
+
+    def test_min_words_zero_preserves_legacy_behavior(self):
+        md = self._multi_section_doc()
+        legacy = chunk_markdown(md, max_words=200)
+        track_d = chunk_markdown(md, max_words=200, min_words=0)
+        assert [c.text for c in legacy] == [c.text for c in track_d]
+
+    def test_min_words_merges_small_adjacent_chunks(self):
+        md = self._multi_section_doc()
+        # Without merge: many ~43-word chunks
+        before = chunk_markdown(md, max_words=200)
+        # With merge: fewer, larger chunks
+        after = chunk_markdown(md, max_words=200, min_words=100)
+        assert len(after) < len(before)
+        # Most merged chunks should be at or above min_words (last one may be smaller)
+        big = [c for c in after if len(c.text.split()) >= 100]
+        assert len(big) >= len(after) - 1
+
+    def test_min_words_respects_max_words_ceiling(self):
+        md = self._multi_section_doc()
+        max_w = 250
+        chunks = chunk_markdown(md, max_words=max_w, min_words=200)
+        for c in chunks:
+            assert len(c.text.split()) <= max_w + 50  # small slack for breadcrumb prefixes
+
+
+class TestSectionOverlap:
+    """Track D: section_overlap_words prefixes a tail of the previous chunk."""
+
+    def _multi_section_doc(self, n_sections: int = 6, words_per_section: int = 80) -> str:
+        sections = []
+        for letter in "ABCDEFG"[:n_sections]:
+            body = " ".join(f"word{i}" for i in range(words_per_section))
+            sections.append(f"## Section {letter}\n\n{body}")
+        return "# Title\n\n" + "\n\n".join(sections)
+
+    def test_section_overlap_zero_preserves_legacy(self):
+        md = self._multi_section_doc()
+        legacy = chunk_markdown(md, max_words=120, min_words=80)
+        track_d = chunk_markdown(md, max_words=120, min_words=80, section_overlap_words=0)
+        assert [c.text for c in legacy] == [c.text for c in track_d]
+
+    def test_section_overlap_prefixes_subsequent_chunks(self):
+        md = self._multi_section_doc()
+        chunks = chunk_markdown(md, max_words=120, min_words=80, section_overlap_words=10)
+        # First chunk has no overlap
+        assert not chunks[0].text.startswith("...")
+        # Subsequent chunks start with the "..." marker
+        for c in chunks[1:]:
+            assert c.text.lstrip().startswith("..."), \
+                f"chunk {c.index} should start with '...' marker, got: {c.text[:30]!r}"
+
+    def test_section_overlap_inflates_chunk_size_by_overlap_amount(self):
+        md = self._multi_section_doc()
+        n = 15
+        without_ov = chunk_markdown(md, max_words=120, min_words=80, section_overlap_words=0)
+        with_ov = chunk_markdown(md, max_words=120, min_words=80, section_overlap_words=n)
+        # All overlapped chunks (except first) should be ~n words longer
+        for i in range(1, len(without_ov)):
+            d = len(with_ov[i].text.split()) - len(without_ov[i].text.split())
+            assert d >= n - 2, f"chunk {i} should be ≥{n-2} words larger; was {d}"
