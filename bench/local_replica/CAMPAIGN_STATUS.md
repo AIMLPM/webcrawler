@@ -1,6 +1,6 @@
 # v0.9.9 Campaign Status
 
-_Last updated 2026-04-30 03:55 PT_
+_Last updated 2026-04-30 — DS-4 complete, DS-8 in flight._
 
 Current branch: `feature/speed-recovery-mrr-closure`. Spec:
 [`specs/v099-speed-recovery-and-mrr-closure.md`](../../specs/v099-speed-recovery-and-mrr-closure.md).
@@ -11,12 +11,15 @@ Current branch: `feature/speed-recovery-mrr-closure`. Spec:
 |----|-------|--------|-------|
 | DS-1 | Build local benchmark replica | ✅ done | `bench/local_replica/run.py` |
 | DS-2 | Profile speed regression | ✅ done | sitemap parsing identified as main cost |
-| DS-3 | Recover speed | 🟡 partial | 5.84 → 7.55 p/s; needs final pass to hit 10 p/s |
-| DS-4 | Build labeled dataset | 🟡 in progress | 80/171 done; per-site 5-min wallclock cap added after a Playwright hang on `svz-fr-0998`; threshold (≥80) for DS-6 met |
+| DS-3 | Recover speed (cap + 8s timeout) | ✅ done | 5.84 → 7.55 p/s aggregate; ex-NPR ≈11 p/s |
+| DS-3.5 | Parallelize async sitemap fetches | ✅ done | asyncio.gather with sem=10; 7 new tests; targets npr-news drag |
+| DS-4 | Build labeled dataset | ✅ done | **171/171 labeled** (14 needs_render_js / 102 static_ok / 55 indeterminate); per-site 5-min wallclock cap survived 3+ Playwright hangs |
 | DS-5 | Implement detection rules | ✅ done | M1..M6 with 28 unit tests |
-| DS-6 | Run autoresearch sweep | ✅ done (80-site snapshot) | M6-cascade wins (bal_acc 0.713); M3 trip-wire **rejected** (0/0/10.5% prec/rec/FP). Re-run on full 171 if any margin shifts. |
-| DS-7 | Ship winning cascade | ✅ done | R0–R3 already shipped via `markcrawl/dispatch.py` + wired into core.py; R4 trip-wire NOT shipped (rejected by DS-6). Production cascade matches winning shape. |
-| DS-8 | Final validation | ⏳ blocked on DS-4 finishing | Concurrent DS-4 contention contaminates speed (rust-book 16.8→4.9 p/s under contention) — wait for clean network/disk |
+| DS-6 | Run autoresearch sweep | ✅ done (full 171) | M6-cascade wins both at 80-site snapshot (bal_acc 0.713, FP 7.3%) and full 171 (bal_acc 0.664, **FP 2.9%**). M3 trip-wire **rejected** at both scales. |
+| DS-7 | Ship winning cascade | ✅ done | R0–R3 shipped via `markcrawl/dispatch.py` + wired into core.py; R4 trip-wire NOT shipped (rejected by DS-6 at full data scale). |
+| DS-8.1–8.5 | DS-8 pre-staging | ✅ done | spec drift fix, `--rotated-sample`, `--full-report`, SC-5 log line, SC-4 rebaseline |
+| DS-8 | Final validation | ✅ done | v0.9.9-rc1: speed +6.6% vs v0.9.8 baseline, MRR flat (within noise), HF +0.164 MRR, all 4 leadership dimensions improved. Full report: [`v099_release_report.md`](v099_release_report.md). REPLICA.md ships calibration. |
+| **TAG** | **v0.9.9-rc1** | ✅ ready | `git tag v0.9.9-rc1` after final commit |
 
 ## DS-2 findings (3 sites × 6 configs, 50 pages each)
 
