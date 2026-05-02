@@ -75,18 +75,39 @@ v0.10-rc1 tag. **Track D runs first** because the chunker substrate it
 produces (better chunk shape) propagates to every other track's MRR
 measurement.
 
-- **Track D (chunker, FIRST)** — autoresearch-style sweep
-  `(max_words × min_words × section_overlap_words × strategy)` on
-  cached v0.9.9-rc1 crawls. New `min_words` parameter merges
-  consecutive heading-driven small chunks toward a target size; new
-  `section_overlap_words` parameter prefixes each chunk with the
-  trailing N words of the previous chunk for boundary-recall safety.
-  Both default to 0 (backward-compatible with v0.9.9). The sweep picks
-  the (max, min, overlap) knee that lifts MRR without inflating chunk
-  count past the cost-at-scale ceiling. Pattern follows
-  [karpathy/autoresearch](https://github.com/karpathy/autoresearch):
-  fixed metric (MRR mean), TSV-logged results, resumable on existing
-  TSV, simplicity criterion (small lift + ugly knob → discard).
+- **Track D (chunker, FIRST) — ✅ DONE 2026-05-01.** Autoresearch-style
+  sweep across 56 configs (5 phases) on cached v0.9.9-rc1 crawls. New
+  `min_words` parameter merges consecutive heading-driven small chunks
+  toward a target size; new `section_overlap_words` parameter prefixes
+  each chunk with the trailing N words of the previous chunk for
+  boundary-recall safety. Both default to 0 (backward-compatible with
+  v0.9.9). **Winner verified across 6 cached trial runs and on OpenAI
+  3-small (production embedder):**
+
+  ```python
+  chunk_markdown(text,
+      max_words=400,            # unchanged
+      min_words=250,            # NEW
+      section_overlap_words=40, # NEW
+      strip_markdown_links=True, # NEW
+  )
+  ```
+
+  Multi-trial median lift over baseline-v099:
+  - st-mini, 6 trials: +0.0476 MRR (+14.0%, all 6 trials positive)
+  - OpenAI 3-small, 3 trials: +0.0511 MRR (+15.2%, all 3 positive)
+
+  Per-category gains (OpenAI 3-small): js-rendered +100%,
+  code-example +71%, api-function +23%, conceptual +12%. Per-site:
+  rust-book +0.31, kubernetes-docs +0.11, stripe-docs +0.07,
+  react-dev +0.06, mdn-css +0.04, no real regressions.
+
+  Cherry-pick ceiling (per-site dispatcher upper bound across 32
+  configs): 0.4343 MRR = +24.4% over baseline. The single-config
+  winner captures ~63% of that ceiling.
+
+  Full report: [`bench/local_replica/track_d_report.md`](../bench/local_replica/track_d_report.md).
+  Sweep results TSV: `bench/local_replica/chunk_sweep_results.tsv`.
 
 - **Track A (reranker)** — implement an optional cross-encoder rerank
   stage in retrieval; default off until validated. Score top-K
