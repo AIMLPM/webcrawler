@@ -114,13 +114,14 @@ sites:
     difficulty: [dynamic_js, paginated]
     max_pages: 200
     render_js: true
-    # Track-C v0.10 fix: auto_path_scope's deepest-marker heuristic
-    # over-restricts on Newegg because products live at sibling top-level
-    # paths (/<product-slug>/p/<sku>) rather than under a common ancestor
-    # with the seed. Without this override the crawl stops at the seed
-    # (1/200 pages); with it we get whole-host BFS which discovers product
-    # pages. See bench/local_replica/ecom_diagnosis.md.
-    auto_path_scope: false
+    # Track-C v0.10 status: auto_path_scope=false fixes the scope
+    # over-restriction (1 page → 14+ pages crawled), but newegg responds
+    # with CAPTCHA pages on volume crawls. The fix exposes an anti-bot
+    # wall that needs UA rotation / retry-with-jitter to clear (deferred
+    # to v0.11). Until then the canonical eval reuses the v0.9.9 cached
+    # crawl which happened to capture the real seed page before anti-bot
+    # engaged. Per-site auto_path_scope override in the harness is
+    # plumbed for future use. See bench/local_replica/track_c_report.md.
     description: "Newegg electronics catalog -- product listings with pricing, clean /<slug>/p/<id> URL pattern"
     has_queries: true
 
