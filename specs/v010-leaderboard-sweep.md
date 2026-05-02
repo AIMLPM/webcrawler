@@ -109,13 +109,20 @@ measurement.
   Full report: [`bench/local_replica/track_d_report.md`](../bench/local_replica/track_d_report.md).
   Sweep results TSV: `bench/local_replica/chunk_sweep_results.tsv`.
 
-- **Track A (reranker)** — implement an optional cross-encoder rerank
-  stage in retrieval; default off until validated. Score top-K
-  embedding-retrieved candidates with a small cross-encoder (e.g.
-  `cross-encoder/ms-marco-MiniLM-L-6-v2` ≈ 22M params, <50ms/query for
-  K=20). Validate +MRR / latency cost on the canonical pool **using
-  Track D's chunk shape** so the lift is measured on top of the better
-  chunks, not the v0.9.9 baseline.
+- **Track A (reranker) — ❌ FAILED 2026-05-01.** Cross-encoder rerank
+  stage implemented (`markcrawl/retrieval.py`, `--rerank` on the
+  harness). Validated on the 11-site canonical pool using Track D's
+  chunk shape: **mean MRR regressed −0.0131** (0.4031 → 0.3900) vs
+  the SC-A1 bar of +0.030; two categories regressed beyond the SC
+  threshold (mdn-css −0.094, huggingface-transformers −0.083); only
+  rust-book (tutorial) gained robustly (+0.069). Latency at K=20
+  averaged 241.7 ms/query on dev-laptop CPU vs the SC-A2 budget of
+  100 ms. **Decision:** rerank stays opt-in (off by default); ms-marco
+  cross-encoder bias toward natural-language prose hurts technical
+  api-docs/reference content. Code retained as infrastructure for
+  v0.11 per-class dispatch (rerank tutorial-class only) and alternate
+  reranker models. Full report:
+  [`bench/local_replica/track_a_report.md`](../bench/local_replica/track_a_report.md).
 
 - **Track B (embedder)** — abstract the embedder behind a thin
   interface; benchmark `text-embedding-3-small` (current),
@@ -200,39 +207,31 @@ under v0.10.x point releases.
 ### Track A — Cross-encoder reranker
 
 #### DS-A1: Profile current retrieval ceiling
-- [ ] Status: pending
-  - **What:** For each canonical site, measure top-K recall (does the
-    answer URL appear in top 10/20/50 embedding-retrieved chunks?)
-    versus position rank within those K. Distinguishes "answer never
-    retrieved" (recall problem, no fix from rerank) from "answer
-    retrieved but ranked low" (rerank-fixable).
-  - **Output:** `bench/local_replica/recall_vs_rank.json` per site +
-    aggregate. Also a category-level pivot.
-  - **Test:** `tests/test_retrieval_recall.py`
-  - **Failure mode:** If <50% of mis-MRR cases are recall-fixable, rerank
-    won't lift much. Pivot to chunking/embedding work instead.
+- [x] Status: done (subsumed into DS-A3 — the validation run emits both
+      cosine and rerank ranks per query, which gives the same recall/
+      rank pivot directly).
+  - **Output:** Per-query rank distribution in `runs/v010-rerank-A/<site>/
+    report.json`. Aggregate: 53% of queries (55/104) miss top-20 entirely
+    (recall-bounded, not rerank-fixable); 33% retrieved but unchanged by
+    rerank; 6% improved; 9% worsened.
 
-#### DS-A2: Implement rerank stage
-- [ ] Status: pending
-  - **What:** New `markcrawl/retrieval.py` with a `Reranker` class
-    wrapping a `sentence_transformers.CrossEncoder`. Default model
-    `cross-encoder/ms-marco-MiniLM-L-6-v2` (22M params, CPU-friendly).
-    Threading a `rerank: bool = False` arg through `run.py`'s scoring
-    path. K=20 default, configurable.
-  - **Output:** `markcrawl/retrieval.py`, unit tests for score
-    monotonicity + pickleable model loading.
-  - **Test:** `tests/test_retrieval_rerank.py`
-  - **Failure mode:** If `sentence_transformers` adds ≥3s import time
-    to cold start, gate behind a `--rerank` flag (already planned) and
-    document. If model download fails offline, ship local cache path.
+#### DS-A2: Implement rerank stage — ✅ done 2026-05-01
+- [x] `markcrawl/retrieval.py` with `CrossEncoderReranker` (lazy
+      model load, default `cross-encoder/ms-marco-MiniLM-L-6-v2`),
+      re-exported from `markcrawl/__init__.py`.
+- [x] `bench/local_replica/run.py` — `--rerank` and `--rerank-model`
+      flags; `score_site` emits both baseline and rerank metrics +
+      per-site latency in a single pass.
+- [x] `tests/test_retrieval_rerank.py` — 14 tests, FakeModel-injected
+      so no network/model download in CI.
 
-#### DS-A3: Validate on canonical pool
-- [ ] Status: pending
-  - **What:** Run `bench/local_replica/run.py --label v010-rerank-A
-    --rerank` and compare to v0.9.9-rc1 baseline. Check SC-A1 + SC-A2.
-  - **Output:** Comparison report; commit + tests if SC pass.
-  - **Failure mode:** If SC-A1 fails (lift < 0.03), keep rerank off by
-    default and document the per-category breakdown for v0.11.
+#### DS-A3: Validate on canonical pool — ❌ failed 2026-05-01
+- [x] Run executed: `bench/local_replica/runs/v010-rerank-A/`. Mean MRR
+      lift **−0.0131** (need ≥+0.030); two per-category regressions
+      beyond the SC threshold; latency 241.7 ms / query mean (budget
+      100 ms). **Decision:** rerank stays opt-in; defaults unchanged.
+      Full analysis + v0.11 follow-ups in
+      [`bench/local_replica/track_a_report.md`](../bench/local_replica/track_a_report.md).
 
 ### Track B — Embedder swap
 

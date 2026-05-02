@@ -49,6 +49,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from markcrawl.chunker import chunk_markdown  # noqa: E402
 from markcrawl.core import crawl  # noqa: E402
+from markcrawl.retrieval import CrossEncoderReranker  # noqa: E402
 
 REPLICA = Path(__file__).resolve().parent
 QUERIES = REPLICA / "queries"
@@ -269,8 +270,29 @@ def cosine_top_k(query_vec: List[float], chunk_vecs: List[List[float]], k: int =
     return top.tolist()
 
 
-def score_site(site_name: str, jsonl_path: Path) -> dict:
-    """Compute MRR + Hit@K against canonical queries."""
+def _first_match_rank(ordered_indices: List[int], url_match: str,
+                      chunks: List[dict]) -> int | None:
+    """Return the 1-based rank of the first chunk whose URL contains
+    ``url_match``, or ``None`` if no match within ``ordered_indices``."""
+    if not url_match:
+        return None
+    needle = url_match.lower()
+    for rank, idx in enumerate(ordered_indices, start=1):
+        if needle in chunks[idx]["url"].lower():
+            return rank
+    return None
+
+
+def score_site(site_name: str, jsonl_path: Path,
+               reranker: CrossEncoderReranker | None = None) -> dict:
+    """Compute MRR + Hit@K against canonical queries.
+
+    When ``reranker`` is provided, also computes MRR/Hit@K under
+    cross-encoder reranking of the top-20 cosine candidates and emits
+    per-query rerank latency. The baseline (cosine-only) numbers are
+    always computed alongside so a single run produces both columns
+    for direct comparison.
+    """
     qpath = QUERIES / f"{site_name}.json"
     if not qpath.is_file():
         return {"error": f"no queries for {site_name}"}
@@ -303,27 +325,46 @@ def score_site(site_name: str, jsonl_path: Path) -> dict:
     K = [1, 3, 5, 10, 20]
     hits = {k: 0 for k in K}
     rr_sum = 0.0
+    hits_rerank = {k: 0 for k in K} if reranker is not None else None
+    rr_sum_rerank = 0.0
+    rerank_latencies: List[float] = []
     per_query = []
     for qi, q in enumerate(queries):
         url_match = q.get("url_match", "")
         topk = cosine_top_k(query_vecs[qi], chunk_vecs, k=20)
-        # Find first chunk whose URL matches
-        first_rank = None
-        for rank, idx in enumerate(topk, start=1):
-            chunk_url = chunks[idx]["url"]
-            if url_match and url_match.lower() in chunk_url.lower():
-                first_rank = rank
-                break
+        # Baseline (cosine-only) rank
+        first_rank = _first_match_rank(topk, url_match, chunks)
         if first_rank is not None:
             rr_sum += 1.0 / first_rank
             for k in K:
                 if first_rank <= k:
                     hits[k] += 1
-        per_query.append({"query": q["query"][:80], "rank": first_rank,
-                          "url_match": url_match, "covered": first_rank is not None})
+
+        # Reranker rank, if enabled
+        rerank_rank = None
+        if reranker is not None:
+            t_rerank = time.perf_counter()
+            cand_texts = [chunks[i]["text"] for i in topk]
+            order = reranker.rerank(q["query"], cand_texts)
+            rerank_latencies.append(time.perf_counter() - t_rerank)
+            reranked_topk = [topk[j] for j in order]
+            rerank_rank = _first_match_rank(reranked_topk, url_match, chunks)
+            if rerank_rank is not None:
+                rr_sum_rerank += 1.0 / rerank_rank
+                for k in K:
+                    if rerank_rank <= k:
+                        hits_rerank[k] += 1
+
+        per_query.append({
+            "query": q["query"][:80],
+            "rank": first_rank,
+            "url_match": url_match,
+            "covered": first_rank is not None,
+            **({"rerank_rank": rerank_rank} if reranker is not None else {}),
+        })
 
     n = len(queries)
-    return {
+    result = {
         "mrr": rr_sum / n if n else 0.0,
         "n_queries": n,
         "n_chunks": len(chunks),
@@ -331,6 +372,20 @@ def score_site(site_name: str, jsonl_path: Path) -> dict:
         "hits_raw": hits,
         "per_query": per_query,
     }
+    if reranker is not None:
+        sorted_lat = sorted(rerank_latencies)
+        p95_idx = max(0, int(0.95 * (len(sorted_lat) - 1))) if sorted_lat else 0
+        result.update({
+            "mrr_rerank": rr_sum_rerank / n if n else 0.0,
+            "hits_rerank": {f"{k}": f"{hits_rerank[k]}/{n}" for k in K},
+            "hits_rerank_raw": hits_rerank,
+            "rerank_latency_ms_mean": round(
+                1000 * sum(rerank_latencies) / len(rerank_latencies), 2)
+                if rerank_latencies else 0.0,
+            "rerank_latency_ms_p95": round(1000 * sorted_lat[p95_idx], 2)
+                if sorted_lat else 0.0,
+        })
+    return result
 
 
 # ---------------------------- Aggregation -----------------------------
@@ -421,10 +476,20 @@ def summarize(site_results: List[dict], total_wallclock: float,
     crawl_pps = n_pages / crawl_seconds if crawl_seconds > 0 else 0.0
     e2e_pps = n_pages / total_wallclock if total_wallclock > 0 else 0.0
     mrrs = [r["mrr"] for r in site_results if "mrr" in r]
+    rerank_mrrs = [r["mrr_rerank"] for r in site_results if "mrr_rerank" in r]
     by_cat: Dict[str, List[float]] = {}
+    by_cat_rerank: Dict[str, List[float]] = {}
+    rerank_lat_means: List[float] = []
+    rerank_lat_p95s: List[float] = []
     for r in site_results:
         if "mrr" in r:
             by_cat.setdefault(r["category"], []).append(r["mrr"])
+        if "mrr_rerank" in r:
+            by_cat_rerank.setdefault(r["category"], []).append(r["mrr_rerank"])
+        if "rerank_latency_ms_mean" in r:
+            rerank_lat_means.append(r["rerank_latency_ms_mean"])
+        if "rerank_latency_ms_p95" in r:
+            rerank_lat_p95s.append(r["rerank_latency_ms_p95"])
 
     # Per-site p/s for the "ex-NPR" cut. NPR-style sites are server-bound
     # and drag the aggregate; the spec's 8-site bar (and the public
@@ -451,6 +516,20 @@ def summarize(site_results: List[dict], total_wallclock: float,
         "by_category": {c: {"n": len(ms), "mrr_mean": round(sum(ms)/len(ms), 4)}
                         for c, ms in by_cat.items()},
     }
+
+    if rerank_mrrs:
+        out["mrr_rerank_mean"] = round(sum(rerank_mrrs) / len(rerank_mrrs), 4)
+        out["mrr_rerank_median"] = round(sorted(rerank_mrrs)[len(rerank_mrrs)//2], 4)
+        out["mrr_rerank_lift"] = round(
+            out["mrr_rerank_mean"] - out["mrr_mean"], 4)
+        out["by_category_rerank"] = {
+            c: {"n": len(ms), "mrr_mean": round(sum(ms)/len(ms), 4)}
+            for c, ms in by_cat_rerank.items()
+        }
+        out["rerank_latency_ms_mean"] = round(
+            sum(rerank_lat_means) / len(rerank_lat_means), 2) if rerank_lat_means else 0.0
+        out["rerank_latency_ms_p95"] = round(
+            max(rerank_lat_p95s), 2) if rerank_lat_p95s else 0.0
 
     if full_report:
         out["full_report"] = {
@@ -544,6 +623,12 @@ def main() -> None:
                    help="Emit 4 leaderboard dimensions (pages/sec, content_signal_pct, cost_at_scale_dollars, pipeline_timing_sec). See SC-6 in specs/v099-...md.")
     p.add_argument("--max-wallclock-per-site", type=int, default=600,
                    help="Per-site wallclock cap in seconds. Hard-kills the crawl process tree on cap. Default 600 (10 min).")
+    p.add_argument("--rerank", action="store_true",
+                   help="Add a cross-encoder rerank stage on the top-20 cosine candidates. "
+                        "Emits both baseline and rerank MRRs in a single run for direct comparison. "
+                        "Requires markcrawl[ml] (sentence-transformers).")
+    p.add_argument("--rerank-model", default=None,
+                   help="Cross-encoder model name. Defaults to cross-encoder/ms-marco-MiniLM-L-6-v2.")
     args = p.parse_args()
 
     if args.rotated_pool:
@@ -572,13 +657,23 @@ def main() -> None:
         log.error("No sites selected.")
         return
 
-    log.info("Replica run label=%s sites=%d auto_scan=%s",
-             args.label, len(sites), args.auto_scan)
+    log.info("Replica run label=%s sites=%d auto_scan=%s rerank=%s",
+             args.label, len(sites), args.auto_scan, args.rerank)
 
     run_dir = RUNS / args.label
     run_dir.mkdir(parents=True, exist_ok=True)
     site_results: List[dict] = []
     dispatch = {"auto_scan": args.auto_scan}
+
+    reranker = None
+    if args.rerank:
+        kwargs = {"model_name": args.rerank_model} if args.rerank_model else {}
+        reranker = CrossEncoderReranker(**kwargs)
+        # Pre-load the model so the per-site latency numbers don't include
+        # the one-time model-load cost.
+        log.info("loading reranker model %s ...", reranker.model_name)
+        reranker._load()
+        log.info("reranker ready")
 
     t_total = time.perf_counter()
     for s in sites:
@@ -598,7 +693,7 @@ def main() -> None:
         # Score
         if jsonl.is_file() and pages > 0:
             log.info("  scoring MRR ...")
-            r = score_site(s["name"], jsonl)
+            r = score_site(s["name"], jsonl, reranker=reranker)
             r.setdefault("mrr", 0.0)
         else:
             r = {"mrr": 0.0, "error": "no pages"}
@@ -627,6 +722,14 @@ def main() -> None:
     print(f"  Per-cat:     " + " | ".join(
         f"{c}: {st['mrr_mean']:.3f} (n={st['n']})"
         for c, st in summary["by_category"].items()))
+    if "mrr_rerank_mean" in summary:
+        print(f"  MRR rerank:  {summary['mrr_rerank_mean']}  "
+              f"(lift {summary['mrr_rerank_lift']:+.4f}, "
+              f"latency {summary['rerank_latency_ms_mean']:.1f}ms mean / "
+              f"{summary['rerank_latency_ms_p95']:.1f}ms p95)")
+        print(f"  Per-cat rr:  " + " | ".join(
+            f"{c}: {st['mrr_mean']:.3f} (n={st['n']})"
+            for c, st in summary["by_category_rerank"].items()))
     if args.full_report:
         fr = summary["full_report"]
         ru = fr["leaderboard_runner_up_v2"]
