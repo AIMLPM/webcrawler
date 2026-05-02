@@ -1,0 +1,178 @@
+{
+  "rows": [
+    {
+      "slug": "3small",
+      "spec": "text-embedding-3-small",
+      "kind": "openai",
+      "notes": "current default",
+      "mrr_mean": 0.4038,
+      "mrr_median": 0.4167,
+      "by_category": {
+        "framework_docs": {
+          "n": 2,
+          "mrr_mean": 0.4349
+        },
+        "api_docs": {
+          "n": 3,
+          "mrr_mean": 0.5631
+        },
+        "reference": {
+          "n": 1,
+          "mrr_mean": 0.375
+        },
+        "tutorial": {
+          "n": 1,
+          "mrr_mean": 0.7158
+        },
+        "ecommerce": {
+          "n": 2,
+          "mrr_mean": 0.0625
+        },
+        "blog": {
+          "n": 1,
+          "mrr_mean": 0.5
+        },
+        "news": {
+          "n": 1,
+          "mrr_mean": 0.1667
+        }
+      },
+      "cost_at_scale": 5245.98,
+      "chunks_per_page_observed": 10.49,
+      "embed_dollars_per_M_chunks": 10.0
+    },
+    {
+      "slug": "3large",
+      "spec": "text-embedding-3-large",
+      "kind": "openai",
+      "notes": "OpenAI premium",
+      "mrr_mean": 0.3938,
+      "mrr_median": 0.375,
+      "by_category": {
+        "framework_docs": {
+          "n": 2,
+          "mrr_mean": 0.4031
+        },
+        "api_docs": {
+          "n": 3,
+          "mrr_mean": 0.5557
+        },
+        "reference": {
+          "n": 1,
+          "mrr_mean": 0.375
+        },
+        "tutorial": {
+          "n": 1,
+          "mrr_mean": 0.6917
+        },
+        "ecommerce": {
+          "n": 2,
+          "mrr_mean": 0.0625
+        },
+        "blog": {
+          "n": 1,
+          "mrr_mean": 0.5
+        },
+        "news": {
+          "n": 1,
+          "mrr_mean": 0.1667
+        }
+      },
+      "cost_at_scale": 34098.86,
+      "chunks_per_page_observed": 10.49,
+      "embed_dollars_per_M_chunks": 65.0
+    },
+    {
+      "slug": "bge-large",
+      "spec": "BAAI/bge-large-en-v1.5",
+      "kind": "local",
+      "notes": "BGE family",
+      "mrr_mean": 0.3756,
+      "mrr_median": 0.375,
+      "by_category": {
+        "framework_docs": {
+          "n": 2,
+          "mrr_mean": 0.3579
+        },
+        "api_docs": {
+          "n": 3,
+          "mrr_mean": 0.5376
+        },
+        "reference": {
+          "n": 1,
+          "mrr_mean": 0.375
+        },
+        "tutorial": {
+          "n": 1,
+          "mrr_mean": 0.6364
+        },
+        "ecommerce": {
+          "n": 2,
+          "mrr_mean": 0.0625
+        },
+        "blog": {
+          "n": 1,
+          "mrr_mean": 0.5
+        },
+        "news": {
+          "n": 1,
+          "mrr_mean": 0.1667
+        }
+      },
+      "cost_at_scale": 0.0,
+      "chunks_per_page_observed": 10.49,
+      "embed_dollars_per_M_chunks": 0.0
+    },
+    {
+      "slug": "mxbai-large",
+      "spec": "mixedbread-ai/mxbai-embed-large-v1",
+      "kind": "local",
+      "notes": "Mixedbread",
+      "mrr_mean": 0.3859,
+      "mrr_median": 0.375,
+      "by_category": {
+        "framework_docs": {
+          "n": 2,
+          "mrr_mean": 0.3771
+        },
+        "api_docs": {
+          "n": 3,
+          "mrr_mean": 0.5414
+        },
+        "reference": {
+          "n": 1,
+          "mrr_mean": 0.375
+        },
+        "tutorial": {
+          "n": 1,
+          "mrr_mean": 0.7
+        },
+        "ecommerce": {
+          "n": 2,
+          "mrr_mean": 0.0625
+        },
+        "blog": {
+          "n": 1,
+          "mrr_mean": 0.5
+        },
+        "news": {
+          "n": 1,
+          "mrr_mean": 0.1667
+        }
+      },
+      "cost_at_scale": 0.0,
+      "chunks_per_page_observed": 10.49,
+      "embed_dollars_per_M_chunks": 0.0
+    },
+    {
+      "slug": "nomic-text",
+      "spec": "nomic-ai/nomic-embed-text-v1.5",
+      "kind": "local",
+      "notes": "Nomic w/ task prefix",
+      "missing": true
+    }
+  ],
+  "baseline_slug": "3small",
+  "scb1_bar_dollars": 2622.99,
+  "scb2_band_mrr": 0.02
+}

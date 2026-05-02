@@ -229,18 +229,27 @@ def chunkify(pages: List[dict]) -> List[dict]:
 _CLIENT = None
 
 
+def _load_openai_api_key_into_env() -> None:
+    """Ensure ``OPENAI_API_KEY`` is set in ``os.environ`` (reading from
+    ROOT/.env if necessary) so any downstream caller — including the
+    new :class:`OpenAIEmbedder` — picks it up the same way the legacy
+    ``_openai_client`` did."""
+    if os.environ.get("OPENAI_API_KEY"):
+        return
+    env_path = ROOT / ".env"
+    if env_path.is_file():
+        for line in env_path.read_text().splitlines():
+            if line.startswith("OPENAI_API_KEY="):
+                os.environ["OPENAI_API_KEY"] = line.split("=", 1)[1].strip().strip('"').strip("'")
+                return
+
+
 def _openai_client():
     global _CLIENT
     if _CLIENT is not None:
         return _CLIENT
+    _load_openai_api_key_into_env()
     api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        env_path = ROOT / ".env"
-        if env_path.is_file():
-            for line in env_path.read_text().splitlines():
-                if line.startswith("OPENAI_API_KEY="):
-                    api_key = line.split("=", 1)[1].strip().strip('"').strip("'")
-                    break
     if not api_key:
         raise SystemExit("OPENAI_API_KEY missing (env or .env)")
     from openai import OpenAI
@@ -700,6 +709,8 @@ def main() -> None:
     site_results: List[dict] = []
     dispatch = {"auto_scan": args.auto_scan}
 
+    # Make OPENAI_API_KEY available from .env so OpenAIEmbedder can read it.
+    _load_openai_api_key_into_env()
     embedder = make_embedder(args.embedder)
 
     reranker = None

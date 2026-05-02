@@ -124,13 +124,25 @@ measurement.
   reranker models. Full report:
   [`bench/local_replica/track_a_report.md`](../bench/local_replica/track_a_report.md).
 
-- **Track B (embedder)** — abstract the embedder behind a thin
-  interface; benchmark `text-embedding-3-small` (current),
-  `text-embedding-3-large`, `BAAI/bge-large-en-v1.5`,
-  `mxbai-embed-large-v1`, and `nomic-embed-text-v1.5` on the canonical
-  pool's MRR. Pick the cost-quality knee. Default to a local open-source
-  embedder if MRR is within 0.02 of OpenAI 3-small. Cost-at-scale should
-  drop to ~$0 at 1M-page scale (CPU inference).
+- **Track B (embedder) — ✅ PARTIAL DONE 2026-05-02.** Embedder ABC
+  shipped (`markcrawl/embedder.py`, OpenAI + Local backends with
+  asymmetric retrieval prefixes); `--embedder` flag on the harness;
+  bake-off run on the 11-site canonical pool against 4 embedders (5th,
+  nomic, aborted at 1/11 sites because `trust_remote_code` MPS forward
+  pass projects 14 hr per embedder — its react-dev result was already
+  worse than mxbai's). **Bake-off winner: `mixedbread-ai/mxbai-embed-
+  large-v1` — 0.3859 MRR (Δ −0.0179 vs 3-small 0.4038), $0 cost at
+  scale.** Passes SC-B1 (≤ $2,623 budget) and SC-B2 (within ±0.020
+  band). 3-large fails SC-B1 (cost 6× over) AND ties on MRR; BGE-large
+  fails SC-B2 by 0.008. The bake-off also corrected a stale
+  `CHUNKS_PER_PAGE=3.0` constant in cost projection — observed under
+  Track-D chunks is 10.49, so the real 3-small cost at scale is $5,246
+  (not ~$1,500 as historically reported); mxbai net savings on a 50 M-
+  page pipeline is **−$5,246/year**. **Default-flip deferred to v0.11**
+  pending an extras-aware factory (`markcrawl[ml]` adds
+  sentence-transformers + 1.3 GB model — too heavy for the default
+  install). Full report:
+  [`bench/local_replica/track_b_report.md`](../bench/local_replica/track_b_report.md).
 
 - **Track C (ecom resilience)** — diagnose newegg/ikea via the
   `bench/local_replica/run.py` already-saved pages.jsonl from
@@ -235,42 +247,36 @@ under v0.10.x point releases.
 
 ### Track B — Embedder swap
 
-#### DS-B1: Embedder bake-off
-- [ ] Status: pending
-  - **What:** Run the canonical pool 4 times, once per candidate
-    embedder: `text-embedding-3-small`, `text-embedding-3-large`,
-    `BAAI/bge-large-en-v1.5` (local), `mxbai-embed-large-v1` (local),
-    `nomic-embed-text-v1.5` (local). Reuse v0.9.9-rc1 cached crawls
-    via `--reuse-crawl` so only the embed-and-score step varies.
-  - **Output:** `bench/local_replica/embedder_bakeoff.json` —
-    {embedder: {mrr_mean, cost_at_scale, latency, model_size_mb}}.
-    Pareto-knee identification documented.
-  - **Test:** `tests/test_embedder_interface.py` (interface
-    parity, deterministic output for fixed seed).
-  - **Failure mode:** If no local embedder is within 0.02 MRR of
-    OpenAI 3-small, stay on OpenAI but switch to 3-large for the +MRR
-    side and measure cost-at-scale impact separately.
+#### DS-B1: Embedder bake-off — ✅ done 2026-05-02
+- [x] Ran 4 of 5 candidates on the canonical pool with cached
+      crawls + Track-D chunks; nomic-text aborted at 1/11 sites
+      (trust_remote_code MPS forward pass too slow — 14 hr projected,
+      and its single-site result was already worse than mxbai's).
+- [x] Output: `bench/local_replica/embedder_bakeoff.json` +
+      `bench/local_replica/track_b_report.md`. Per-embedder MRR,
+      per-category breakdown, SC-B1/B2 evaluation, cost-at-scale
+      with the corrected `chunks_per_page=10.49` Track-D number.
 
-#### DS-B2: Embedder abstraction + ship default
-- [ ] Status: pending
-  - **What:** New `markcrawl/embedder.py` with a `Embedder` interface
-    (+ `OpenAIEmbedder`, `LocalSentenceTransformerEmbedder`,
-    `OllamaEmbedder` if useful). Default selected by Pareto knee from
-    DS-B1. CLI flag `--embedder NAME` for overrides.
-  - **Output:** `markcrawl/embedder.py`, `markcrawl/retrieval.py`
-    refactored to use it, REPLICA.md cost formula updated.
-  - **Test:** `tests/test_embedder_interface.py` covers all backends
-    via mock or skip-if-not-installed.
-  - **Failure mode:** Local embedder dependency footprint
-    (sentence_transformers + torch) is 2GB+. If too heavy for the
-    default install, gate behind an extras_require: `pip install
-    markcrawl[local-embed]`.
+#### DS-B2: Embedder abstraction + ship default — ✅ partial done 2026-05-02
+- [x] `markcrawl/embedder.py` with `Embedder` ABC + `OpenAIEmbedder`
+      + `LocalSentenceTransformerEmbedder` (with model-specific
+      instruction prefixes for asymmetric retrieval). 23 tests,
+      FakeOpenAIClient + monkey-patched SentenceTransformer.
+- [x] `--embedder` flag on `bench/local_replica/run.py`; embed cache
+      keyed by model_id; cost-at-scale consults active embedder.
+- [ ] **Default flip deferred to v0.11.** Switching production
+      default from `text-embedding-3-small` to a local
+      sentence-transformers model pulls `markcrawl[ml]` (1.3 GB
+      model checkpoint + torch) into the default install. Needs an
+      extras-aware factory: pick mxbai when `[ml]` is installed,
+      else fall back to OpenAI 3-small. That's a packaging change,
+      not a Track B decision.
 
-#### DS-B3: Validate joint MRR neutrality
-- [ ] Status: pending
-  - **What:** Re-run the canonical pool with the chosen embedder.
-    Verify SC-B1 + SC-B2.
-  - **Output:** Comparison report + commit.
+#### DS-B3: Validate joint MRR neutrality — ✅ done 2026-05-02
+- [x] Bake-off table at `track_b_report.md` confirms mxbai-embed-
+      large-v1 PASSES SC-B1 (cost $0 ≤ $2,623 budget) and SC-B2
+      (Δ −0.0179 within ±0.020 band). BGE-large fails SC-B2 by
+      0.008; 3-large fails SC-B1 by 13×. nomic-text aborted.
 
 ### Track C — Ecommerce resilience
 
