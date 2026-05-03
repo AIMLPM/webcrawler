@@ -901,29 +901,29 @@ class TestAdaptiveThrottle:
         # Our UA is not Googlebot — should not get Googlebot's delay
         assert CrawlEngine._parse_crawl_delay(robots, "markcrawl") is None
 
-    def test_update_throttle_429_increases_delay(self):
-        engine = self._make_engine(delay=0)
+    def test_update_throttle_429_is_ignored(self):
+        # As of v0.10.0 the throttle no longer reacts to 429 — that signal
+        # is owned by markcrawl.retry. Throttle should leave delay alone.
+        engine = self._make_engine(delay=0.5)
         resp = MagicMock()
         resp.status_code = 429
         resp.elapsed = None
 
         engine._update_throttle(resp)
-        assert engine.throttle._backoff_count == 1
-        # With base_delay=0 and doubling, active_delay should be > 0
-        # (max(0, 0 * 2) = 0, but the backoff triggers)
+        assert engine.throttle._backoff_count == 0
+        assert engine.throttle.active_delay == engine.throttle.base_delay
 
-    def test_update_throttle_429_then_success_decays(self):
+    def test_update_throttle_429_does_not_disturb_pacing(self):
+        # A 429 must not change inter-request pacing; subsequent 200s must
+        # set delay based on response-time signal alone.
         engine = self._make_engine(delay=0.1)
 
-        # Simulate 429
         resp_429 = MagicMock()
         resp_429.status_code = 429
         resp_429.elapsed = None
         engine._update_throttle(resp_429)
-        assert engine.throttle._backoff_count == 1
-        assert engine.throttle.active_delay >= engine.throttle.base_delay
+        assert engine.throttle.active_delay == engine.throttle.base_delay
 
-        # Simulate success
         resp_200 = MagicMock()
         resp_200.status_code = 200
         resp_200.ok = True

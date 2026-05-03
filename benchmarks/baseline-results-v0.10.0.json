@@ -1,0 +1,191 @@
+{
+  "source_version": "0.10.0",
+  "captured_by": "benchmarks/run-all.sh",
+  "benchmarks": {
+    "b1_cli_parity": {
+      "benchmark": "b1_cli_parity",
+      "result": "PASS",
+      "source_version": "0.10.0",
+      "pinned": false,
+      "diff_line_count": 0,
+      "source_help_lines": 118,
+      "pypi_help_lines": 118,
+      "diff_excerpt": [],
+      "duration_s": 55.184,
+      "notes": "source and PyPI --help outputs are identical"
+    },
+    "b2_backoff_timing": {
+      "benchmark": "b2_backoff_timing",
+      "result": "PASS",
+      "policy": {
+        "multiplier": 2.0,
+        "max_delay_s": 30.0,
+        "max_tries": 5,
+        "compliance_tolerance": 0.1
+      },
+      "trials": 5,
+      "total_retries_sampled": 20,
+      "percent_compliant": 100.0,
+      "threshold": 95.0,
+      "samples": [
+        {
+          "attempt": 1,
+          "sleep_s": 0.7783370398898561,
+          "envelope_upper": 2.0,
+          "compliant": true
+        },
+        {
+          "attempt": 2,
+          "sleep_s": 3.3855170258885954,
+          "envelope_upper": 4.0,
+          "compliant": true
+        },
+        {
+          "attempt": 3,
+          "sleep_s": 3.803814255542476,
+          "envelope_upper": 8.0,
+          "compliant": true
+        },
+        {
+          "attempt": 4,
+          "sleep_s": 8.680161844305257,
+          "envelope_upper": 16.0,
+          "compliant": true
+        },
+        {
+          "attempt": 1,
+          "sleep_s": 1.0430146351889023,
+          "envelope_upper": 2.0,
+          "compliant": true
+        },
+        {
+          "attempt": 2,
+          "sleep_s": 3.996290597857957,
+          "envelope_upper": 4.0,
+          "compliant": true
+        },
+        {
+          "attempt": 3,
+          "sleep_s": 3.6822118913621322,
+          "envelope_upper": 8.0,
+          "compliant": true
+        },
+        {
+          "attempt": 4,
+          "sleep_s": 15.641206081801712,
+          "envelope_upper": 16.0,
+          "compliant": true
+        },
+        {
+          "attempt": 1,
+          "sleep_s": 1.574436661604339,
+          "envelope_upper": 2.0,
+          "compliant": true
+        },
+        {
+          "attempt": 2,
+          "sleep_s": 0.6845477465010696,
+          "envelope_upper": 4.0,
+          "compliant": true
+        },
+        {
+          "attempt": 3,
+          "sleep_s": 6.6830147483799065,
+          "envelope_upper": 8.0,
+          "compliant": true
+        },
+        {
+          "attempt": 4,
+          "sleep_s": 3.9949638428194074,
+          "envelope_upper": 16.0,
+          "compliant": true
+        },
+        {
+          "attempt": 1,
+          "sleep_s": 1.9766687950844999,
+          "envelope_upper": 2.0,
+          "compliant": true
+        },
+        {
+          "attempt": 2,
+          "sleep_s": 2.9244439752616764,
+          "envelope_upper": 4.0,
+          "compliant": true
+        },
+        {
+          "attempt": 3,
+          "sleep_s": 6.279074767278972,
+          "envelope_upper": 8.0,
+          "compliant": true
+        },
+        {
+          "attempt": 4,
+          "sleep_s": 10.863261317504383,
+          "envelope_upper": 16.0,
+          "compliant": true
+        },
+        {
+          "attempt": 1,
+          "sleep_s": 0.33228208642619395,
+          "envelope_upper": 2.0,
+          "compliant": true
+        },
+        {
+          "attempt": 2,
+          "sleep_s": 2.946400852741728,
+          "envelope_upper": 4.0,
+          "compliant": true
+        },
+        {
+          "attempt": 3,
+          "sleep_s": 5.24091542981706,
+          "envelope_upper": 8.0,
+          "compliant": true
+        },
+        {
+          "attempt": 4,
+          "sleep_s": 8.295606201341316,
+          "envelope_upper": 16.0,
+          "compliant": true
+        }
+      ],
+      "per_attempt_stats": {
+        "1": {
+          "n": 5,
+          "min": 0.332,
+          "max": 1.977,
+          "mean": 1.141,
+          "envelope_upper": 2.0
+        },
+        "2": {
+          "n": 5,
+          "min": 0.685,
+          "max": 3.996,
+          "mean": 2.787,
+          "envelope_upper": 4.0
+        },
+        "3": {
+          "n": 5,
+          "min": 3.682,
+          "max": 6.683,
+          "mean": 5.138,
+          "envelope_upper": 8.0
+        },
+        "4": {
+          "n": 5,
+          "min": 3.995,
+          "max": 15.641,
+          "mean": 9.495,
+          "envelope_upper": 16.0
+        }
+      },
+      "duration_s": 93.118,
+      "notes": ""
+    },
+    "b3_designlens_no_fallback": {
+      "benchmark": "b3_designlens_no_fallback",
+      "result": "DESIGN_ONLY",
+      "notes": "executable run gated on PyPI publish + designlens setup; see b3_designlens_integration.md"
+    }
+  }
+}

@@ -8,15 +8,14 @@ from __future__ import annotations
 
 import logging
 import os
-import time as _time
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 import requests
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 from .exceptions import MarkcrawlDependencyError
+from .retry import with_retry, with_retry_async
 
 try:
     import httpx as _httpx
@@ -35,8 +34,6 @@ DEFAULT_UA = (
     "Mozilla/5.0 (compatible; MarkCrawl/0.1; +https://github.com/AIMLPM/markcrawl) "
     "Python-requests"
 )
-
-_RETRY_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
 logger = logging.getLogger(__name__)
 
@@ -87,22 +84,17 @@ def _build_httpx_client(
 
 
 def _fetch_httpx(client: Any, url: str, timeout: int) -> Optional[Any]:
-    """Fetch with httpx including retry logic for transient errors."""
-    max_retries = 3
-    backoff = 0.5
-    last_resp = None
-    for attempt in range(max_retries + 1):
-        try:
-            resp = client.get(url, timeout=timeout)
-            last_resp = resp
-            if resp.status_code not in _RETRY_STATUS_CODES or attempt == max_retries:
-                return resp
-        except _httpx.HTTPError as exc:
-            if attempt == max_retries:
-                logger.warning("Fetch error for %s: %s", url, exc)
-                return None
-        _time.sleep(backoff * (2 ** attempt))
-    return last_resp
+    """Fetch with httpx, applying markcrawl's standard retry policy.
+
+    Retry policy lives in ``markcrawl.retry``: 5 attempts, full-jitter
+    exponential 2s->30s, ``Retry-After`` honored on 429, structured INFO log
+    per retry. Replaced the prior hand-rolled doubling loop in v0.10.0.
+    """
+    fetch = with_retry(
+        lambda: client.get(url, timeout=timeout),
+        transient_errors=(_httpx.HTTPError,),
+    )
+    return fetch()
 
 
 # ---------------------------------------------------------------------------
@@ -114,7 +106,12 @@ def _build_requests_session(
     proxy: Optional[str] = None,
     pool_size: int = 10,
 ) -> requests.Session:
-    """Create a ``requests.Session`` pre-configured for crawling."""
+    """Create a ``requests.Session`` pre-configured for crawling.
+
+    No transport-level ``urllib3.Retry`` adapter is mounted: request-level
+    retry is now centralised in :mod:`markcrawl.retry` (applied in
+    ``_fetch_requests``) so the two layers do not double-retry.
+    """
     session = requests.Session()
     session.verify = CERT_PATH
     session.headers.update(
@@ -126,16 +123,7 @@ def _build_requests_session(
     if proxy:
         session.proxies = {"http": proxy, "https": proxy}
 
-    retry = Retry(
-        total=3,
-        connect=3,
-        read=3,
-        backoff_factor=0.5,
-        status_forcelist=list(_RETRY_STATUS_CODES),
-        allowed_methods=["GET", "HEAD"],
-    )
     adapter = HTTPAdapter(
-        max_retries=retry,
         pool_connections=pool_size,
         pool_maxsize=pool_size,
     )
@@ -165,14 +153,20 @@ def _fix_encoding(response: requests.Response) -> None:
 
 
 def _fetch_requests(session: requests.Session, url: str, timeout: int) -> Optional[requests.Response]:
-    """Fetch with requests."""
-    try:
-        resp = session.get(url, timeout=timeout, allow_redirects=True)
+    """Fetch with requests, applying markcrawl's standard retry policy.
+
+    The retry decorator from :mod:`markcrawl.retry` handles 429/5xx and
+    transient ``RequestException`` cases uniformly with the httpx path.
+    Encoding is fixed on the final response that bubbles back.
+    """
+    fetch = with_retry(
+        lambda: session.get(url, timeout=timeout, allow_redirects=True),
+        transient_errors=(requests.RequestException,),
+    )
+    resp = fetch()
+    if resp is not None:
         _fix_encoding(resp)
-        return resp
-    except requests.RequestException as exc:
-        logger.warning("Fetch error for %s: %s", url, exc)
-        return None
+    return resp
 
 
 # ---------------------------------------------------------------------------
@@ -253,24 +247,23 @@ def build_async_session(
 
 
 async def fetch_async(client: Any, url: str, timeout: int) -> Optional[Any]:
-    """Async HTTP GET with retry logic for transient errors."""
-    import asyncio as _asyncio
+    """Async HTTP GET, applying markcrawl's standard retry policy.
 
-    max_retries = 3
-    backoff = 0.5
-    last_resp = None
-    for attempt in range(max_retries + 1):
-        try:
-            resp = await client.get(url, timeout=timeout)
-            last_resp = resp
-            if resp.status_code not in _RETRY_STATUS_CODES or attempt == max_retries:
-                return resp
-        except _httpx.HTTPError as exc:
-            if attempt == max_retries:
-                logger.warning("Fetch error for %s: %s", url, exc)
-                return None
-        await _asyncio.sleep(backoff * (2 ** attempt))
-    return last_resp
+    Mirrors :func:`_fetch_httpx` using :func:`markcrawl.retry.with_retry_async`
+    so sync and async callers see identical 429/5xx handling and
+    ``Retry-After`` honoring.
+    """
+
+    async def _do_get():
+        # async wrapper (not a sync lambda) so tenacity's AsyncRetrying
+        # detects this as a coroutine callable and awaits it on each attempt.
+        return await client.get(url, timeout=timeout)
+
+    fetch = with_retry_async(
+        _do_get,
+        transient_errors=(_httpx.HTTPError,),
+    )
+    return await fetch()
 
 
 # ---------------------------------------------------------------------------

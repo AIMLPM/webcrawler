@@ -8,11 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 class AdaptiveThrottle:
-    """Three-layer adaptive throttle:
+    """Two-layer adaptive throttle:
 
     1. Crawl-delay from robots.txt (floor)
     2. Response-time proportional — slow servers get more delay
-    3. 429 backoff — double delay on rate-limit, decay on success
+
+    429 / rate-limit handling is **not** in this throttle. As of v0.10.0 it
+    lives in :mod:`markcrawl.retry` (request-level exponential backoff with
+    jitter and ``Retry-After`` honoring). The two layers compose: throttle
+    decides "wait N seconds *between* requests"; retry decides "this request
+    failed, wait M seconds, try *again*". Both used to react to 429s, which
+    caused double-waiting and uncapped delay drift; only the retry layer
+    does now.
     """
 
     def __init__(self, base_delay: float, progress: Callable[[str], None]):
@@ -21,6 +28,9 @@ class AdaptiveThrottle:
         self._response_times: List[float] = []
         self._response_time_window = 10
         self._slow_threshold = 0.5
+        # Retained as a no-op attribute for backwards compatibility with
+        # callers (and tests) that previously inspected ``_backoff_count``.
+        # Always 0 in v0.10.0+ — see class docstring.
         self._backoff_count = 0
         self._progress = progress
 
@@ -38,21 +48,21 @@ class AdaptiveThrottle:
         self._active_delay = value
 
     def update(self, response) -> None:
-        """Adapt delay based on server response time and status codes."""
+        """Adapt delay based on server response time.
+
+        429 responses are intentionally ignored here — :mod:`markcrawl.retry`
+        owns rate-limit backoff (with jitter and ``Retry-After`` honoring) so
+        keeping a doubling-on-429 branch in the throttle would double-wait
+        and undermine the retry layer's exponential schedule.
+        """
         if response is None:
             return
 
+        # Skip 429s entirely; the retry layer will have already replayed the
+        # request before we ever observe a non-retryable outcome here.
         status = getattr(response, "status_code", getattr(response, "status", 0))
         if status == 429:
-            self._backoff_count += 1
-            self._active_delay = max(1.0, self._active_delay * 2)
-            self._progress(f"[throttle] 429 received — delay increased to {self._active_delay:.1f}s")
             return
-
-        if self._backoff_count > 0:
-            self._backoff_count = max(0, self._backoff_count - 1)
-            if self._backoff_count == 0:
-                self._active_delay = self._base_delay
 
         response_time = 0.0
         try:
@@ -67,7 +77,7 @@ class AdaptiveThrottle:
             self._response_times = self._response_times[-self._response_time_window:]
 
         avg_response = sum(self._response_times) / len(self._response_times) if self._response_times else 0
-        if avg_response > self._slow_threshold and self._backoff_count == 0:
+        if avg_response > self._slow_threshold:
             self._active_delay = max(self._base_delay, avg_response * 0.5)
 
     @staticmethod

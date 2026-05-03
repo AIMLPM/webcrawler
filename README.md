@@ -19,6 +19,24 @@ Everything else — LLM extraction, Supabase upload, MCP server, LangChain tools
 
 **LLM agents:** Load [docs/LLM_PROMPT.md](docs/LLM_PROMPT.md) as a system prompt to generate correct MarkCrawl commands automatically.
 
+## Installation / Upgrading
+
+Install or upgrade with pip:
+
+```bash
+pip install --upgrade markcrawl
+pip show markcrawl | grep Version       # confirm the installed version
+markcrawl --help | head -1              # confirm the binary on $PATH is the upgraded one
+```
+
+If `markcrawl --help` is missing flags you expect (e.g. `--screenshot`, `--seed-file`, `--smart-sample`, `--download-images`), your local install is stale. Run `pip install --upgrade markcrawl` against the same Python that owns the `markcrawl` binary on your `PATH` — `head -1 $(which markcrawl)` shows the right interpreter. PyPI is always the source of truth; see [CHANGELOG.md](CHANGELOG.md) for the full release history.
+
+**v0.10.0 highlights** ([changelog](CHANGELOG.md#0100--2026-05-01)):
+
+- New tenacity-backed retry layer for HTTP fetches: full-jitter exponential backoff (2 s -> 30 s, 5 attempts) that **honors the server's `Retry-After` header** on 429s.
+- Removed the uncapped doubling-on-429 branch from `throttle.py` so the two layers no longer double-wait.
+- Added a CI parity job ([`.github/workflows/cli-flag-parity.yml`](.github/workflows/cli-flag-parity.yml)) that diffs `markcrawl --help` between the local source and the latest published wheel - catches the source-vs-PyPI drift class on every push to `main` and every release tag.
+
 ## Quickstart (2 minutes)
 
 ```bash

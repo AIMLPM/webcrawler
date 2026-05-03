@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "markcrawl"
-version = "0.9.3"
+version = "0.10.0"
 description = "Fast Python web crawler for AI & RAG ingestion — crawl, extract, and embed website content with one tool."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,7 +29,8 @@ dependencies = [
   "lxml>=5.0.0",
   "markdownify>=0.12.0",
   "requests>=2.31.0",
-  "certifi>=2024.2.2"
+  "certifi>=2024.2.2",
+  "tenacity>=8.0,<10.0"
 ]
 
 [project.optional-dependencies]

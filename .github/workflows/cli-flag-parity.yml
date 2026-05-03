@@ -1,0 +1,94 @@
+name: CLI Flag Parity
+
+# Catch source-vs-published divergence in CI before users hit the
+# stale-install bug class (see specs/v3-landscape/root-cause-diagnosis.md).
+#
+# Strategy: install the local source as a wheel, capture `markcrawl --help`,
+# then force-reinstall the latest published wheel from PyPI and capture
+# `--help` again. Diff the two outputs and fail if they differ.
+#
+# Trigger surface:
+#   - push to main         → catches drift the moment it lands on trunk
+#   - push of a v* tag     → catches drift on every release cut
+#   - workflow_dispatch    → manual re-run
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  parity:
+    name: Source --help == Published --help
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Read source version
+        id: ver
+        run: |
+          v=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Source version: $v"
+
+      - name: Capture --help from local source install
+        run: |
+          python -m venv /tmp/source-venv
+          /tmp/source-venv/bin/python -m pip install --upgrade pip
+          /tmp/source-venv/bin/python -m pip install .
+          /tmp/source-venv/bin/markcrawl --help > /tmp/help-source.txt 2>&1
+          echo "===== SOURCE --help ====="
+          cat /tmp/help-source.txt
+
+      - name: Capture --help from latest published wheel
+        id: published
+        run: |
+          python -m venv /tmp/pypi-venv
+          /tmp/pypi-venv/bin/python -m pip install --upgrade pip
+          # Pin to the source version when it's already published (release tags),
+          # otherwise grab whatever is current on PyPI to spot drift early.
+          v="${{ steps.ver.outputs.version }}"
+          if /tmp/pypi-venv/bin/python -m pip install --force-reinstall "markcrawl==$v" 2>/tmp/pip.log; then
+            echo "Pinned to PyPI markcrawl==$v"
+            echo "pinned=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "PyPI does not yet have $v; falling back to latest"
+            /tmp/pypi-venv/bin/python -m pip install --force-reinstall --upgrade markcrawl
+            echo "pinned=false" >> "$GITHUB_OUTPUT"
+          fi
+          /tmp/pypi-venv/bin/markcrawl --help > /tmp/help-pypi.txt 2>&1
+          echo "===== PUBLISHED --help ====="
+          cat /tmp/help-pypi.txt
+
+      - name: Diff --help outputs
+        run: |
+          set -euo pipefail
+          if diff -u /tmp/help-source.txt /tmp/help-pypi.txt; then
+            echo "PASS: source and published markcrawl --help are identical"
+            exit 0
+          fi
+          # Drift detected. Whether this fails the job depends on whether the
+          # current source version is already on PyPI:
+          #   * Pinned (source==PyPI): a true regression — fail loudly so the
+          #     next release can correct it before users hit it.
+          #   * Unpinned (source ahead of PyPI): expected during the window
+          #     between merging a release-bumping PR and tagging it. Soft-fail
+          #     with a clear advisory so the diff is still surfaced.
+          if [ "${{ steps.published.outputs.pinned }}" = "true" ]; then
+            echo "::error::Drift detected: source --help differs from published wheel for the SAME version."
+            exit 1
+          else
+            echo "::warning::Source is ahead of PyPI; a release cut for ${{ steps.ver.outputs.version }} is expected."
+            # Soft-fail to keep the signal honest while not blocking pre-release merges.
+            exit 0
+          fi
